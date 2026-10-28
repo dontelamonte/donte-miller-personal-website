@@ -30,7 +30,7 @@ const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,hou
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 const modelFlow=new ScrollFlow({settleTime:0});
-let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, homeReturnTween=null, navigationTween=null;
+let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
 const pickables = [];
@@ -283,7 +283,7 @@ function resetTableSequence(){
  state.scrollTarget='press';state.scrollAmount=0;state.progress=0;state.libraryScrollAmount=0;state.courseCarry=0;savedReader.clear();
  document.documentElement.dataset.tableProgress='0';updateTableHint();
 }
-function cancelHomeReturn(){if(homeReturnTween){homeReturnTween.kill();homeReturnTween=null;}state.homeReturning=false;}
+function cancelHomeReturn(){state.homeReturning=false;}
 function cancelNavigationFlight(){if(navigationTween){navigationTween.kill();navigationTween=null;}document.body.classList.remove('room-travelling');}
 function navigationOrigin(destination){
  if(navigationTween){
@@ -347,22 +347,9 @@ function navigateRoom(id,{historyChange=true}={}){
  },onComplete:()=>settleNavigation(id)});
 }
 function returnHomeFromLibrary({historyChange=true}={}){
- // Fly back through the doorway at standing height. Skip the table's overhead
- // camera stop entirely, so the final book leads directly into the living room.
- const aspect=viewport().width/viewport().height;
- const views=[1,.9,.76,.68,.48,.22].map(p=>libraryCameraAt(p,aspect)).concat([.5,.3,.2,0].map(p=>cameraAt(p,aspect)));
- const positions=new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal');
- // The outbound Workshop gaze points at the desk. On the return, turn toward
- // the doorway and keep looking along the route instead of facing the desk.
- const returnTargets=[
-  views[0].target,[12,3.35,-4],[4,3.35,3.3],[2,3.3,3.3],[-3,3.3,3.3],[-7,3.3,3.3],
-  [-13,3.1,3.3],[-15,3.1,-1],[-15,3.1,-4],views.at(-1).target
- ];
- const gazes=new THREE.CatmullRomCurve3(returnTargets.map(v=>new THREE.Vector3(...v)),false,'centripetal');
- const travel={t:0};gsap.killTweensOf(state);state.journeyNavigation=true;state.homeReturning=true;state.houseTarget=0;state.libraryTarget=0;state.libraryVelocity=state.journeyVelocity=0;state.aboutOffset=0;resetTableSequence();
- if(historyChange)routeTo('living');document.title='Donte Miller — Make yourself at home.';
- if(state.reduce){state.libraryProgress=state.houseProgress=0;state.journeyNavigation=state.homeReturning=false;travelCamera();announce('Returned Home.');return;}
- homeReturnTween=gsap.to(travel,{t:1,duration:3.4,ease:'power1.inOut',onUpdate:()=>{camera.position.copy(positions.getPoint(travel.t));target.copy(gazes.getPoint(travel.t));camera.fov=THREE.MathUtils.lerp(46,40,travel.t);camera.updateProjectionMatrix();look();updateHouseUI(travel.t<.64?'dining':'living');},onComplete:()=>{homeReturnTween=null;state.libraryProgress=state.houseProgress=0;state.journeyNavigation=state.homeReturning=false;travelCamera();announce('Returned Home.');}});
+ // Use the shared direction-aware flight used by room tabs so the final book
+ // returns directly through the house without its older, hand-built gaze turn.
+ state.aboutOffset=0;resetTableSequence();navigateRoom('living',{historyChange});
 }
 function goRoom(id,{historyChange=true}={}){
  if(id==='dining')id='table';

@@ -14,7 +14,7 @@ The portrait jumps to the inline About story; six frames open Forbes, Georgia Tr
 
 On phones, a focused portrait view and a six-item recognition menu keep all credentials accessible.
 
-The connected room geometry and furniture are modeled in Three.js. The portrait texture is cropped at runtime from a compressed copy of the supplied living-room reference; the original remains in the parent reference folder. Wall, upholstery and mural textures are procedural. No screenshot is used as a flat room background.
+The connected room geometry and furniture are modeled in Three.js. The house is enclosed by a shared exterior shell and continuous dining ceiling, with the room-to-room archways left open. Reverse tab travel and the final Library-to-Home return use the same direction-aware camera flight as forward tab travel. The portrait texture is cropped at runtime from a compressed copy of the supplied living-room reference; the original remains in the parent reference folder. Wall, upholstery and mural textures are procedural. No screenshot is used as a flat room background.
 
 ## Interaction
 
