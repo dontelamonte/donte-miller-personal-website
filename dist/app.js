@@ -310,38 +310,30 @@ function goRoom(id,{historyChange=true}={}){
  if(state.mode==='living-detail')closeLiving({historyChange:false});
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:id});if(historyChange)routeTo(id);return;}
  if(state.mode!=='exploring')return;
- resetTableSequence();
- if(state.libraryProgress>.001||state.libraryTarget>0){gsap.killTweensOf(state);state.libraryTarget=0;state.workshopOffset=0;state.modelSequenceComplete=false;state.modelScrollTarget='workers-equity';state.journeyNavigation=true;state.scrollAmount=0;if(historyChange)routeTo(id);document.title=id==='living'?'Donte Miller — Make yourself at home.':'Donte Miller — The Dining Table';if(state.reduce){state.libraryProgress=0;state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else travelCamera();return;}gsap.to(state,{libraryProgress:0,duration:Math.max(.7,state.libraryProgress*2.1),ease:'power1.inOut',onUpdate:travelCamera,onComplete:()=>{state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else{travelCamera();announce('Returned to the table.');}}});return;}
- const progress=id==='living'?0:1;state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;
- state.houseTarget=progress;state.journeyVelocity=0;state.progress=0;state.scrollAmount=0;state.autoCooldown=performance.now()+500;
  gsap.killTweensOf(state);
+ resetTableSequence();
+ const progress=id==='living'?0:1;state.houseProgress=state.houseTarget=progress;state.libraryProgress=state.libraryTarget=0;
+ state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;state.workshopOffset=0;state.modelSequenceComplete=false;state.modelScrollTarget='workers-equity';
+ state.journeyNavigation=false;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+500;
  if(historyChange)routeTo(id);
- document.title=id==='living'?'Donte Miller — Make yourself at home.':`Donte Miller — ${id==='table'?'The Dining Table':'The Dining Room'}`;
- if(state.reduce){state.journeyNavigation=false;state.houseProgress=progress;travelCamera();announce(`${id==='living'?'Home':'The Table'}.`);return;}
- state.journeyNavigation=true;
- gsap.to(state,{houseProgress:progress,duration:Math.max(.7,Math.abs(progress-state.houseProgress)*4.8),ease:'power1.inOut',onUpdate:travelCamera,onInterrupt:()=>{state.journeyNavigation=false;},onComplete:()=>{state.journeyNavigation=false;announce(`${id==='living'?'Home':'The Table'}.`);}});
+ document.title=id==='living'?'Donte Miller — Make yourself at home.':'Donte Miller — The Dining Table';
+ travelCamera();announce(`${id==='living'?'Home':'The Table'}.`);
 }
 function goLibrary({historyChange=true}={}){
  cancelHomeReturn();
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:'library'});if(historyChange)routeTo('library');return;}
  if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);const needsTable=state.houseProgress<.999;state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;if(needsTable)state.progress=0;state.libraryTarget=1;state.workshopOffset=WORKSHOP_STORY_DISTANCE;state.modelSequenceComplete=true;state.scrollTarget='library';state.courseScrollTarget='flourish';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+500;
+ gsap.killTweensOf(state);state.houseProgress=state.houseTarget=1;state.libraryProgress=state.libraryTarget=1;state.aboutOffset=ABOUT_DISTANCE;state.progress=0;state.workshopOffset=WORKSHOP_STORY_DISTANCE;state.modelSequenceComplete=true;state.scrollTarget='library';state.courseScrollTarget='flourish';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.journeyNavigation=false;state.autoCooldown=performance.now()+500;
  if(historyChange)routeTo('library');
  document.title='Donte Miller — The Library';
- if(state.reduce){state.houseProgress=state.libraryProgress=1;travelCamera();announce('The library.');return;}
- state.journeyNavigation=true;const tl=gsap.timeline({onComplete:()=>{state.journeyNavigation=false;travelCamera();announce('The library. Keep scrolling or choose a book.');}});
- if(needsTable)tl.to(state,{houseProgress:1,duration:Math.max(.7,(1-state.houseProgress)*4.2),ease:'power1.inOut',onUpdate:travelCamera});
- tl.to(state,{libraryProgress:1,duration:Math.max(.8,(1-state.libraryProgress)*3.5),ease:'power1.inOut',onUpdate:travelCamera});
+ travelCamera();announce('The library. Keep scrolling or choose a book.');
 }
 function goWorkshop({historyChange=true}={}){
  cancelHomeReturn();
  if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);const needsTable=state.houseProgress<.999;state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;state.libraryTarget=WORKSHOP_STOP;state.workshopOffset=0;state.modelScrollTarget='workers-equity';state.modelSequenceComplete=false;state.scrollTarget='library';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+350;
+ gsap.killTweensOf(state);state.houseProgress=state.houseTarget=1;state.libraryProgress=state.libraryTarget=WORKSHOP_STOP;state.aboutOffset=ABOUT_DISTANCE;state.progress=0;state.workshopOffset=0;state.modelScrollTarget='workers-equity';state.modelSequenceComplete=false;state.scrollTarget='library';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.journeyNavigation=false;state.autoCooldown=performance.now()+350;
  if(historyChange)routeTo('workshop');document.title='Donte Miller — The Workshop';
- if(state.reduce){state.houseProgress=1;state.libraryProgress=WORKSHOP_STOP;travelCamera();announce('The Workshop.');return;}
- state.journeyNavigation=true;const tl=gsap.timeline({onComplete:()=>{state.journeyNavigation=false;travelCamera();announce('The Workshop. Scroll to explore the models.');}});
- if(needsTable)tl.to(state,{houseProgress:1,duration:Math.max(.7,(1-state.houseProgress)*4.2),ease:'power1.inOut',onUpdate:travelCamera});
- tl.to(state,{libraryProgress:WORKSHOP_STOP,duration:Math.max(.8,Math.abs(WORKSHOP_STOP-state.libraryProgress)*3.5),ease:'power1.inOut',onUpdate:travelCamera});
+ travelCamera();announce('The Workshop. Scroll to explore the models.');
 }
 function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad',library:'the library'};$('table-scroll-hint').textContent=`Keep scrolling to ${state.scrollTarget==='library'?'visit':'open'} ${names[state.scrollTarget]}.`;}
 function advanceTable(delta){
@@ -379,7 +371,13 @@ document.addEventListener('touchstart',e=>{if(state.mode==='exploring'&&e.touche
 document.addEventListener('touchmove',e=>{if(state.mode!=='exploring'||sceneTouch===null||e.touches.length!==1)return;advanceTable((sceneTouch-e.touches[0].clientY)*2);sceneTouch=e.touches[0].clientY;},{passive:true});
 document.addEventListener('touchend',()=>{sceneTouch=null;},{passive:true});
 document.addEventListener('keydown',e=>{if(state.mode==='living-detail'){if(e.key==='Escape'){e.preventDefault();closeLiving();}if(e.key==='Tab'){const nodes=[...$('living-panel').querySelectorAll('button,a,[tabindex="0"]')],first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}if(e.key==='Escape'&&state.mode==='course-reading'){e.preventDefault();closeCourse();return;}if(e.key==='Escape'&&state.mode==='model-reading'){e.preventDefault();closeModel({fromStart:true});return;}if(e.key==='Escape'&&state.mode==='reading'){closeBook();return;}if(state.mode!=='exploring'||e.ctrlKey||e.metaKey||e.target.closest('button,a,input,textarea,select'))return;const delta={ArrowDown:100,PageDown:650,' ':e.shiftKey?-650:650,ArrowUp:-100,PageUp:-650}[e.key];if(delta!==undefined){e.preventDefault();advanceTable(delta);}});
-document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>goRoom(b.dataset.roomGo)));
+function navigateTab(id){
+ if(state.mode==='course-reading'){routeTo(id);closeCourse({historyChange:false});return;}
+ if(state.mode==='model-reading'){routeTo(id);closeModel({historyChange:false,fromStart:true});return;}
+ if(state.mode==='reading'&&id==='workshop'){routeTo(id);closeBook(null,{historyChange:false,roomAfter:id});return;}
+ goRoom(id);
+}
+document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>navigateTab(b.dataset.roomGo)));
 function updateAboutStory(){
  const view=storyFrame(state.aboutOffset,ABOUT_DISTANCE),stage=view.welcome?'welcome':'story';
  $('about-story').dataset.stage=stage;
