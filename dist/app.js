@@ -4,7 +4,8 @@ import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=
 import {buildHouse} from './house-scene.js';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame} from './about-story.js';
-import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt,moveLibrary} from './library-path.js';
+import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
+import {advanceLibraryScroll,libraryBookReady} from './library-scroll.js';
 import {buildLibrary} from './library-scene.js';
 import {curricula,curriculumById} from './library-content.js';
 
@@ -22,9 +23,9 @@ let storyStage='';
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
 const courseIds=curricula.map(item=>item.id);
 const nextCourse=id=>courseIds[courseIds.indexOf(id)+1]||null;
-const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,courseScrollTarget:'flourish',aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
+const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,courseScrollTarget:'flourish',courseCarry:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
 const scrollFlow=new ScrollFlow();
-const courseFlow=new ScrollFlow();
+const courseFlow=new ScrollFlow({settleTime:0});
 let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
@@ -140,10 +141,11 @@ function courseMarkup(item){
  return `<p class="eyebrow">THE LIBRARY · CURRICULUM PREVIEW</p><h1 id="course-heading" tabindex="-1">${title}.</h1><p class="course-deck">${overview}</p><p><strong>For:</strong> ${escapeHTML(item.audience)}</p><hr class="course-rule"><h2>Inside this book.</h2><ol class="course-chapters">${item.chapters.map((name,i)=>`<li>${escapeHTML(name)} ${i?'· Paid chapter':'· Free first chapter'}</li>`).join('')}</ol><hr class="course-rule"><p class="eyebrow">FREE FIRST CHAPTER · SAMPLE TEXT</p><h2>${escapeHTML(item.chapters[0])}.</h2><div class="course-sample"><p>${escapeHTML(item.sample)}</p></div><p class="course-note">This is sample chapter text for the website prototype. The final lessons and downloadable resources will be added with the completed curriculum.</p><button class="course-action" disabled>Buy ${title} — available when pricing and content are ready</button>${continuation}`;
 }
 function showCourse(id,token){
- if(token!==state.token)return;const item=curriculumById[id];state.active=id;setMode('course-reading');
+ if(token!==state.token)return;const item=curriculumById[id],carried=state.courseCarry;state.courseCarry=0;state.active=id;setMode('course-reading');
  $('course-content').innerHTML=courseMarkup(item);$('course-toolbar-title').textContent=item.title.toUpperCase();$('course-shell').hidden=false;$('course-scroll').scrollTop=0;courseFlow.reset(performance.now());
  gsap.fromTo($('course-shell'),{autoAlpha:0},{autoAlpha:1,duration:duration(.35)});
  document.title=`${item.title} — Donte Miller`;$('course-heading').focus({preventScroll:true});announce(`${item.title}. Curriculum preview open.`);
+ if(carried>0)setTimeout(()=>{if(token===state.token&&state.mode==='course-reading')moveCourseReader(carried);},260);
 }
 function openCourse(id,{historyChange=true}={}){
  if(!curriculumById[id]||state.mode!=='exploring'||state.libraryProgress<.98)return;
@@ -157,7 +159,7 @@ function openCourse(id,{historyChange=true}={}){
 }
 function closeCourse({historyChange=true,next=null,fromStart=false}={}){
  if(state.mode!=='course-reading')return;const id=state.active,b=library.books.get(id),token=++state.token;setMode('course-closing');
- const finish=()=>{if(token!==state.token)return;$('course-shell').hidden=true;$('course-content').innerHTML='';state.active=null;setMode('exploring');state.courseScrollTarget=fromStart?id:next||id;state.libraryScrollAmount=0;state.autoCooldown=performance.now()+600;travelCamera();if(next){openCourse(next,{historyChange});return;}$('library-ui').hidden=false;if(historyChange)routeTo('library');document.title='Donte Miller — The Library';(courseFocus?.isConnected&&courseFocus.matches('button')?courseFocus:document.querySelector(`[data-course="${id}"]`))?.focus({preventScroll:true});announce(fromStart?'Returned to the shelf. Scroll down to reopen this book.':'Returned to the library shelf.');};
+ const finish=()=>{if(token!==state.token)return;$('course-shell').hidden=true;$('course-content').innerHTML='';state.active=null;setMode('exploring');state.courseScrollTarget=fromStart?id:next||id;state.libraryScrollAmount=0;state.autoCooldown=performance.now()+600;travelCamera();if(next){openCourse(next,{historyChange});return;}state.courseCarry=0;$('library-ui').hidden=false;if(historyChange)routeTo('library');document.title='Donte Miller — The Library';(courseFocus?.isConnected&&courseFocus.matches('button')?courseFocus:document.querySelector(`[data-course="${id}"]`))?.focus({preventScroll:true});announce(fromStart?'Returned to the shelf. Scroll down to reopen this book.':'Returned to the library shelf.');};
  if(state.reduce){gsap.to($('course-shell'),{autoAlpha:0,duration:.01,onComplete:finish});return;}
  const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:finish});tl.to($('course-shell'),{autoAlpha:0,duration:.22},0);tl.to(b.hinge.rotation,{y:0,duration:.42},0);tl.to(b.group.position,{x:b.home.position.x,y:b.home.position.y,z:b.home.position.z,duration:.85,ease:'power2.inOut'},.23);tl.to(b.group.rotation,{y:b.home.rotation.y,duration:.85},.23);
 }
@@ -170,9 +172,10 @@ function moveCourseReader(delta){
  if(next.action==='next')closeCourse({next:nextCourse(state.active)});
  else if(next.action==='table')closeCourse({fromStart:true});
 }
-$('course-shell').addEventListener('wheel',e=>{if(state.mode!=='course-reading'||e.ctrlKey||!e.deltaY)return;e.preventDefault();moveCourseReader(e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?$('course-scroll').clientHeight:1));},{passive:false});
+function queueCourseScroll(delta){if(!Number.isFinite(delta))return;state.courseCarry=delta<0?0:Math.min(240,state.courseCarry+delta);}
+$('course-shell').addEventListener('wheel',e=>{if(!['course-reading','course-opening','course-closing'].includes(state.mode)||e.ctrlKey||!e.deltaY)return;e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?$('course-scroll').clientHeight:1);if(state.mode==='course-reading')moveCourseReader(delta);else queueCourseScroll(delta);},{passive:false});
 $('course-shell').addEventListener('touchstart',e=>{state.courseTouchY=e.touches.length===1?e.touches[0].clientY:null;},{passive:true});
-$('course-shell').addEventListener('touchmove',e=>{if(state.mode!=='course-reading'||e.touches.length!==1||state.courseTouchY===null)return;const y=e.touches[0].clientY,delta=state.courseTouchY-y;state.courseTouchY=y;e.preventDefault();moveCourseReader(delta);},{passive:false});
+$('course-shell').addEventListener('touchmove',e=>{if(!['course-reading','course-opening','course-closing'].includes(state.mode)||e.touches.length!==1||state.courseTouchY===null)return;const y=e.touches[0].clientY,delta=state.courseTouchY-y;state.courseTouchY=y;e.preventDefault();if(state.mode==='course-reading')moveCourseReader(delta);else queueCourseScroll(delta);},{passive:false});
 for(const event of ['touchend','touchcancel'])$('course-shell').addEventListener(event,()=>{state.courseTouchY=null;},{passive:true});
 $('course-shell').addEventListener('keydown',e=>{if(state.mode!=='course-reading'||e.target.closest('button,a,input,textarea,select')||e.ctrlKey||e.metaKey||e.altKey)return;const page=Math.max(100,$('course-scroll').clientHeight*.9),delta={ArrowUp:-48,PageUp:-page,ArrowDown:48,PageDown:page,' ':e.shiftKey?-page:page}[e.key];if(delta!==undefined){e.preventDefault();moveCourseReader(delta);}});
 courseControls.forEach(button=>button.addEventListener('click',()=>openCourse(button.dataset.course)));
@@ -250,8 +253,7 @@ function advanceTable(delta){
  if(state.libraryTarget>0||state.libraryProgress>.001){
   if(state.journeyNavigation){gsap.killTweensOf(state);state.journeyNavigation=false;}
   state.scrollTarget='library';
-  if(delta>0&&state.libraryTarget>=1&&state.libraryProgress>.999){state.libraryScrollAmount+=delta;if(state.libraryScrollAmount>=560){state.libraryScrollAmount=0;openCourse(state.courseScrollTarget);}return;}
-  state.libraryScrollAmount=0;state.libraryTarget=moveLibrary(state.libraryTarget,delta);
+  const next=advanceLibraryScroll(state.libraryTarget,state.libraryScrollAmount,delta);state.libraryTarget=next.target;state.libraryScrollAmount=next.pending;
   if(state.reduce){state.libraryProgress=state.libraryTarget;travelCamera();}
   return;
  }
@@ -265,9 +267,9 @@ function advanceTable(delta){
  state.progress=THREE.MathUtils.clamp(state.progress+delta*.0007,0,1);
  state.scrollAmount=Math.max(0,state.scrollAmount+delta);
  document.documentElement.dataset.tableProgress=String(Math.min(1,state.scrollAmount/620));travelCamera();
- if(state.scrollAmount>=620){const excess=state.scrollAmount-620;state.scrollAmount=0;if(state.scrollTarget==='library'){state.libraryTarget=moveLibrary(0,Math.max(60,excess));state.libraryVelocity=0;document.title='Donte Miller — The Library';travelCamera();}else{savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}}
+ if(state.scrollAmount>=620){const excess=state.scrollAmount-620;state.scrollAmount=0;if(state.scrollTarget==='library'){const next=advanceLibraryScroll(0,0,excess);state.libraryTarget=next.target;state.libraryScrollAmount=next.pending;state.libraryVelocity=0;document.title='Donte Miller — The Library';travelCamera();}else{savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}}
 }
-window.addEventListener('wheel',e=>{if(state.mode!=='exploring'||e.ctrlKey||e.target.closest('.reader-shell,.living-panel,.room-navigation'))return;advanceTable(e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1));},{passive:true});
+window.addEventListener('wheel',e=>{if(e.ctrlKey||e.target.closest('.reader-shell,.course-shell,.living-panel,.room-navigation'))return;const delta=e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1);if(['course-opening','course-closing'].includes(state.mode)){queueCourseScroll(delta);return;}if(state.mode==='exploring')advanceTable(delta);},{passive:true});
 let sceneTouch=null;
 document.addEventListener('touchstart',e=>{if(state.mode==='exploring'&&e.touches.length===1)sceneTouch=e.touches[0].clientY;},{passive:true});
 document.addEventListener('touchmove',e=>{if(state.mode!=='exploring'||sceneTouch===null||e.touches.length!==1)return;advanceTable((sceneTouch-e.touches[0].clientY)*2);sceneTouch=e.touches[0].clientY;},{passive:true});
@@ -359,6 +361,7 @@ function frame(now=performance.now()){
  if(state.mode==='exploring'&&!state.reduce&&!state.journeyNavigation&&(state.libraryProgress!==state.libraryTarget||Math.abs(state.libraryVelocity)>.0001)){
   const next=followProgress(state.libraryProgress,state.libraryTarget,state.libraryVelocity,dt);state.libraryProgress=next.position;state.libraryVelocity=next.velocity;travelCamera();
  }
+ if(state.mode==='exploring'&&performance.now()>=state.autoCooldown&&libraryBookReady(state.libraryTarget,state.libraryProgress,state.libraryScrollAmount)){state.courseCarry=Math.min(240,Math.max(0,state.libraryScrollAmount-160));state.libraryScrollAmount=0;openCourse(state.courseScrollTarget);}
  if(!dirty||!renderer||!scene||!camera)return;dirty=false;if(state.mode==='exploring')positionHotspots();renderer.render(scene,camera);
 }
 window.addEventListener('resize',()=>{if(!camera||!renderer)return;camera.aspect=viewport().width/viewport().height;camera.updateProjectionMatrix();renderer.setSize(viewport().width,viewport().height);if(state.mode==='exploring')travelCamera();invalidate();if(state.mode==='reading')updateProgress();});
