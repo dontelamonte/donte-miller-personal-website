@@ -49,3 +49,69 @@
 @media(max-width:850px){.book-stage{inset:76px 19px 26px}.inside-cover{padding:27px 28px}.inside-title{font-size:45px}.inside-deck{font-size:16px}.reader-paper{padding:26px 26px 0 28px}.reader-paper>.paper-heading{font-size:35px}.press-row h2{font-size:25px}.page-foot{margin:0 24px}}
 @media(max-width:650px){.reader-toolbar{height:64px;padding:0 20px;gap:12px}.reader-toolbar>span{font-size:8px}.book-stage{inset:76px 16px 27px}.open-publication{display:block;max-width:500px;height:100%;border-radius:3px 10px 10px 3px;transform:none;border-bottom-width:6px}.open-publication:before{inset:-5px -6px -11px}.inside-cover{display:none}.book-gutter{left:0;width:17px;background:linear-gradient(90deg,#56452d5c,#a88f6438 30%,transparent)}.right-page{height:100%;border-radius:3px 9px 9px 3px}.reader-paper{padding:25px 25px 0 29px}.reader-paper>.paper-heading{font-size:45px;margin-top:25px}.reader-paper>.paper-subtitle{font-size:17px}.reader-paper>.paper-hero{display:block;height:155px;margin:23px 0 18px}.reader-paper>.image-caption{display:block;font-size:9px}.reader-paper>.paper-masthead{font-size:7px}.press-row{grid-template-columns:23px 1fr 17px;gap:7px}.press-row h2{font-size:28px}.press-row p{font-size:12px}.page-foot{height:33px;margin:0 21px 0 28px;font-size:6px}.reader-shell[data-publication='opportunities'] .open-publication{display:block;transform:none}.reader-shell[data-publication='opportunities'] .reader-paper{padding:23px 23px 0 37px}.reader-shell[data-publication='opportunities'] .right-page:before{left:24px}.reader-shell[data-publication='opportunities'] .paper-heading{font-size:52px}.notepad-binding i{width:7px;height:26px}.reader-shell[data-publication='opportunities'] .notepad-binding{left:17px;right:17px}.reader-shell[data-publication='opportunities'] .paper-subtitle{font-size:17px}}
 @media(prefers-reduced-motion:reduce){.open-publication{transform:none!important}}
+
+/* The house keeps the room in view and the controls at its edges. */
+#scene{inset:0;mask-image:none}
+.room-navigation{display:flex;gap:22px;align-items:center}
+.room-navigation button{border:0;background:none;padding:10px 0;color:inherit;font-size:10px;letter-spacing:.6px;opacity:.65;border-bottom:1px solid transparent}
+.room-navigation button:hover,.room-navigation button[aria-current=true]{opacity:1;border-color:currentColor}
+html:not([data-room=table]) .site-header{color:#f6ead2;text-shadow:0 1px 16px #182b3b99}
+html:not([data-room=table]) .wordmark span{color:#d7aa72}
+html:not([data-room=table]) #table-view{visibility:hidden;pointer-events:none}
+html[data-room=table] #living-ui,html[data-room=table] .house-footer{visibility:hidden;pointer-events:none}
+.house-footer{position:fixed;z-index:5;bottom:25px;left:40px;right:40px;display:flex;align-items:center;justify-content:space-between;gap:25px;color:#f8eed9;text-shadow:0 1px 10px #18324199;font-size:9px;letter-spacing:1.1px;pointer-events:none}
+#house-scroll-hint{font-size:11px;letter-spacing:.4px}
+.journey-track{width:90px;height:1px;background:#f7edd74d;position:relative}.journey-track i{position:absolute;inset:0 auto 0 0;width:0;background:#f7edd7}
+#living-ui{position:fixed;inset:0;z-index:4;pointer-events:none}
+.living-welcome{position:absolute;bottom:82px;left:40px;color:#f9eedc;text-shadow:0 2px 20px #20324299}
+.living-welcome .eyebrow{font-size:8px;letter-spacing:2px;margin-bottom:12px}
+.living-welcome h1{font:46px/.98 'Libre Caslon Display',Georgia,serif;letter-spacing:-1px;margin:0 0 15px}
+.living-welcome>p:last-child{font-size:10px;line-height:1.7;margin:0;opacity:.85}
+#living-hotspots{position:absolute;inset:0;pointer-events:none}
+#living-hotspots button{position:absolute;pointer-events:auto;transform:translate(-50%,-50%)}
+.portrait-control{display:flex;align-items:center;gap:22px;background:#f6eddcec;border:1px solid #ddbd85;color:#4b3e2d;font-size:10px;padding:10px 14px;white-space:nowrap;box-shadow:0 4px 20px #291d1e33}
+.portrait-control:hover{background:#fff5e2}.portrait-control span{font-size:16px}
+.frame-control{background:transparent;border:1px solid transparent;border-radius:9px;box-shadow:none;min-width:42px;min-height:42px}
+.frame-control:hover,.frame-control:focus-visible{border-color:#ffe3a299;background:#ffdd8b15;outline-color:#ffe7b2}
+.frame-control span{position:absolute;left:50%;top:calc(100% + 5px);transform:translateX(-50%);padding:7px 10px;background:#f6eed9;color:#453823;font-size:9px;white-space:nowrap;opacity:0;pointer-events:none}
+.frame-control:hover span,.frame-control:focus-visible span{opacity:1}
+.living-panel{position:fixed;inset:0;z-index:20;background:#15283777;backdrop-filter:blur(4px);display:flex;justify-content:flex-end;padding:28px}
+.living-panel[hidden]{display:none}
+.living-panel-paper{background:#f6eddb;color:#243d32;width:min(620px,100%);height:100%;border:1px solid #c5aa7a;box-shadow:0 12px 80px #162d344d;display:flex;flex-direction:column;position:relative}
+.living-panel-paper:before{content:'';position:absolute;inset:7px;border:1px solid #c6ab7d88;pointer-events:none}
+.living-panel-paper>header{padding:24px 31px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #d8c9ae;font-size:8px;letter-spacing:1.6px}
+.living-panel-paper>header button{background:none;border:0;padding:4px 0;font-size:10px;display:flex;gap:18px;align-items:center}.living-panel-paper>header button span{font-size:22px}
+.living-panel-scroll{padding:38px 48px 42px;overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;scrollbar-color:#baa078 transparent;scrollbar-width:thin}
+.living-panel-scroll .eyebrow{font-size:8px;color:#985234;letter-spacing:1.6px}
+.living-panel-scroll h1{font:58px/1 'Libre Caslon Display',Georgia,serif;letter-spacing:-1.1px;margin:22px 0 26px}
+#living-panel-body>p{font-size:13px;line-height:1.9;color:#52604f;margin:0 0 21px}#living-panel-body>.living-lead{font:22px/1.45 'Libre Caslon Display',Georgia,serif;color:#2c4436}
+#living-panel-body h2{font:31px/1.1 'Libre Caslon Display',Georgia,serif;margin:30px 0 16px}
+.living-link{display:block;font:11px/1.8 'DM Sans',sans-serif;border:0;border-bottom:1px solid #9eac9570;background:none;text-align:left;padding:11px 0;margin:8px 0 0;color:#2c4937;text-decoration:none;cursor:pointer}
+.living-link:hover{color:#a45232;border-color:#a45232}
+.living-panel-paper>footer{padding:20px 30px;font-size:7px;letter-spacing:1px;border-top:1px solid #d8c9ae;display:flex;justify-content:space-between}
+.scene-reading #living-ui,.scene-reading .house-footer,html[data-mode=living-detail] #living-ui,html[data-mode=living-detail] .house-footer,html[data-mode=living-detail] .site-header{visibility:hidden}
+.scene-opening #living-ui,.scene-opening .house-footer{opacity:0;pointer-events:none}.scene-opening .site-header{pointer-events:none}
+@media(max-width:850px){.room-navigation{gap:14px}.room-navigation button{font-size:9px}.house-footer{left:23px;right:23px}.living-welcome{left:23px;bottom:80px}.living-welcome h1{font-size:38px}.living-welcome>p:last-child{display:none}}
+@media(max-width:560px){
+ #scene{inset:0;mask-image:none}.site-header{padding:19px 18px;flex-wrap:wrap;gap:14px}.wordmark{font-size:26px}.room-navigation{order:3;width:100%;justify-content:center;gap:27px}.room-navigation button{font-size:9px;padding:7px 0}.site-header>.text-control{margin-left:auto;font-size:9px}.living-welcome{left:20px;bottom:85px}.living-welcome h1{font-size:36px}.living-welcome .eyebrow{font-size:7px}.house-footer{left:20px;right:20px;bottom:25px;gap:14px;flex-wrap:wrap}.house-footer>span:first-child{font-size:8px}#house-scroll-hint{font-size:9px}.journey-track{display:none}.portrait-control{font-size:9px;padding:8px 10px;min-height:38px;gap:14px}.frame-control span{font-size:8px;padding:6px}.living-panel{padding:13px}.living-panel-paper>header{padding:17px 23px}.living-panel-scroll{padding:28px 27px 35px}.living-panel-scroll h1{font-size:46px}.living-panel-paper>footer{padding:17px 23px;font-size:6px}.living-panel-paper>footer span{max-width:150px;text-align:right;line-height:1.6}
+ html[data-room=table] .site-header{background:linear-gradient(#e5d7bfcc,transparent)}
+}
+
+.living-welcome{bottom:64px}.living-welcome h1{font-size:32px;margin:0}.living-welcome h1 br{display:none}.living-welcome .eyebrow,.living-welcome>p:last-child{display:none}
+@media(max-width:560px){.living-welcome{bottom:74px}.living-welcome h1{font-size:28px}}
+
+html[data-room=dining] .site-header{color:#29404a;text-shadow:0 1px 12px #fff8e8;background:linear-gradient(#e8dbc5e8,transparent)}
+html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;border-radius:2px}
+#house-scroll-hint{background:#f5ebdce0;color:#2d4140;text-shadow:none;padding:8px 12px}
+
+@media(max-width:560px){
+ #scene{top:135px;bottom:230px;mask-image:linear-gradient(to bottom,transparent,#000 5%,#000 96%,transparent)}
+ html[data-room=table] #scene{top:225px;bottom:85px;mask-image:linear-gradient(to bottom,transparent,#000 17%,#000 86%,transparent)}
+ .living-welcome{top:109px;bottom:auto;left:20px;color:#28414a;text-shadow:none}.living-welcome h1{font-size:27px}
+ html:not([data-room=table]) .site-header{background:linear-gradient(#e5d7bf,#e5d7bfdd,transparent);color:#29404a;text-shadow:none}
+ #credential-controls{position:absolute;left:20px;right:20px;bottom:89px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;pointer-events:none}
+ #credential-controls:before{content:'RECOGNITION & EDUCATION';position:absolute;bottom:calc(100% + 10px);left:0;font-size:7px;letter-spacing:1.6px;color:#4c635f}
+ #living-hotspots #credential-controls .frame-control{position:static!important;transform:none!important;left:auto!important;top:auto!important;width:auto!important;height:auto!important;min-height:36px;border:1px solid #b7a78788;border-radius:0;background:#f3eada;color:#354a43;pointer-events:auto}
+ #credential-controls .frame-control span{position:static;transform:none;opacity:1;padding:0;background:none;white-space:normal;display:block;font-size:8px;line-height:1.4}
+ .house-footer{color:#344c4b;text-shadow:none}#house-scroll-hint{padding:6px 8px}
+}

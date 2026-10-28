@@ -1,10 +1,20 @@
-# Donte Miller — Dining-table prototype
+# Donte Miller — Connected-house prototype
 
-A working first interaction study for the personal website. Uses real Three.js geometry, animated book covers, a readable press index, a condensed edition of the supplied ten-year report, and an opportunities notepad.
+A connected living-room and dining-room experience for the personal website. Uses real Three.js geometry, animated book covers, a readable press index, a condensed edition of the supplied ten-year report, and an opportunities notepad.
 
 ## Run locally
 
 From this folder, run `npm run dev` and open `http://127.0.0.1:8788`. `PORT` can override the default loopback port. Run `npm run check` for JavaScript syntax checks and `npm test` for scroll-boundary regression checks. No dependency installation or build step is needed; runtime libraries are vendored.
+
+## House journey
+
+The root opens in the living room. Scrolling pulls back and turns through the right-hand arch, enters the dining room, and rises toward the approved table camera. Room navigation provides Living room, Dining room and The table stops; reduced motion uses immediate room selection. `#living`, `#dining` and `#table` remain direct destinations.
+
+The portrait opens About; six frames open Forbes, Georgia Trend, Atlanta, Morehouse, Echoing Green and Village information. Frames use supplied founder context and supporting public links. `#about`, `#forbes`, `#georgia`, `#atlanta`, `#morehouse`, `#echoing` and `#village` open the corresponding detail panel. Escape or the return control closes it.
+
+On phones, a focused portrait view and a six-item recognition menu keep all credentials accessible.
+
+The connected room geometry and furniture are modeled in Three.js. The portrait texture is cropped at runtime from a compressed copy of the supplied living-room reference; the original remains in the parent reference folder. Wall, upholstery and mural textures are procedural. No screenshot is used as a flat room background.
 
 ## Interaction
 
@@ -14,9 +24,9 @@ The report reader is a clearly labeled condensed web edition. The complete suppl
 
 ## Scope and next work
 
-Implemented: table, three object rigs, single-approach camera transitions without overhead turning, three publication-styled readers, guided continuation, hash navigation, reduced-motion option, original PDF access, desktop and narrow layouts.
+Implemented: living room with portrait and recognition panels, connected archway and dining-room architecture, reversible scroll camera route, room navigation, table, three object rigs, single-approach camera transitions without overhead turning, three publication-styled readers, guided continuation, hash navigation, reduced-motion option, original PDF access, desktop and narrow layouts.
 
-Future: connected room geometry, living-room content, library/course books, accounts/payment services, more precise paper-to-reader alignment, and production art fidelity. The first version uses a matched paper-colored dissolve during the final reader handoff. Physical-device touch testing remains outstanding.
+Future: library/course books, accounts/payment services, more precise paper-to-reader alignment, and production art fidelity. The first version uses a matched paper-colored dissolve during the final reader handoff. Physical-device touch testing remains outstanding.
 
 ## Records
 
