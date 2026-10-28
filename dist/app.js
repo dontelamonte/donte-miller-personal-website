@@ -1,8 +1,9 @@
 import * as THREE from './vendor/three.module.min.js';
 import {ScrollFlow} from './scroll-flow.js';
-import {cameraAt,moveHouse} from './house-path.js';
+import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=smooth-house-6';
 import {buildHouse} from './house-scene.js';
 import {livingItems} from './living-content.js';
+import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame} from './about-story.js';
 
 const $ = (id) => document.getElementById(id);
 const shell = $('reader-shell');
@@ -11,8 +12,12 @@ const paper = $('reader-content');
 const intro = $('intro');
 const gsap = window.gsap;
 const BOOKS = ['press','report','opportunities'];
+const aboutParagraphs=[...livingItems.about.body.matchAll(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/g)].map(m=>m[1]);
+const aboutChapters=[{label:'WELCOME TO MY HOUSE',title:'Make yourself at home.',body:'Scroll through my story, then join me at the table.'},...aboutParagraphs.map((body,i)=>({label:'ABOUT DONTE MILLER',title:['I’m Donte Miller.','Where the work began.','Knowledge. Community. Possibility.','What we might build next.'][i]||'The work keeps growing.',body}))];
+const ABOUT_DISTANCE=aboutChapters.length*ABOUT_CHAPTER_DISTANCE;
+let storyIndex=-1;
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
-const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null};
+const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null};
 const scrollFlow=new ScrollFlow();
 let renderer, scene, camera, photo, portraitImage, house, dirty=true, hovered=null, lastFocus=null, livingFocus=null;
 const target = new THREE.Vector3(0,0,0);
@@ -46,6 +51,7 @@ function content(id){
 function setMode(mode){state.mode=mode;document.documentElement.dataset.mode=mode;document.documentElement.dataset.active=state.active||'';document.body.classList.toggle('scene-opening',mode==='opening'||mode==='closing');document.body.classList.toggle('scene-reading',mode==='reading');hotspots.forEach(b=>b.disabled=mode!=='exploring');}
 function announce(text){$('announcer').textContent=text;}
 const invalidate=()=>{dirty=true;};
+const invalidateShadows=()=>{if(renderer)renderer.shadowMap.needsUpdate=true;invalidate();};
 function duration(n){return state.reduce?0.01:n;}
 function look(){camera.lookAt(target);invalidate();}
 function routeTo(id,replace=false){const hash=id?'#'+id:'#table';if(location.hash!==hash)history[replace?'replaceState':'pushState']({reader:id},'',hash);}
@@ -70,10 +76,10 @@ function readingReady(id,token){
 function openBook(id,{historyChange=true}={}){
  if(!BOOKS.includes(id)||!['exploring','reading'].includes(state.mode))return;
  if(state.mode==='reading'){if(state.active!==id)closeBook(id,{historyChange});return;}
- gsap.killTweensOf(state);state.houseProgress=state.houseTarget=1;travelCamera();
+ gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=0;state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;travelCamera();
  const token=++state.token;lastFocus=document.activeElement;state.active=id;setMode('opening');if(historyChange)routeTo(id);
  const b=books.get(id);if(camera){canvasHome.position.copy(camera.position);canvasHome.target.copy(target);}if(!b||!camera||state.reduce){readingReady(id,token);return;}
- const tl=gsap.timeline({onUpdate:invalidate,onComplete:()=>readingReady(id,token)});
+ const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:()=>readingReady(id,token)});
  tl.to(b.group.position,{x:0,y:2.8,z:0,duration:duration(.9),ease:'power2.inOut'},0);
  tl.to(b.hinge.rotation,{y:-Math.PI*.96,duration:duration(.7),ease:'power2.inOut'},.3);
  tl.to(target,{x:0,y:2.8,z:0,duration:duration(1),ease:'power2.inOut',onUpdate:look},.1);
@@ -87,7 +93,7 @@ function closeBook(next=null,{historyChange=true,fromStart=false,restartNext=fal
  const b=books.get(previous);
  const finish=()=>{if(token!==state.token)return;shell.hidden=true;paper.innerHTML='';state.active=null;setMode('exploring');if(historyChange&&!next)routeTo(null);invalidate();if(next){openBook(next,{historyChange});}else{state.scrollAmount=0;state.scrollTarget=fromStart?previous:BOOKS[(BOOKS.indexOf(previous)+1)%BOOKS.length];state.autoCooldown=performance.now()+900;updateTableHint();document.title='Donte Miller — The Dining Table';announce(fromStart?'Returned to the dining table. Scroll down to reopen this publication.':'Returned to the dining table. Keep scrolling to open the next object.');const restore=lastFocus?.isConnected&&lastFocus.matches('button,a')?lastFocus:document.querySelector(`[data-open="${previous}"]`);restore?.focus({preventScroll:true});if(roomAfter)goRoom(roomAfter,{historyChange:false});}};
  if(!b||!camera||state.reduce){gsap.to(shell,{autoAlpha:0,duration:duration(.2),onComplete:finish});return;}
- const tl=gsap.timeline({onUpdate:invalidate,onComplete:finish});
+ const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:finish});
  tl.to(shell,{autoAlpha:0,duration:duration(.2)},0);
  tl.to(camera.position,{x:canvasHome.position.x,y:canvasHome.position.y,z:canvasHome.position.z,duration:duration(1.05),ease:'power2.inOut',onUpdate:look},0);
  tl.to(target,{x:canvasHome.target.x,y:canvasHome.target.y,z:canvasHome.target.z,duration:duration(1.05),ease:'power2.inOut',onUpdate:look},0);
@@ -118,12 +124,13 @@ $('return-table').addEventListener('click',()=>closeBook());
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openBook(b.dataset.open)));
 $('simple-view').addEventListener('click',()=>openBook('press'));
 document.querySelector('.wordmark').addEventListener('click',e=>{e.preventDefault();goRoom('living');});
-function setMotion(reduce){state.reduce=reduce;$('motion-toggle').setAttribute('aria-pressed',String(reduce));$('motion-toggle').textContent=reduce?'Motion reduced':'Reduce motion';}
+function setMotion(reduce){state.reduce=reduce;if(reduce&&state.mode==='exploring'){gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=0;state.houseProgress=state.houseTarget;travelCamera();}$('motion-toggle').setAttribute('aria-pressed',String(reduce));$('motion-toggle').textContent=reduce?'Motion reduced':'Reduce motion';}
 setMotion(state.reduce);$('motion-toggle').addEventListener('click',()=>setMotion(!state.reduce));prefs.addEventListener('change',e=>setMotion(e.matches));
 function applyRoute(){
  const id=location.hash.slice(1);
  if(state.mode==='living-detail')closeLiving({historyChange:false});
  if(BOOKS.includes(id)){if(state.mode==='exploring')openBook(id,{historyChange:false});else if(state.mode==='reading'&&state.active!==id)closeBook(id,{historyChange:false});}
+ else if(id==='about'&&state.mode==='exploring'){showAbout();}
  else if(livingItems[id]){if(state.mode==='exploring'){state.houseProgress=state.houseTarget=0;travelCamera();openLiving(id,{historyChange:false});}else if(state.mode==='reading')closeBook(null,{historyChange:false,roomAfter:'living'});}
  else if(['living','dining','table',''].includes(id))goRoom(id||'living',{historyChange:false});
 }
@@ -132,43 +139,47 @@ function travelCamera(){
  if(!camera||!['exploring','loading'].includes(state.mode))return;
  const r=viewport(),v=cameraAt(state.houseProgress,r.width/r.height);
  camera.position.set(...v.position);target.set(...v.target);camera.fov=v.fov;
- if(state.houseProgress>.999){const mobile=r.width/r.height<.9;camera.position.set(mobile?0:-1.3,9.8-1.7*state.progress,6.8-3.2*state.progress);target.set(mobile?0:-1.3,0,0);}
+ if(state.houseProgress>.999){const mobile=r.width/r.height<.9;camera.position.set(mobile?0:-1.3,TABLE_CAMERA.position[1]-.8*state.progress,TABLE_CAMERA.position[2]-1.5*state.progress);target.set(mobile?0:-1.3,0,0);}
  camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))){if(state.houseProgress>.999&&state.houseTarget===1)routeTo('table',true);else if(state.houseProgress<.001&&state.houseTarget===0)routeTo('living',true);}
 }
 function updateHouseUI(room){
  const changed=document.documentElement.dataset.room!==room;document.documentElement.dataset.room=room;
  if(changed&&renderer&&camera){const r=viewport();camera.aspect=r.width/r.height;renderer.setSize(r.width,r.height);camera.updateProjectionMatrix();invalidate();}
- const p=state.houseProgress;
+ const p=state.houseProgress;updateAboutStory();
  $('living-ui').style.opacity=String(Math.max(0,1-p/.24));
  $('living-ui').inert=p>.24||state.mode!=='exploring';
  $('house-room-label').textContent=room==='living'?'01 / THE LIVING ROOM':'02 / THE DINING ROOM';
- $('house-scroll-hint').textContent=p<.16?'Select a frame, or scroll to explore ↓':p<.5?'Through the archway →':p<.8?'A seat at the table. Keep scrolling ↓':'A few things to share. Keep scrolling ↓';
- $('journey-progress').style.width=`${p*100}%`;
- document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo===room)));
+ $('house-scroll-hint').textContent=p<.001&&state.aboutOffset<ABOUT_DISTANCE?'Scroll to read my story ↓':p<.16?'Select a plaque, or keep scrolling ↓':p<.5?'Through the archway →':p<.8?'A seat at the table. Keep scrolling ↓':'A few things to share. Keep scrolling ↓';
+ $('journey-progress').style.width=`${100*(state.aboutOffset+p*3400)/(ABOUT_DISTANCE+3400)}%`;
+ document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo==='living'?room==='living':room!=='living')));
  hotspots.forEach(b=>b.disabled=state.mode!=='exploring'||room!=='table');
  intro.style.opacity=String(1-state.progress*.85);
 }
 function goRoom(id,{historyChange=true}={}){
- if(!['living','dining','table'].includes(id))return;
+ if(id==='dining')id='table';
+ if(!['living','table'].includes(id))return;
  if(state.mode==='living-detail')closeLiving({historyChange:false});
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:id});if(historyChange)routeTo(id);return;}
  if(state.mode!=='exploring')return;
- const progress={living:0,dining:.76,table:1}[id];
- state.houseTarget=progress;state.progress=0;state.scrollAmount=0;state.autoCooldown=performance.now()+500;
+ const progress=id==='living'?0:1;state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;
+ state.houseTarget=progress;state.journeyVelocity=0;state.progress=0;state.scrollAmount=0;state.autoCooldown=performance.now()+500;
  gsap.killTweensOf(state);
  if(historyChange)routeTo(id);
  document.title=id==='living'?'Donte Miller — Make yourself at home.':`Donte Miller — ${id==='table'?'The Dining Table':'The Dining Room'}`;
- if(state.reduce){state.houseProgress=progress;travelCamera();announce(`${id==='living'?'Living room':id==='dining'?'Dining room':'Dining table'}.`);return;}
- gsap.to(state,{houseProgress:progress,duration:Math.max(.35,Math.abs(progress-state.houseProgress)*2.5),ease:'power1.inOut',onUpdate:travelCamera,onComplete:()=>announce(`${id==='living'?'Living room':id==='dining'?'Dining room':'Dining table'}.`)});
+ if(state.reduce){state.journeyNavigation=false;state.houseProgress=progress;travelCamera();announce(`${id==='living'?'Home':'The Table'}.`);return;}
+ state.journeyNavigation=true;
+ gsap.to(state,{houseProgress:progress,duration:Math.max(.7,Math.abs(progress-state.houseProgress)*4.8),ease:'power1.inOut',onUpdate:travelCamera,onInterrupt:()=>{state.journeyNavigation=false;},onComplete:()=>{state.journeyNavigation=false;announce(`${id==='living'?'Home':'The Table'}.`);}});
 }
 function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad'};$('table-scroll-hint').textContent=`Keep scrolling to open ${names[state.scrollTarget]}.`;}
 function advanceTable(delta){
  if(state.mode!=='exploring'||performance.now()<state.autoCooldown||!Number.isFinite(delta))return;
+ if(state.houseTarget===0&&state.houseProgress<.001&&(state.aboutOffset<ABOUT_DISTANCE||delta<0)){
+  const intro=advanceAbout(state.aboutOffset,delta,ABOUT_DISTANCE);state.aboutOffset=intro.offset;updateAboutStory();updateHouseUI('living');delta=intro.overflow;if(!delta)return;
+ }
  if(state.houseTarget<1||(delta<0&&state.scrollAmount<=0)){
   const next=moveHouse(state.houseTarget,delta);state.houseTarget=next.progress;state.progress=0;
-  gsap.killTweensOf(state);
-  if(state.reduce){state.houseProgress=next.progress;travelCamera();}
-  else gsap.to(state,{houseProgress:next.progress,duration:.55,ease:'power1.out',onUpdate:travelCamera});
+  if(state.journeyNavigation){gsap.killTweensOf(state);state.journeyNavigation=false;}
+  if(state.reduce){state.journeyVelocity=0;state.houseProgress=next.progress;travelCamera();}
   return;
  }
  if(state.houseProgress<.999)return;
@@ -184,9 +195,17 @@ document.addEventListener('touchmove',e=>{if(state.mode!=='exploring'||sceneTouc
 document.addEventListener('touchend',()=>{sceneTouch=null;},{passive:true});
 document.addEventListener('keydown',e=>{if(state.mode==='living-detail'){if(e.key==='Escape'){e.preventDefault();closeLiving();}if(e.key==='Tab'){const nodes=[...$('living-panel').querySelectorAll('button,a,[tabindex="0"]')],first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}if(e.key==='Escape'&&state.mode==='reading'){closeBook();return;}if(state.mode!=='exploring'||e.ctrlKey||e.metaKey||e.target.closest('button,a,input,textarea,select'))return;const delta={ArrowDown:100,PageDown:650,' ':e.shiftKey?-650:650,ArrowUp:-100,PageUp:-650}[e.key];if(delta!==undefined){e.preventDefault();advanceTable(delta);}});
 document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>goRoom(b.dataset.roomGo)));
+function updateAboutStory(){
+ const view=storyFrame(state.aboutOffset,aboutChapters.length),chapter=aboutChapters[view.index];
+ $('about-story').dataset.chapter=String(view.index);
+ if(view.index!==storyIndex){storyIndex=view.index;$('about-story-label').textContent=chapter.label;$('about-story-title').textContent=chapter.title;$('about-story-text').innerHTML=chapter.body;$('about-story-counter').textContent=`${String(view.index+1).padStart(2,'0')} / ${String(aboutChapters.length).padStart(2,'0')}`;}
+ $('about-story-copy').style.transform=`translateY(${view.lift}px)`;$('about-story-copy').style.opacity=String(view.opacity);
+}
+function showAbout(){goRoom('living');state.aboutOffset=ABOUT_CHAPTER_DISTANCE*1.25;updateAboutStory();}
 function openLiving(id,{historyChange=true}={}){
+ if(id==='about'){showAbout();return;}
  if(!livingItems[id]||state.mode!=='exploring')return;
- gsap.killTweensOf(state);state.houseTarget=state.houseProgress;
+ gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=0;state.houseTarget=state.houseProgress;
  livingFocus=document.activeElement;state.active=id;setMode('living-detail');
  const item=livingItems[id];$('living-panel-label').textContent=item.label;$('living-panel-eyebrow').textContent=item.eyebrow;$('living-heading').innerHTML=item.title;$('living-panel-body').innerHTML=item.body;
  $('living-panel').hidden=false;$('living-panel-scroll').scrollTop=0;
@@ -202,7 +221,7 @@ function closeLiving({historyChange=true}={}){
 }
 livingControls.forEach(b=>b.addEventListener('click',()=>openLiving(b.dataset.living)));
 $('close-living').addEventListener('click',()=>closeLiving());
-$('living-panel').addEventListener('click',e=>{if(e.target===$('living-panel'))closeLiving();if(e.target.closest('[data-go-table]')){closeLiving({historyChange:false});goRoom('table');}if(e.target.closest('[data-open-report]')){closeLiving({historyChange:false});state.houseProgress=state.houseTarget=1;travelCamera();openBook('report');}});
+$('living-panel').addEventListener('click',e=>{if(e.target===$('living-panel'))closeLiving();if(e.target.closest('[data-go-table]')){closeLiving({historyChange:false});goRoom('table');}if(e.target.closest('[data-open-report]')){closeLiving({historyChange:false});state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;travelCamera();openBook('report');}});
 
 // Browser-native procedural surfaces keep the scene independent of a flat tabletop image.
 function seeded(seed=1){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};}
@@ -222,7 +241,11 @@ function makeBook(id,x,z,angle){const group=new THREE.Group();scene.add(group);c
  const lines=texture((ctx,W,H)=>{ctx.fillStyle='#e6dac1';ctx.fillRect(0,0,W,H);for(let y=0;y<H;y+=9){ctx.fillStyle='#bfb199';ctx.fillRect(0,y,W,1);}},128,128);pageBlock.material=[paperMat,paperMat,new THREE.MeshStandardMaterial({map:lines}),paperMat,paperMat,paperMat];
  const inner=mesh(new THREE.PlaneGeometry(w-.035,h-.025),new THREE.MeshBasicMaterial({map:innerTexture(id)}),group);inner.position.z=thickness/2+.003;inner.castShadow=false;
  const hinge=new THREE.Group();hinge.position.set(-w/2,0,thickness/2+.014);group.add(hinge);const coverMaterials=[new THREE.MeshStandardMaterial({color:id==='report'?'#203c2a':'#e5dbc4'}),paperMat,paperMat,paperMat,new THREE.MeshBasicMaterial({map:coverTexture(id)}),new THREE.MeshStandardMaterial({color:'#f0e6ce',roughness:1})];const cover=mesh(new THREE.BoxGeometry(w,h,.022),coverMaterials,hinge);cover.position.x=w/2;
- if(id==='opportunities'){for(let i=0;i<14;i++){const coil=mesh(new THREE.TorusGeometry(.048,.011,4,10),new THREE.MeshStandardMaterial({color:'#3c4037',metalness:.7,roughness:.4}),group);coil.position.set(-w/2+.07+i*(w-.14)/13,h/2-.035,thickness/2+.025);coil.rotation.x=Math.PI/2;}const pen=mesh(new THREE.CylinderGeometry(.025,.025,1.12,8),new THREE.MeshStandardMaterial({color:'#293b2d',roughness:.4}),group);pen.position.set(.16,-.14,.11);pen.rotation.z=-.4;const clip=mesh(new THREE.BoxGeometry(.015,.25,.018),new THREE.MeshStandardMaterial({color:'#bb9c57',metalness:.7,roughness:.4}),group);clip.position.set(.29,.23,.145);}
+ if(id==='opportunities'){for(let i=0;i<14;i++){const coil=mesh(new THREE.TorusGeometry(.048,.011,4,10),new THREE.MeshStandardMaterial({color:'#3c4037',metalness:.7,roughness:.4}),group);coil.position.set(-w/2+.07+i*(w-.14)/13,h/2-.035,thickness/2+.025);coil.rotation.x=Math.PI/2;}// The pen belongs to the table, not to the animated notepad rig.
+ const penRig=new THREE.Group();penRig.name='Pen beside notepad — stays on table';scene.add(penRig);penRig.position.set(x+w/2+.3,.805,z);penRig.rotation.y=-.3;
+ const pen=mesh(new THREE.CylinderGeometry(.025,.025,1.12,10),new THREE.MeshStandardMaterial({color:'#293b2d',roughness:.4}),penRig);pen.rotation.x=Math.PI/2;
+ const clip=mesh(new THREE.BoxGeometry(.016,.018,.25),new THREE.MeshStandardMaterial({color:'#bb9c57',metalness:.7,roughness:.4}),penRig);clip.position.set(.018,.026,-.32);}
+
  group.userData.bookId=id;group.traverse(c=>{if(c.isMesh){c.userData.bookId=id;pickables.push(c);}});books.set(id,{group,hinge,w,h,home:{position:group.position.clone(),rotation:group.rotation.clone()}});}
 function makeChair(x,z,rot){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rot;scene.add(group);const wood=new THREE.MeshStandardMaterial({color:'#684329',roughness:.85}),fabric=new THREE.MeshStandardMaterial({color:'#a95e36',roughness:1});const seat=mesh(new THREE.CylinderGeometry(.51,.5,.16,32),fabric,group);seat.scale.z=.85;seat.position.y=.39;for(const a of [-1,1])for(const b of [-1,1]){const leg=mesh(new THREE.BoxGeometry(.08,.44,.08),wood,group);leg.position.set(a*.32,.15,b*.27);}const back=mesh(new THREE.BoxGeometry(1.02,.08,.1),wood,group);back.position.set(0,1,-.38);for(const a of [-1,1]){const post=mesh(new THREE.BoxGeometry(.07,.85,.07),wood,group);post.position.set(a*.46,.61,-.38);}}
 function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('#e3d5bd');scene.fog=new THREE.Fog('#dfd0b7',50,95);camera=new THREE.PerspectiveCamera(40,viewport().width/viewport().height,.1,80);camera.position.set(0,9.8,6.8);camera.lookAt(target);
@@ -236,8 +259,8 @@ function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('
  house=buildHouse(scene,{portrait:portraitImage,rugMap:rugTexture()});
  travelCamera();
  function pick(e){updatePointer(e);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(state.houseProgress<.25?house.pickables:state.houseProgress>.94?pickables:[],false)[0]?.object;}
- renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidate}));});
- renderer.domElement.addEventListener('pointerleave',()=>{if(state.mode==='exploring'){hovered=null;books.forEach(b=>gsap.to(b.group.position,{y:b.home.position.y,duration:.25,onUpdate:invalidate}));}});
+ renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));});
+ renderer.domElement.addEventListener('pointerleave',()=>{if(state.mode==='exploring'){hovered=null;books.forEach(b=>gsap.to(b.group.position,{y:b.home.position.y,duration:.25,onUpdate:invalidateShadows}));}});
  renderer.domElement.addEventListener('click',e=>{if(state.mode!=='exploring')return;const hit=pick(e);if(hit?.userData.bookId)openBook(hit.userData.bookId);else if(hit?.userData.livingId)openLiving(hit.userData.livingId);});
 }
 function positionHotspots(){
@@ -246,19 +269,27 @@ function positionHotspots(){
  const r=viewport();
  for(const button of livingControls){const id=button.dataset.living,a=house.anchors.get(id),v=a.clone().project(camera);button.hidden=state.houseProgress>.24||v.z>1||v.z< -1;if(button.hidden)continue;button.style.left=`${r.left+(v.x*.5+.5)*r.width}px`;button.style.top=`${r.top+(-v.y*.5+.5)*r.height}px`;if(id!=='about'){const upper=a.clone().add(new THREE.Vector3(.9,.66,0)).project(camera),lower=a.clone().add(new THREE.Vector3(-.9,-.66,0)).project(camera);button.style.width=`${Math.max(42,Math.abs(upper.x-lower.x)*r.width/2)}px`;button.style.height=`${Math.max(42,Math.abs(upper.y-lower.y)*r.height/2)}px`;}}
 }
-function frame(){requestAnimationFrame(frame);if(!dirty||!renderer||!scene||!camera)return;dirty=false;if(state.mode==='exploring')positionHotspots();renderer.render(scene,camera);}
+let previousFrame=0;
+function frame(now=performance.now()){
+ requestAnimationFrame(frame);const dt=previousFrame?(now-previousFrame)/1000:1/60;previousFrame=now;
+ if(state.mode==='exploring'&&!state.reduce&&!state.journeyNavigation&&(state.houseProgress!==state.houseTarget||Math.abs(state.journeyVelocity)>.0001)){
+  const next=followProgress(state.houseProgress,state.houseTarget,state.journeyVelocity,dt);state.houseProgress=next.position;state.journeyVelocity=next.velocity;travelCamera();
+ }
+ if(!dirty||!renderer||!scene||!camera)return;dirty=false;if(state.mode==='exploring')positionHotspots();renderer.render(scene,camera);
+}
 window.addEventListener('resize',()=>{if(!camera||!renderer)return;camera.aspect=viewport().width/viewport().height;camera.updateProjectionMatrix();renderer.setSize(viewport().width,viewport().height);if(state.mode==='exploring')travelCamera();invalidate();if(state.mode==='reading')updateProgress();});
 async function start(){
  try{
   if(!gsap)throw new Error('Animation library did not load');
-  renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(viewport().width,viewport().height);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;$('scene').append(renderer.domElement);
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(viewport().width,viewport().height);renderer.shadowMap.enabled=true;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;$('scene').append(renderer.domElement);
   const loadImage=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});
   [photo,portraitImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg')]);
   const direct=location.hash.slice(1);
-  state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'?1:direct==='dining'?.76:0;
+  state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'?1:0;
+  state.aboutOffset=state.houseTarget===1?ABOUT_DISTANCE:direct==='about'?ABOUT_CHAPTER_DISTANCE*1.25:0;
   buildScene();setMode('exploring');travelCamera();frame();
   gsap.to($('loading'),{autoAlpha:0,duration:.6,onComplete:()=>{$('loading').hidden=true;}});
-  if(BOOKS.includes(direct))openBook(direct,{historyChange:false});else if(livingItems[direct])openLiving(direct,{historyChange:false});
+  if(BOOKS.includes(direct))openBook(direct,{historyChange:false});else if(livingItems[direct]&&direct!=='about')openLiving(direct,{historyChange:false});
  }catch(error){console.error('Scene initialization:',error);$('loading').hidden=true;$('scene-error').hidden=false;setMode('exploring');document.body.classList.add('simple-mode');state.houseProgress=state.houseTarget=1;document.documentElement.dataset.room='table';announce('The reading menu is available while the scene is unavailable.');const direct=location.hash.slice(1);if(BOOKS.includes(direct))openBook(direct,{historyChange:false});}
 }
 start();
