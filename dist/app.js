@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {ScrollFlow} from './scroll-flow.js';
 
 const $ = (id) => document.getElementById(id);
 const shell = $('reader-shell');
@@ -8,7 +9,8 @@ const intro = $('intro');
 const gsap = window.gsap;
 const BOOKS = ['press','report','opportunities'];
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
-const state = {mode:'loading',active:null,token:0,progress:0,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,bottomReady:false,bottomAt:0,topReady:false,topAt:0,lastWheel:0,touchY:0,touchAtBottom:false,touchAtTop:false};
+const state = {mode:'loading',active:null,token:0,progress:0,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null};
+const scrollFlow=new ScrollFlow();
 let renderer, scene, camera, photo, dirty=true, hovered=null, lastFocus=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
@@ -31,7 +33,7 @@ const pressItems = [
 ];
 const escapeHTML=(s)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const masthead=(right)=>`<div class="paper-masthead"><span>DONTE MILLER · THE DINING TABLE</span><span>${right}</span></div>`;
-const continuation=(next,title)=>`<footer class="continuation" data-next="${next||''}"><p class="eyebrow">${next?'THERE’S MORE ON THE TABLE':'THANK YOU FOR PULLING UP A CHAIR'}</p><button class="continue-button" type="button" data-continue="${next||''}">${title}<span aria-hidden="true">${next?'↗':'↙'}</span></button><p class="continue-hint">${next?'Keep scrolling down to close this publication and open the next.<br>You can also select the title above.':'Return to the table to explore again.'}</p></footer>`;
+const continuation=(next,title)=>`<footer class="continuation" data-next="${next||''}"><p class="eyebrow">${next?'THERE’S MORE ON THE TABLE':'THANK YOU FOR PULLING UP A CHAIR'}</p><button class="continue-button" type="button" data-continue="${next||''}">${title}<span aria-hidden="true">${next?'↗':'↙'}</span></button><p class="continue-hint">${next?'Keep scrolling — the next publication opens automatically.<br>You can also select the title above.':'Keep scrolling to return to the table.'}</p></footer>`;
 function content(id){
  if(id==='press') return masthead('VOL. 01 · SELECTED COVERAGE')+`<h1 class="paper-heading" id="reader-heading" tabindex="-1">The Village,<br>in the world.</h1><p class="paper-subtitle">Conversations, stories, and recognition from the work of building community wealth.</p><img class="paper-hero" src="/assets/akua-ribbon.jpg" alt="Community members celebrating together at a ribbon-cutting"><p class="image-caption">From the Village archive · photograph supplied by Donte Miller</p>`+pressItems.map(([pub,title,description,url],i)=>`<a class="press-row" href="${url}" target="_blank" rel="noopener noreferrer"><span class="press-number">${String(i+1).padStart(2,'0')}</span><div><p class="press-publication">${pub}</p><h2>${title}</h2><p>${description}</p></div><span class="press-arrow" aria-hidden="true">↗</span><span class="sr-only">Opens an external publication in a new tab</span></a>`).join('')+continuation('report','A decade of building together.');
  if(id==='report') return masthead('VILLAGE MICRO FUND · 2015–2025')+`<h1 class="paper-heading" id="reader-heading" tabindex="-1">Ten years.<br>One Village.</h1><p class="paper-subtitle">A decade of teaching, investing, and building the conditions for our communities to thrive.</p><img class="paper-hero" src="/assets/akua-ribbon.jpg" alt="A joyful ribbon-cutting with members of the Village community"><p class="image-caption">A short web edition drawn from Village Micro Fund’s supplied 2015–2025 report.</p><section class="paper-section"><p class="eyebrow">01 · WHERE IT BEGAN</p><h2>Our community is our greatest asset.</h2><p>The report begins with a simple act: a community-crowdfunded loan for Westview Pizza Café. That first investment became a foundation for an institution built around trust, knowledge, and shared economic possibility.</p><p>In their founders’ letter, Donte Miller and Harriett Williams describe the Village as more than loans or workshops. The work is about supporting the whole entrepreneur and building something that lasts.</p><blockquote class="pullquote">“We are our own greatest asset, and we are not waiting for permission to invest in ourselves.”</blockquote></section><div class="report-grid"><section class="paper-section"><p class="eyebrow">02 · TEACH</p><h2>Knowledge is a beginning.</h2><p>The 15-week Flourish Fellowship brings together practical business learning, mentorship, and a community of support. The report describes a program that helps founders step back, strengthen their businesses, and build lasting relationships.</p></section><section class="paper-section"><p class="eyebrow">03 · INVEST</p><h2>Capital with community at its heart.</h2><p>The report documents partnerships with Kiva and Access to Capital for Entrepreneurs, alongside work on new ownership models. The Worker’s Equity Fund explores a path from outside investment toward employee ownership.</p></section></div><section class="paper-section"><p class="eyebrow">04 · SUPPORT</p><h2>Relationships become infrastructure.</h2><p>Stories in the report follow founders working in education, wellness, food, farming, and technology. Connections made through the Village become collaborations, community support, and opportunities to build together.</p><p>The Southwest Atlanta Growers Cooperative story illustrates this approach: individual farms work toward shared resources and a stronger collective voice.</p></section><section class="paper-section"><p class="eyebrow">05 · THE NEXT CHAPTER</p><h2>Building a different economic future.</h2><p>The report’s future vision brings worker ownership, the EnDAO community-governance model, and a Time Bank into a wider cooperative financial ecosystem. It describes a future in which community knowledge, labor, and collective decision-making have a place alongside financial capital.</p><p>These ideas appear here in the context of the report’s 2015–2025 edition. Explore the original for its full histories, stories, and future vision.</p><a class="paper-link" href="https://villagemicrofund.com" target="_blank" rel="noopener noreferrer">Explore Village Micro Fund ↗</a><a class="paper-link" href="/assets/vmf-10-year-report.pdf#page=6" target="_blank" rel="noopener">Read about EnDAO in the report ↗</a></section><aside class="report-original"><img src="/assets/original-report-cover.png" alt="Original Village Micro Fund 10-Year Report cover"><div><h2>The complete report.</h2><p>The original 19-page PDF, including the founders’ letter, success stories, history, and future vision.</p><a class="paper-link" href="/assets/vmf-10-year-report.pdf" target="_blank" rel="noopener">Open the full report ↗</a><a class="paper-link" href="/assets/vmf-10-year-report.pdf" download="Village-Micro-Fund-10-Year-Report.pdf">Download PDF ↓</a></div></aside><p class="source-note">Source: Village Micro Fund / VMF Collective, 2015–2025 Report. This condensed web edition accompanies the original; the full document remains available above.</p>`+continuation('opportunities','What could we build next?');
@@ -56,7 +58,7 @@ function readingReady(id,token){
  if(innerWidth>650){if(id==='press')$('reader-heading').innerHTML='Selected<br>conversations.';if(id==='report')$('reader-heading').innerHTML='The story<br>of the Village.';}
  $('reader-label').textContent=labels[id];$('reader-counter').textContent=`0${BOOKS.indexOf(id)+1} / 03`;
  document.title=`${labels[id]} — Donte Miller`;
- scroller.scrollTop=savedReader.get(id)||0;state.bottomReady=false;state.topReady=false;state.lastWheel=0;
+ scroller.scrollTop=savedReader.get(id)||0;scrollFlow.reset(performance.now());
  gsap.fromTo(shell,{autoAlpha:0},{autoAlpha:1,duration:duration(.32)});
  gsap.fromTo($('open-publication'),{scale:.96},{scale:1,duration:duration(.5),ease:'power2.out'});
  updateProgress();$('reader-heading').focus({preventScroll:true});announce(`${labels[id]}. Publication open.`);
@@ -74,9 +76,9 @@ function openBook(id,{historyChange=true}={}){
  // Passing directly overhead and then sideways caused the pre-opening twist.
  tl.to(camera.position,{x:0,y:5.45,z:1.8,duration:duration(1.1),ease:'power2.inOut',onUpdate:look},.1);
 }
-function closeBook(next=null,{historyChange=true,fromStart=false}={}){
+function closeBook(next=null,{historyChange=true,fromStart=false,restartNext=false}={}){
  if(state.mode!=='reading')return;
- const previous=state.active,token=++state.token;bumpBottom();savedReader.set(previous,scroller.scrollTop);setMode('closing');
+ const previous=state.active,token=++state.token;savedReader.set(previous,scroller.scrollTop);if(next&&restartNext)savedReader.delete(next);setMode('closing');
  const b=books.get(previous);
  const finish=()=>{if(token!==state.token)return;shell.hidden=true;paper.innerHTML='';state.active=null;setMode('exploring');if(historyChange&&!next)routeTo(null);invalidate();if(next){openBook(next,{historyChange});}else{state.scrollAmount=0;state.scrollTarget=fromStart?previous:BOOKS[(BOOKS.indexOf(previous)+1)%BOOKS.length];state.autoCooldown=performance.now()+900;updateTableHint();document.title='The Dining Table — Donte Miller';announce(fromStart?'Returned to the dining table. Scroll down to reopen this publication.':'Returned to the dining table. Keep scrolling to open the next object.');const restore=lastFocus?.isConnected&&lastFocus.matches('button,a')?lastFocus:document.querySelector(`[data-open="${previous}"]`);restore?.focus({preventScroll:true});}};
  if(!b||!camera||state.reduce){gsap.to(shell,{autoAlpha:0,duration:duration(.2),onComplete:finish});return;}
@@ -88,20 +90,24 @@ function closeBook(next=null,{historyChange=true,fromStart=false}={}){
  tl.to(b.group.position,{x:b.home.position.x,y:b.home.position.y,z:b.home.position.z,duration:duration(.9),ease:'power2.inOut'},.3);
  tl.to(b.group.rotation,{x:b.home.rotation.x,y:b.home.rotation.y,z:b.home.rotation.z,duration:duration(.9),ease:'power2.inOut'},.3);
 }
-function bumpBottom(){state.bottomReady=false;state.bottomAt=0;}
-function updateProgress(){if(state.mode!=='reading')return;const max=scroller.scrollHeight-scroller.clientHeight;$('read-progress-fill').style.width=`${max>0?100*scroller.scrollTop/max:100}%`;const bottom=max-scroller.scrollTop<8;if(bottom&&!state.bottomReady){state.bottomAt=performance.now();state.bottomReady=true;}if(!bottom)bumpBottom();const top=scroller.scrollTop<8;if(top&&!state.topReady){state.topAt=performance.now();state.topReady=true;}if(!top){state.topReady=false;state.topAt=0;}}
-function continueReading(){if(state.mode!=='reading')return;const footer=paper.querySelector('[data-next]');closeBook(footer?.dataset.next||null);}
+function updateProgress(){if(state.mode!=='reading')return;const max=scroller.scrollHeight-scroller.clientHeight;$('read-progress-fill').style.width=`${max>0?100*scroller.scrollTop/max:100}%`;}
+function continueReading(){if(state.mode!=='reading')return;const footer=paper.querySelector('[data-next]');closeBook(footer?.dataset.next||null,{restartNext:true});}
+function moveReader(delta){
+ if(state.mode!=='reading')return;
+ const next=scrollFlow.move({delta,top:scroller.scrollTop,max:scroller.scrollHeight-scroller.clientHeight,now:performance.now()});
+ scroller.scrollTop=next.top;updateProgress();
+ if(next.action==='next')continueReading();
+ else if(next.action==='table')closeBook(null,{fromStart:true});
+}
 scroller.addEventListener('scroll',updateProgress,{passive:true});
 shell.addEventListener('wheel',e=>{
- if(state.mode!=='reading')return;
- const now=performance.now(),gap=now-state.lastWheel;state.lastWheel=now;
- if(e.deltaY < -5&&state.topReady&&now-state.topAt>650&&gap>140){e.preventDefault();closeBook(null,{fromStart:true});return;}
- if(e.deltaY>5&&state.bottomReady&&now-state.bottomAt>650&&gap>140){e.preventDefault();continueReading();return;}
- if(!scroller.contains(e.target)){e.preventDefault();scroller.scrollBy(0,e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?scroller.clientHeight:1));}
+ if(state.mode!=='reading'||e.ctrlKey||!e.deltaY)return;
+ e.preventDefault();moveReader(e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?scroller.clientHeight:1));
 },{passive:false});
-scroller.addEventListener('touchstart',e=>{state.touchY=e.touches[0].clientY;state.touchAtBottom=state.bottomReady&&performance.now()-state.bottomAt>500;state.touchAtTop=state.topReady&&performance.now()-state.topAt>500;},{passive:true});
-scroller.addEventListener('touchmove',e=>{if(state.mode!=='reading')return;const delta=state.touchY-e.touches[0].clientY;if(state.touchAtTop&&delta < -80){state.touchAtTop=false;e.preventDefault();closeBook(null,{fromStart:true});}else if(state.touchAtBottom&&delta>80){state.touchAtBottom=false;e.preventDefault();continueReading();}},{passive:false});
-scroller.addEventListener('keydown',e=>{if(e.target.closest('button,a,input,textarea'))return;if((['ArrowUp','PageUp'].includes(e.key)||(e.key===' '&&e.shiftKey))&&state.topReady&&performance.now()-state.topAt>500){e.preventDefault();closeBook(null,{fromStart:true});}else if((['ArrowDown','PageDown'].includes(e.key)||(e.key===' '&&!e.shiftKey))&&state.bottomReady&&performance.now()-state.bottomAt>500){e.preventDefault();continueReading();}});
+shell.addEventListener('touchstart',e=>{state.touchY=e.touches.length===1?e.touches[0].clientY:null;},{passive:true});
+shell.addEventListener('touchmove',e=>{if(state.mode!=='reading'||e.touches.length!==1||state.touchY===null)return;const y=e.touches[0].clientY,delta=state.touchY-y;state.touchY=y;e.preventDefault();moveReader(delta);},{passive:false});
+for(const event of ['touchend','touchcancel'])shell.addEventListener(event,()=>{state.touchY=null;},{passive:true});
+shell.addEventListener('keydown',e=>{if(state.mode!=='reading'||e.target.closest('button,a,input,textarea,select')||e.ctrlKey||e.metaKey||e.altKey)return;const page=Math.max(100,scroller.clientHeight*.9);const delta={ArrowUp:-48,PageUp:-page,ArrowDown:48,PageDown:page,' ':e.shiftKey?-page:page}[e.key];if(delta!==undefined){e.preventDefault();moveReader(delta);}});
 paper.addEventListener('click',e=>{const button=e.target.closest('[data-continue]');if(button)continueReading();});
 $('return-table').addEventListener('click',()=>closeBook());
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openBook(b.dataset.open)));
@@ -119,7 +125,7 @@ function advanceTable(delta){
  state.scrollAmount=Math.max(0,state.scrollAmount+delta);
  document.documentElement.dataset.tableProgress=String(Math.min(1,state.scrollAmount/620));
  travelCamera();
- if(state.scrollAmount>=620){state.scrollAmount=0;openBook(state.scrollTarget);}
+ if(state.scrollAmount>=620){state.scrollAmount=0;savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}
 }
 window.addEventListener('wheel',e=>{if(state.mode!=='exploring'||e.target.closest('.reader-shell'))return;advanceTable(e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1));},{passive:true});
 let sceneTouch=0;document.addEventListener('touchstart',e=>{if(state.mode==='exploring')sceneTouch=e.touches[0].clientY;},{passive:true});
