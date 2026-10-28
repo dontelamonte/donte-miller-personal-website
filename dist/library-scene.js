@@ -46,11 +46,14 @@ export function buildLibrary(scene){
   const group=new THREE.Group();root.add(group);group.position.set(21.52,1.49,1.58+i*1.66);group.rotation.y=Math.PI/2;
   box(1.43,.055,.92,0,0,0,studioCream,group);
   const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=['#b2704e','#416e72','#b28c57'][i];c.fillRect(0,0,w,h);c.strokeStyle='#f1d6a6';c.lineWidth=7;c.strokeRect(18,18,w-36,h-36);c.fillStyle='#fff0cf';c.font='bold 43px Georgia';c.fillText(title,36,185);c.font='22px Georgia';c.fillText(caption,36,245);for(let y=340;y<h-45;y+=43){c.fillStyle='#f6e2be77';c.fillRect(38,y,w-76,2);}},768,512);
-  const cover=mesh(new THREE.PlaneGeometry(1.4,.89),new THREE.MeshBasicMaterial({map:coverMap,side:THREE.DoubleSide}),group);cover.rotation.x=-Math.PI/2;cover.position.y=.03;cover.castShadow=false;
+  const pageMap=canvasTexture((c,w,h)=>{c.fillStyle='#f3e8d1';c.fillRect(0,0,w,h);c.fillStyle='#3a5961';c.font='bold 30px Georgia';c.fillText(title,40,80);c.font='19px Georgia';c.fillText('WORKING NOTES · DONTE MILLER',40,119);for(let y=155;y<h-35;y+=37){c.fillStyle='#91a9a755';c.fillRect(40,y,w-80,2);}},768,512);
+  const page=mesh(new THREE.PlaneGeometry(1.4,.89),new THREE.MeshBasicMaterial({map:pageMap,side:THREE.DoubleSide}),group);page.rotation.set(-Math.PI/2,0,Math.PI);page.position.y=.032;page.castShadow=false;
+  const hinge=new THREE.Group();hinge.position.set(0,.066,.43);group.add(hinge);
+  const cover=mesh(new THREE.BoxGeometry(1.4,.025,.88),[studioWood,studioWood,new THREE.MeshBasicMaterial({map:coverMap}),studioWood,studioWood,studioWood],hinge);cover.position.z=-.43;cover.rotation.y=Math.PI;cover.castShadow=false;
   box(1.43,.075,.07,0,.06,.43,studioWood,group);
   for(let j=0;j<10;j++){const loop=mesh(new THREE.TorusGeometry(.035,.01,4,10),edge,group);loop.position.set(-.61+j*.135,.095,.43);loop.rotation.x=Math.PI/2;}
   group.traverse(o=>{if(o.isMesh){o.userData.modelId=id;modelPickables.push(o);}});
-  modelPads.set(id,{group,home:{position:group.position.clone(),rotation:group.rotation.clone()}});
+  modelPads.set(id,{group,hinge,home:{position:group.position.clone(),rotation:group.rotation.clone()}});
  }
  // A swiveling desk chair has its own depth and silhouette during camera travel.
  box(.78,.12,.96,20.52,.55,3.25,upholstery);

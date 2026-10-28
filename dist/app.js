@@ -41,6 +41,7 @@ const courseControls=[...document.querySelectorAll('[data-course]')];
 const viewport=()=> $('scene').getBoundingClientRect();
 function updatePointer(e){const r=viewport();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);}
 const canvasHome = {position:new THREE.Vector3(),target:new THREE.Vector3()};
+const modelCameraHome = {position:new THREE.Vector3(),target:new THREE.Vector3()};
 const prefs = matchMedia('(prefers-reduced-motion: reduce)');
 const savedReader = new Map();
 const pressItems = [
@@ -154,14 +155,24 @@ function showModel(id,token){
 function openModel(id,{historyChange=true}={}){
  if(!modelById[id]||state.mode!=='exploring'||Math.abs(state.libraryProgress-WORKSHOP_STOP)>.02)return;
  const token=++state.token;state.active=id;state.modelScrollTarget=id;state.libraryTarget=WORKSHOP_STOP;state.libraryVelocity=0;state.workshopOffset=Math.max(state.workshopOffset,modelIds.indexOf(id)*500+160);setMode('model-opening');$('workshop-ui').hidden=true;if(historyChange)routeTo(`model-${id}`);
- const pad=library.modelPads.get(id);if(state.reduce){showModel(id,token);return;}
- gsap.to(pad.group.position,{x:16.5,y:2.6,z:3.25,duration:.75,ease:'power2.inOut',onUpdate:invalidateShadows,onComplete:()=>showModel(id,token)});
+ const pad=library.modelPads.get(id);if(camera){modelCameraHome.position.copy(camera.position);modelCameraHome.target.copy(target);}if(!pad||!camera||state.reduce){showModel(id,token);return;}
+ gsap.killTweensOf(pad.group.position);const focusZ=pad.home.position.z;
+ const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:()=>showModel(id,token)});
+ tl.to(pad.group.position,{x:17.7,y:2.7,z:focusZ,duration:.9,ease:'power2.inOut'},0);
+ tl.to(pad.hinge.rotation,{x:Math.PI*.92,duration:.72,ease:'power2.inOut'},.34);
+ tl.to(target,{x:17.7,y:2.7,z:focusZ,duration:1.05,ease:'power2.inOut',onUpdate:look},.1);
+ tl.to(camera.position,{x:15.2,y:4.9,z:focusZ+.45,duration:1.1,ease:'power2.inOut',onUpdate:look},.1);
 }
 function closeModel({historyChange=true,next=null,fromStart=false}={}){
  if(state.mode!=='model-reading')return;const id=state.active,pad=library.modelPads.get(id),token=++state.token;setMode('model-closing');
  const finish=()=>{if(token!==state.token)return;$('model-shell').hidden=true;$('model-content').innerHTML='';state.active=null;setMode('exploring');state.workshopOffset=fromStart?0:next?Math.min(WORKSHOP_STORY_DISTANCE,(modelIds.indexOf(id)+1)*500):WORKSHOP_STORY_DISTANCE;state.modelScrollTarget=fromStart?id:next||id;state.modelSequenceComplete=!fromStart&&!next;state.autoCooldown=performance.now()+350;if(!historyChange&&!next){state.modelCarry=0;applyRoute();return;}travelCamera();if(next){openModel(next,{historyChange});return;}state.modelCarry=0;if(historyChange)routeTo('workshop');document.title='Donte Miller — The Workshop';announce(fromStart?'Returned to the desk. Scroll down to reopen this sketchpad.':'Returned to the Workshop. Keep scrolling to the library.');};
  if(state.reduce){gsap.to($('model-shell'),{autoAlpha:0,duration:.01,onComplete:finish});return;}
- const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:finish});tl.to($('model-shell'),{autoAlpha:0,duration:.2},0);tl.to(pad.group.position,{x:pad.home.position.x,y:pad.home.position.y,z:pad.home.position.z,duration:.72,ease:'power2.inOut'},.14);
+ const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:finish});
+ tl.to($('model-shell'),{autoAlpha:0,duration:.2},0);
+ tl.to(camera.position,{x:modelCameraHome.position.x,y:modelCameraHome.position.y,z:modelCameraHome.position.z,duration:1.05,ease:'power2.inOut',onUpdate:look},0);
+ tl.to(target,{x:modelCameraHome.target.x,y:modelCameraHome.target.y,z:modelCameraHome.target.z,duration:1.05,ease:'power2.inOut',onUpdate:look},0);
+ tl.to(pad.hinge.rotation,{x:0,duration:.64,ease:'power2.inOut'},.15);
+ tl.to(pad.group.position,{x:pad.home.position.x,y:pad.home.position.y,z:pad.home.position.z,duration:.87,ease:'power2.inOut'},.27);
 }
 function moveModelReader(delta){
  if(state.mode!=='model-reading')return;const view=$('model-scroll'),next=modelFlow.move({delta,top:view.scrollTop,max:view.scrollHeight-view.clientHeight,now:performance.now()});view.scrollTop=next.top;
