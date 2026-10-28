@@ -3,7 +3,7 @@ import {curricula} from './library-content.js';
 
 export function buildLibrary(scene){
  const root=new THREE.Group();root.name='The library';scene.add(root);
- const pickables=[],books=new Map(),anchors=new Map();
+ const pickables=[],books=new Map(),anchors=new Map(),modelPads=new Map(),modelPickables=[];
  const wood=new THREE.MeshStandardMaterial({color:'#633d29',roughness:.85});
  const edge=new THREE.MeshStandardMaterial({color:'#a66b3a',roughness:.7});
  const blue=new THREE.MeshStandardMaterial({color:'#183b54',roughness:1});
@@ -40,6 +40,18 @@ export function buildLibrary(scene){
  box(.08,.82,1.35,21.5,2.08,3.25,dark);box(.012,.68,1.18,21.45,2.08,3.25,screen);
  box(.08,.49,.08,21.57,1.55,3.25,edge);box(.44,.035,.46,21.57,1.44,3.25,dark);
  box(.46,.028,1.02,21.12,1.43,3.25,studioCream);
+ // Three independent sketchpads lie on the desk, rather than being printed into the wall image.
+ const padNames=[['workers-equity','WORKER’S EQUITY','01 / OWNERSHIP'],['endao','EnDAO','02 / GOVERNANCE'],['time-bank','THE TIME BANK','03 / CONTRIBUTION']];
+ for(const [i,[id,title,caption]] of padNames.entries()){
+  const group=new THREE.Group();root.add(group);group.position.set(21.03,1.87,1.62+i*1.63);
+  box(.09,.81,1.26,0,0,0,studioCream,group);box(.34,.035,1.3,-.09,-.42,0,studioWood,group);
+  const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=['#ead7b1','#d9dcbf','#ead1b7'][i];c.fillRect(0,0,w,h);c.strokeStyle='#8f6747';c.lineWidth=7;c.strokeRect(18,18,w-36,h-36);c.fillStyle='#25445b';c.font='bold 42px Georgia';c.fillText(title,36,185);c.font='22px Georgia';c.fillText(caption,36,245);for(let y=340;y<h-45;y+=43){c.fillStyle='#7a929055';c.fillRect(38,y,w-76,2);}},768,512);
+  const cover=mesh(new THREE.PlaneGeometry(1.25,.79),new THREE.MeshBasicMaterial({map:coverMap,side:THREE.DoubleSide}),group);cover.rotation.y=-Math.PI/2;cover.position.x=-.047;cover.castShadow=false;
+  const binding=box(.1,.07,1.28,-.02,.42,0,studioWood,group);
+  for(let j=0;j<9;j++){const loop=mesh(new THREE.TorusGeometry(.036,.01,4,10),edge,group);loop.position.set(-.08,.45,-.54+j*.135);loop.rotation.y=Math.PI/2;}
+  group.traverse(o=>{if(o.isMesh){o.userData.modelId=id;modelPickables.push(o);}});
+  modelPads.set(id,{group,home:{position:group.position.clone(),rotation:group.rotation.clone()}});
+ }
  // A swiveling desk chair has its own depth and silhouette during camera travel.
  box(.78,.12,.96,20.52,.55,3.25,upholstery);
  box(.15,1.05,1.03,20.06,1.02,3.25,studioWood);
@@ -93,5 +105,5 @@ export function buildLibrary(scene){
  const globe=mesh(new THREE.SphereGeometry(.43,20,12),new THREE.MeshStandardMaterial({color:'#bba26e',roughness:.8}));globe.position.set(15.4,6.3,-4.5);const stand=mesh(new THREE.CylinderGeometry(.025,.04,.32,8),edge);stand.position.set(15.4,5.78,-4.5);
  for(const x of [8.4,22.4]){const pot=mesh(new THREE.CylinderGeometry(.38,.28,.7,12),cream);pot.position.set(x,-.1,-2.8);for(let i=0;i<7;i++){const leaf=mesh(new THREE.SphereGeometry(1,7,5),green);leaf.scale.set(.22,.67,.13);leaf.position.set(x+(random()-.5)*.9,.75+random()*1.4,-2.8+(random()-.5)*.9);leaf.rotation.z=(random()-.5)*1.2;}};
  const light=new THREE.PointLight('#ffcf96',14,23,2);light.position.set(16,6,2);root.add(light);
- return {root,pickables,books,anchors};
+ return {root,pickables,books,anchors,modelPads,modelPickables};
 }

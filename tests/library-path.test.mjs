@@ -36,3 +36,11 @@ test('camera and gaze velocity stay continuous through each library turn',()=>{
   for(let j=0;j<3;j++)assert.ok(Math.abs((b[j]-a[j])/epsilon-(c[j]-b[j])/epsilon)<.03,`${field} axis ${j} at ${p}`);
  }
 });
+
+test('the approach to the workshop keeps facing the blue wall without a reverse turn',()=>{
+ for(let i=48;i<=76;i++){
+  const view=libraryCameraAt(i/100),direction=view.target.map((v,j)=>v-view.position[j]);
+  assert.ok(direction[0]>0,`camera stops facing the workshop at ${i/100}`);
+  assert.ok(Math.abs(direction[2]/direction[0])<.08,`camera yaws away from the wall at ${i/100}`);
+ }
+});
