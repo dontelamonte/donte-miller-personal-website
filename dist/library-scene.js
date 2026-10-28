@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
 import {curricula} from './library-content.js';
+import {HOUSE_SHELL_FRONT_Z} from './house-path.js';
 
 export function buildLibrary(scene){
  const root=new THREE.Group();root.name='The library';scene.add(root);
@@ -82,13 +83,13 @@ export function buildLibrary(scene){
   leaf.rotation.z=(i%4-1.5)*.35;
  }
  const studioLight=new THREE.PointLight('#ffcc91',7,12,2);studioLight.position.set(20.5,5.6,3.25);root.add(studioLight);
- box(15.2,.25,15.8,15.3,8.45,1.8,dark);
+ box(15.2,.25,30,15.3,8.45,9,dark);
  // Complete the shared outer shell behind the camera path. This joins the
  // living/dining return wall while leaving the east-west archways unobstructed.
- box(15.2,8.8,.3,15.3,3.9,10.8,blue);
- for(const x of [8.5,22.1])box(.25,8.3,.42,x,3.7,10.55,edge);
- for(const y of [.05,.35,.72])box(15.0,.08,.16,15.3,y,10.54,edge);
- for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,15.6,x,8.26,1.8,wood);
+ box(15.2,8.8,.3,15.3,3.9,HOUSE_SHELL_FRONT_Z,blue);
+ for(const x of [8.5,22.1])box(.25,8.3,.42,x,3.7,HOUSE_SHELL_FRONT_Z-.26,edge);
+ for(const y of [.05,.35,.72])box(15.0,.08,.16,15.3,y,HOUSE_SHELL_FRONT_Z-.26,edge);
+ for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,30,x,8.26,9,wood);
  for(const y of [-.12,.26,7.95])box(15.2,.12,.35,15.3,y,-5.77,edge);
  const rugMap=canvasTexture((c,w,h)=>{c.fillStyle='#1e4a6c';c.fillRect(0,0,w,h);for(let i=0;i<6;i++){c.strokeStyle=['#d9a35f','#e5c38c','#8f512f'][i%3];c.lineWidth=12-i;c.strokeRect(25+i*16,25+i*16,w-50-i*32,h-50-i*32);}for(let x=70;x<w-70;x+=40)for(let y=70;y<h-70;y+=40){c.fillStyle=(x+y)%3?'#ba6748':'#d5aa78';c.beginPath();c.ellipse(x,y,5,9,0,0,Math.PI*2);c.fill();}},768,512);
  const rug=mesh(new THREE.PlaneGeometry(11.8,7.5),new THREE.MeshStandardMaterial({map:rugMap,roughness:1}));rug.rotation.x=-Math.PI/2;rug.position.set(15.2,-.465,1.4);rug.castShadow=false;

@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {HOUSE_SHELL_FRONT_Z} from './house-path.js';
 
 // Connected architecture and independent objects; the room is not a backdrop.
 export function buildHouse(scene,{portrait, rugMap}) {
@@ -25,14 +26,14 @@ export function buildHouse(scene,{portrait, rugMap}) {
  for(const x of [-22.65,-7.85]){box(.32,8.3,.5,x,3.9,-5.72,navy);box(.06,8.3,.54,x+.21,3.9,-5.7,gold);}
  for(const x of [-22.2,-8.3]){const f=ring(1.05,6.8,.075,gold);f.position.set(x,4.3,-5.75);}
  // Coffered ceiling ends at the dividing wall, clear of the overhead table.
- box(15.5,.22,15.9,-15.25,8.6,1.65,wood);
- for(let x=-22.7;x<=-7.7;x+=2.5)box(.12,.17,15.9,x,8.4,1.65,dark);
- for(let z=-5.9;z<=9.5;z+=2.5)box(15.4,.17,.12,-15.25,8.4,z,dark);
+ box(15.5,.22,30,-15.25,8.6,9,wood);
+ for(let x=-22.7;x<=-7.7;x+=2.5)box(.12,.17,30,x,8.4,9,dark);
+ for(let z=-5.9;z<=HOUSE_SHELL_FRONT_Z-.9;z+=2.5)box(15.4,.17,.12,-15.25,8.4,z,dark);
  // The dining room bridges both neighboring ceilings so reverse camera views
  // stay inside one connected house shell instead of revealing the open scene.
- box(15.1,.22,15.9,0,8.46,1.65,wood);
- for(let x=-7.3;x<=7.3;x+=2.5)box(.12,.17,15.9,x,8.27,1.65,dark);
- for(let z=-5.9;z<=9.5;z+=2.5)box(15.0,.17,.12,0,8.27,z,dark);
+ box(15.1,.22,30,0,8.46,9,wood);
+ for(let x=-7.3;x<=7.3;x+=2.5)box(.12,.17,30,x,8.27,9,dark);
+ for(let z=-5.9;z<=HOUSE_SHELL_FRONT_Z-.9;z+=2.5)box(15.0,.17,.12,0,8.27,z,dark);
  const rug=mesh(new THREE.PlaneGeometry(12.8,8.2),new THREE.MeshStandardMaterial({map:rugMap,roughness:1}));rug.rotation.x=-Math.PI/2;rug.position.set(-15,-.46,.6);rug.castShadow=false;
  // Portrait uses only the painting area from the user's supplied reference.
  const portraitMap=tex((c,w,h)=>c.drawImage(portrait,portrait.width*.321,portrait.height*.154,portrait.width*.357,portrait.height*.393,0,0,w,h),768,844);
@@ -65,11 +66,11 @@ export function buildHouse(scene,{portrait, rugMap}) {
  box(15.2,8.8,.3,0,3.9,-6,cream);
  // Continuous exterior wall behind the camera closes the living/dining shell;
  // the interior route still crosses the side archways at x=-7.5 and x=7.6.
- box(15.5,9,.3,-15.25,4,10.8,red);
- box(15.1,8.8,.3,0,3.9,10.8,cream);
- for(const x of [-22.65,-7.85])box(.3,8.3,.42,x,3.9,10.54,navy);
- for(const y of [.1,.45,.8])box(15.4,.09,.16,-15.25,y,10.54,y===.45?gold:navy);
- for(const y of [.05,.35,.72])box(15.0,.08,.16,0,y,10.54,wood);
+ box(15.5,9,.3,-15.25,4,HOUSE_SHELL_FRONT_Z,red);
+ box(15.1,8.8,.3,0,3.9,HOUSE_SHELL_FRONT_Z,cream);
+ for(const x of [-22.65,-7.85])box(.3,8.3,.42,x,3.9,HOUSE_SHELL_FRONT_Z-.26,navy);
+ for(const y of [.1,.45,.8])box(15.4,.09,.16,-15.25,y,HOUSE_SHELL_FRONT_Z-.26,y===.45?gold:navy);
+ for(const y of [.05,.35,.72])box(15.0,.08,.16,0,y,HOUSE_SHELL_FRONT_Z-.26,wood);
  // The library continues through a matching opening in the dining room's right wall.
  box(.3,8.8,7.1,7.6,3.9,-2.45,cream);box(.3,8.8,4.4,7.6,3.9,7.7,cream);
  box(.3,2.1,4.4,7.6,7.25,3.3,cream);
