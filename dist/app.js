@@ -178,7 +178,7 @@ $('model-shell').addEventListener('keydown',e=>{if(state.mode!=='model-reading'|
 function courseMarkup(item){
  const title=escapeHTML(item.title),overview=escapeHTML(item.overview);
  const next=nextCourse(item.id),nextTitle=next?escapeHTML(curriculumById[next].title):'';
- const continuation=`<footer class="course-continuation"><p class="eyebrow">${next?'NEXT ON THE SHELF':'END OF THE LIBRARY'}</p><button class="course-next" data-course-continue type="button">${next?`Open ${nextTitle} →`:'Return to the shelf ↙'}</button><p>${next?'Keep scrolling and the next book opens automatically.':'Keep scrolling to return to the shelf.'}</p></footer>`;
+ const continuation=`<footer class="course-continuation"><p class="eyebrow">${next?'NEXT ON THE SHELF':'END OF THE LIBRARY'}</p><button class="course-next" data-course-continue type="button">${next?`Open ${nextTitle} →`:'Return Home ↙'}</button><p>${next?'Keep scrolling and the next book opens automatically.':'Keep scrolling to close this book and return Home.'}</p></footer>`;
  if(item.comingSoon)return `<p class="eyebrow">THE LIBRARY · COMING SOON</p><h1 id="course-heading" tabindex="-1">${title}.</h1><p class="course-deck">${overview}</p><hr class="course-rule"><p>This book is reserved on the shelf. Its lessons and resources will appear when the curriculum is ready.</p>${continuation}`;
  return `<p class="eyebrow">THE LIBRARY · CURRICULUM PREVIEW</p><h1 id="course-heading" tabindex="-1">${title}.</h1><p class="course-deck">${overview}</p><p><strong>For:</strong> ${escapeHTML(item.audience)}</p><hr class="course-rule"><h2>Inside this book.</h2><ol class="course-chapters">${item.chapters.map((name,i)=>`<li>${escapeHTML(name)} ${i?'· Paid chapter':'· Free first chapter'}</li>`).join('')}</ol><hr class="course-rule"><p class="eyebrow">FREE FIRST CHAPTER · SAMPLE TEXT</p><h2>${escapeHTML(item.chapters[0])}.</h2><div class="course-sample"><p>${escapeHTML(item.sample)}</p></div><p class="course-note">This is sample chapter text for the website prototype. The final lessons and downloadable resources will be added with the completed curriculum.</p><button class="course-action" disabled>Buy ${title} — available when pricing and content are ready</button>${continuation}`;
 }
@@ -199,19 +199,19 @@ function openCourse(id,{historyChange=true}={}){
  tl.to(b.group.rotation,{y:0,duration:.75,ease:'power2.inOut'},'<');
  tl.to(b.hinge.rotation,{y:-Math.PI*.86,duration:.55,ease:'power2.inOut'},'-=.42');
 }
-function closeCourse({historyChange=true,next=null,fromStart=false}={}){
+function closeCourse({historyChange=true,next=null,fromStart=false,toHome=false}={}){
  if(state.mode!=='course-reading')return;const id=state.active,b=library.books.get(id),token=++state.token;setMode('course-closing');
- const finish=()=>{if(token!==state.token)return;$('course-shell').hidden=true;$('course-content').innerHTML='';state.active=null;setMode('exploring');state.courseScrollTarget=fromStart?id:next||'flourish';state.libraryScrollAmount=0;state.autoCooldown=performance.now()+600;if(!historyChange&&!next){state.courseCarry=0;applyRoute();return;}travelCamera();if(next){openCourse(next,{historyChange});return;}state.courseCarry=0;$('library-ui').hidden=false;if(historyChange)routeTo('library');document.title='Donte Miller — The Library';(courseFocus?.isConnected&&courseFocus.matches('button')?courseFocus:document.querySelector(`[data-course="${id}"]`))?.focus({preventScroll:true});announce(fromStart?'Returned to the shelf. Scroll down to reopen this book.':'Returned to the library shelf.');};
+ const finish=()=>{if(token!==state.token)return;$('course-shell').hidden=true;$('course-content').innerHTML='';state.active=null;setMode('exploring');state.courseScrollTarget=fromStart?id:next||'flourish';state.libraryScrollAmount=0;state.autoCooldown=performance.now()+600;state.courseCarry=0;if(toHome){goRoom('living',{historyChange});announce('Leaving the library and returning Home.');return;}if(!historyChange&&!next){applyRoute();return;}travelCamera();if(next){openCourse(next,{historyChange});return;}$('library-ui').hidden=false;if(historyChange)routeTo('library');document.title='Donte Miller — The Library';(courseFocus?.isConnected&&courseFocus.matches('button')?courseFocus:document.querySelector(`[data-course="${id}"]`))?.focus({preventScroll:true});announce(fromStart?'Returned to the shelf. Scroll down to reopen this book.':'Returned to the library shelf.');};
  if(state.reduce){gsap.to($('course-shell'),{autoAlpha:0,duration:.01,onComplete:finish});return;}
  const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:finish});tl.to($('course-shell'),{autoAlpha:0,duration:.22},0);tl.to(b.hinge.rotation,{y:0,duration:.42},0);tl.to(b.group.position,{x:b.home.position.x,y:b.home.position.y,z:b.home.position.z,duration:.85,ease:'power2.inOut'},.23);tl.to(b.group.rotation,{y:b.home.rotation.y,duration:.85},.23);
 }
 $('return-library').addEventListener('click',()=>closeCourse());
-$('course-content').addEventListener('click',e=>{if(e.target.closest('[data-course-continue]'))closeCourse({next:nextCourse(state.active)});});
+$('course-content').addEventListener('click',e=>{if(e.target.closest('[data-course-continue]')){const next=nextCourse(state.active);closeCourse({next,toHome:!next});}});
 function moveCourseReader(delta){
  if(state.mode!=='course-reading')return;
  const view=$('course-scroll'),next=courseFlow.move({delta,top:view.scrollTop,max:view.scrollHeight-view.clientHeight,now:performance.now()});
  view.scrollTop=next.top;
- if(next.action==='next')closeCourse({next:nextCourse(state.active)});
+ if(next.action==='next'){const following=nextCourse(state.active);closeCourse({next:following,toHome:!following});}
  else if(next.action==='table')closeCourse({fromStart:true});
 }
 function queueCourseScroll(delta){if(!Number.isFinite(delta))return;state.courseCarry=delta<0?0:Math.min(240,state.courseCarry+delta);}

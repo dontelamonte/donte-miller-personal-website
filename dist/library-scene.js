@@ -37,18 +37,18 @@ export function buildLibrary(scene){
   box(.95,1.58,1.58,21.95,.25,z,deskBlue);
   for(const y of [-.25,.23,.71]){box(.025,.39,1.42,21.46,y,z,deskBlue);box(.035,.035,.37,21.43,y,z,edge);}
  }
- box(.08,.82,1.35,21.5,2.08,3.25,dark);box(.012,.68,1.18,21.45,2.08,3.25,screen);
- box(.08,.49,.08,21.57,1.55,3.25,edge);box(.44,.035,.46,21.57,1.44,3.25,dark);
- box(.46,.028,1.02,21.12,1.43,3.25,studioCream);
+ box(.08,.82,1.35,22.08,2.08,3.25,dark);box(.012,.68,1.18,22.03,2.08,3.25,screen);
+ box(.08,.49,.08,22.15,1.55,3.25,edge);box(.44,.035,.46,22.15,1.44,3.25,dark);
+ box(.36,.028,.92,21.96,1.43,3.25,studioCream);
  // Three independent sketchpads lie on the desk, rather than being printed into the wall image.
  const padNames=[['workers-equity','WORKER’S EQUITY','01 / OWNERSHIP'],['endao','EnDAO','02 / GOVERNANCE'],['time-bank','THE TIME BANK','03 / CONTRIBUTION']];
  for(const [i,[id,title,caption]] of padNames.entries()){
-  const group=new THREE.Group();root.add(group);group.position.set(21.03,1.87,1.62+i*1.63);
-  box(.09,.81,1.26,0,0,0,studioCream,group);box(.34,.035,1.3,-.09,-.42,0,studioWood,group);
-  const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=['#ead7b1','#d9dcbf','#ead1b7'][i];c.fillRect(0,0,w,h);c.strokeStyle='#8f6747';c.lineWidth=7;c.strokeRect(18,18,w-36,h-36);c.fillStyle='#25445b';c.font='bold 42px Georgia';c.fillText(title,36,185);c.font='22px Georgia';c.fillText(caption,36,245);for(let y=340;y<h-45;y+=43){c.fillStyle='#7a929055';c.fillRect(38,y,w-76,2);}},768,512);
-  const cover=mesh(new THREE.PlaneGeometry(1.25,.79),new THREE.MeshBasicMaterial({map:coverMap,side:THREE.DoubleSide}),group);cover.rotation.y=-Math.PI/2;cover.position.x=-.047;cover.castShadow=false;
-  const binding=box(.1,.07,1.28,-.02,.42,0,studioWood,group);
-  for(let j=0;j<9;j++){const loop=mesh(new THREE.TorusGeometry(.036,.01,4,10),edge,group);loop.position.set(-.08,.45,-.54+j*.135);loop.rotation.y=Math.PI/2;}
+  const group=new THREE.Group();root.add(group);group.position.set(21.52,1.49,1.58+i*1.66);group.rotation.y=Math.PI/2;
+  box(1.43,.055,.92,0,0,0,studioCream,group);
+  const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=['#b2704e','#416e72','#b28c57'][i];c.fillRect(0,0,w,h);c.strokeStyle='#f1d6a6';c.lineWidth=7;c.strokeRect(18,18,w-36,h-36);c.fillStyle='#fff0cf';c.font='bold 43px Georgia';c.fillText(title,36,185);c.font='22px Georgia';c.fillText(caption,36,245);for(let y=340;y<h-45;y+=43){c.fillStyle='#f6e2be77';c.fillRect(38,y,w-76,2);}},768,512);
+  const cover=mesh(new THREE.PlaneGeometry(1.4,.89),new THREE.MeshBasicMaterial({map:coverMap,side:THREE.DoubleSide}),group);cover.rotation.x=-Math.PI/2;cover.position.y=.03;cover.castShadow=false;
+  box(1.43,.075,.07,0,.06,.43,studioWood,group);
+  for(let j=0;j<10;j++){const loop=mesh(new THREE.TorusGeometry(.035,.01,4,10),edge,group);loop.position.set(-.61+j*.135,.095,.43);loop.rotation.x=Math.PI/2;}
   group.traverse(o=>{if(o.isMesh){o.userData.modelId=id;modelPickables.push(o);}});
   modelPads.set(id,{group,home:{position:group.position.clone(),rotation:group.rotation.clone()}});
  }
