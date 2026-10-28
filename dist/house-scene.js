@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.min.js';
 
 // Connected architecture and independent objects; the room is not a backdrop.
 export function buildHouse(scene,{portrait, rugMap}) {
- const root=new THREE.Group();root.name='Connected living and dining rooms';scene.add(root);
+ const root=new THREE.Group();root.name='Connected living, dining and library rooms';scene.add(root);
  const pickables=[],anchors=new Map();
  let seed=21;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
  function tex(draw,w=768,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
@@ -57,8 +57,12 @@ export function buildHouse(scene,{portrait, rugMap}) {
  for(const z of [1.04,5.56]){box(.66,5.4,.32,-7.5,2.2,z,cream);box(.78,.18,.5,-7.5,4.95,z,paleGold);box(.83,.22,.55,-7.5,-.28,z,cream);for(const dz of [-.08,.08])box(.72,4.9,.025,-7.5,2.25,z+dz,paleGold);}
  const archCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-7.75,5.0,1.04),new THREE.Vector3(-7.75,6.17,1.85),new THREE.Vector3(-7.75,6.95,3.3),new THREE.Vector3(-7.75,6.17,4.75),new THREE.Vector3(-7.75,5.0,5.56)]);mesh(new THREE.TubeGeometry(archCurve,48,.055,6,false),paleGold);
  // Dining room: cream architecture, indigo painted mural and a suspended lantern.
- box(15.2,8.8,.3,0,3.9,-6,cream);box(.3,8.8,15.8,7.6,3.9,1.8,cream);
- for(const y of [-.1,.3,8.0]){box(15.2,.12,.32,0,y,-5.77,wood);box(.32,.12,15.7,7.42,y,1.8,wood);}
+ box(15.2,8.8,.3,0,3.9,-6,cream);
+ // The library continues through a matching opening in the dining room's right wall.
+ box(.3,8.8,7.1,7.6,3.9,-2.45,cream);box(.3,8.8,4.4,7.6,3.9,7.7,cream);
+ box(.3,2.1,4.4,7.6,7.25,3.3,cream);
+ for(const z of [1.04,5.56]){box(.52,5.2,.28,7.6,2.1,z,paleGold);box(.68,.18,.5,7.6,4.9,z,wood);}
+ for(const y of [-.1,.3,8.0]){box(15.2,.12,.32,0,y,-5.77,wood);box(.32,.12,7.1,7.42,y,-2.45,wood);box(.32,.12,4.4,7.42,y,7.7,wood);}
  const muralMap=tex((c,W,H)=>{c.fillStyle='#26485e';c.fillRect(0,0,W,H);c.fillStyle='#d2be99';c.beginPath();c.moveTo(W*.3,H*.7);c.lineTo(W*.3,H*.36);c.bezierCurveTo(W*.3,H*.18,W*.41,H*.1,W*.5,H*.07);c.bezierCurveTo(W*.59,H*.1,W*.7,H*.18,W*.7,H*.36);c.lineTo(W*.7,H*.7);c.fill();for(let i=0;i<19000;i++){const x=rand()*W,y=rand()*H;c.fillStyle=(y>H*.5?['#26485e24','#3f5d5c40','#d5bc9022']:['#d9c29b18','#81938915','#1e405326'])[i%3];c.fillRect(x,y,rand()*27+1,rand()*10+1);}for(let i=0;i<55;i++){const x=rand()*W,y=H*(.4+rand()*.6);c.strokeStyle='#263e3c55';c.lineWidth=1+rand()*3;c.beginPath();c.moveTo(x,H);c.quadraticCurveTo(x-20,y+70,x+rand()*50-25,y);c.stroke();for(let j=0;j<12;j++){c.fillStyle=j%2?'#33574965':'#65765955';c.beginPath();c.ellipse(x+(rand()-.5)*90,y+rand()*160,4+rand()*14,3+rand()*10,rand()*3,0,Math.PI*2);c.fill();}}},1024,1024);
  wallFrame(10.2,6.65,0,4.12,-5.78);const mural=mesh(new THREE.PlaneGeometry(9.85,6.3),new THREE.MeshStandardMaterial({map:muralMap,roughness:1}));mural.position.set(0,4.12,-5.54);mural.castShadow=false;
  // Recess-like side panels provide depth without obstructing the path.

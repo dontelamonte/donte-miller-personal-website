@@ -153,3 +153,46 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 }
 
 @media(max-width:370px){.about-story h1{font-size:19px}#about-story-text{font-size:16px}}
+
+/* Library shelves remain visible behind the named curriculum controls. */
+.library-ui{position:fixed;inset:0;z-index:4;pointer-events:none;color:#f8ebd3;text-shadow:0 2px 12px #101e2a}
+.library-ui[hidden]{display:none}
+.library-intro{position:absolute;left:40px;top:104px;max-width:430px}
+.library-intro .eyebrow{font-size:9px;color:#e9bd85}
+.library-intro h1{font:clamp(36px,4.5vw,62px)/1 'Libre Caslon Display',Georgia,serif;margin:0 0 10px}
+.library-intro>p:last-child{font-size:11px;line-height:1.6;margin:0}
+.library-controls{position:absolute;left:40px;right:40px;bottom:70px;max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.library-controls button{border:1px solid #e8cca4b0;background:#142f3ed9;color:#fff0d5;padding:8px 11px;text-align:left;min-height:45px;box-shadow:0 8px 25px #0b1b2880;pointer-events:auto;font-size:10px;line-height:1.35}
+.library-controls button span{display:block;color:#e8bf8d;font-size:8px;letter-spacing:.6px;margin-top:3px}
+.library-controls button:hover,.library-controls button:focus-visible{background:#284c60}
+.library-ui .library-controls button[hidden]{display:none}
+.course-shell{position:fixed;inset:0;z-index:11;background:radial-gradient(ellipse at 50% 42%,#162c38bd,#0c1a25ee);backdrop-filter:blur(5px);color:#243d32}
+.course-shell[hidden]{display:none}
+.course-toolbar{height:69px;display:flex;justify-content:space-between;align-items:center;padding:0 38px;color:#f8edda;font-size:9px;letter-spacing:1.5px}
+.course-toolbar button{background:none;border:0;color:inherit;font-size:11px;padding:12px 0}
+.course-stage{position:absolute;inset:80px 28px 28px;display:flex;align-items:center;justify-content:center;perspective:1800px}
+.course-book{position:relative;width:min(760px,100%);height:100%;max-height:760px;background:#f8f1e1;border-radius:4px 12px 12px 4px;border-bottom:8px solid #d9cab0;box-shadow:0 4px 0 #ab9879,0 12px 0 #3a5142,0 25px 70px #071722a8;overflow:hidden}
+.course-spine{position:absolute;inset:0 auto 0 0;width:23px;background:linear-gradient(90deg,#5b4936,#b6a07c 40%,#e7dbc4 70%,transparent);z-index:1;pointer-events:none}
+.course-scroll{height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#b09b7c #f8f1e1;outline-offset:-5px}
+#course-content{padding:40px 56px 65px 66px;max-width:720px;margin:auto}
+#course-content .eyebrow{color:#9d563d;font-size:9px}
+#course-content h1{font:clamp(52px,7vw,88px)/.96 'Libre Caslon Display',Georgia,serif;letter-spacing:-1.4px;margin:24px 0}
+#course-content h2{font:34px/1.05 'Libre Caslon Display',Georgia,serif;margin:36px 0 16px}
+#course-content p,#course-content li{font-size:14px;line-height:1.85;color:#425449}
+#course-content .course-deck{font:21px/1.45 'Libre Caslon Display',Georgia,serif;color:#2e4838}
+.course-rule{border:0;border-top:1px solid #c8bca5;margin:33px 0}
+.course-chapters{padding-left:24px}.course-chapters li{padding:8px 0;border-bottom:1px solid #ded5c3}
+.course-sample{border-left:2px solid #a75a3a;padding-left:23px;margin:20px 0}
+.course-note{background:#ece4d2;padding:18px 20px;margin:28px 0;font-size:12px;line-height:1.7}
+.course-action{display:block;width:100%;text-align:left;border:1px solid #a2ab94;background:#e8e2d1;color:#425244;padding:16px 18px;font-size:13px;margin-top:25px}
+.course-action:disabled{opacity:.85;cursor:default}
+.course-return{background:none;border:0;border-bottom:1px solid #607461;padding:8px 0;margin-top:20px;font-size:12px}
+@media(max-width:560px){
+ .library-intro{top:132px;left:20px;right:20px}.library-intro h1{font-size:34px}.library-intro>p:last-child{font-size:10px}
+ .library-controls{left:20px;right:20px;bottom:87px;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ .library-controls button{min-height:49px;padding:6px 9px;font-size:9px}
+ .library-controls button span{font-size:7px;margin-top:1px}
+ .course-toolbar{height:58px;padding:0 18px}.course-toolbar>span{font-size:8px}
+ .course-stage{inset:64px 9px 13px}.course-book{max-height:none}.course-spine{width:16px}
+ #course-content{padding:30px 24px 45px 29px}#course-content h1{font-size:50px}#course-content h2{font-size:29px}#course-content p,#course-content li{font-size:13px}
+}
