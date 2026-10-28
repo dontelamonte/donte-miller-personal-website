@@ -94,7 +94,7 @@ function openBook(id,{historyChange=true}={}){
  const b=books.get(id);if(camera){canvasHome.position.copy(camera.position);canvasHome.target.copy(target);}if(!b||!camera||state.reduce){readingReady(id,token);return;}
  const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:()=>readingReady(id,token)});
  tl.to(b.group.position,{x:0,y:2.8,z:0,duration:duration(.9),ease:'power2.inOut'},0);
- tl.to(b.hinge.rotation,{y:-Math.PI*.96,duration:duration(.7),ease:'power2.inOut'},.3);
+ tl.to(b.hinge.rotation,{[b.hingeAxis]:-Math.PI*.96,duration:duration(.7),ease:'power2.inOut'},.3);
  tl.to(target,{x:0,y:2.8,z:0,duration:duration(1),ease:'power2.inOut',onUpdate:look},.1);
  // Keep the camera in front of its target throughout a single approach.
  // Passing directly overhead and then sideways caused the pre-opening twist.
@@ -110,7 +110,7 @@ function closeBook(next=null,{historyChange=true,fromStart=false,restartNext=fal
  tl.to(shell,{autoAlpha:0,duration:duration(.2)},0);
  tl.to(camera.position,{x:canvasHome.position.x,y:canvasHome.position.y,z:canvasHome.position.z,duration:duration(1.05),ease:'power2.inOut',onUpdate:look},0);
  tl.to(target,{x:canvasHome.target.x,y:canvasHome.target.y,z:canvasHome.target.z,duration:duration(1.05),ease:'power2.inOut',onUpdate:look},0);
- tl.to(b.hinge.rotation,{y:0,duration:duration(.6),ease:'power2.inOut'},.18);
+ tl.to(b.hinge.rotation,{[b.hingeAxis]:0,duration:duration(.6),ease:'power2.inOut'},.18);
  tl.to(b.group.position,{x:b.home.position.x,y:b.home.position.y,z:b.home.position.z,duration:duration(.9),ease:'power2.inOut'},.3);
  tl.to(b.group.rotation,{x:b.home.rotation.x,y:b.home.rotation.y,z:b.home.rotation.z,duration:duration(.9),ease:'power2.inOut'},.3);
 }
@@ -289,7 +289,13 @@ function returnHomeFromLibrary({historyChange=true}={}){
  const aspect=viewport().width/viewport().height;
  const views=[1,.9,.76,.68,.48,.22].map(p=>libraryCameraAt(p,aspect)).concat([.5,.3,.2,0].map(p=>cameraAt(p,aspect)));
  const positions=new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal');
- const gazes=new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.target)),false,'centripetal');
+ // The outbound Workshop gaze points at the desk. On the return, turn toward
+ // the doorway and keep looking along the route instead of facing the desk.
+ const returnTargets=[
+  views[0].target,[12,3.35,-4],[4,3.35,3.3],[2,3.3,3.3],[-3,3.3,3.3],[-7,3.3,3.3],
+  [-13,3.1,3.3],[-15,3.1,-1],[-15,3.1,-4],views.at(-1).target
+ ];
+ const gazes=new THREE.CatmullRomCurve3(returnTargets.map(v=>new THREE.Vector3(...v)),false,'centripetal');
  const travel={t:0};gsap.killTweensOf(state);state.journeyNavigation=true;state.homeReturning=true;state.houseTarget=0;state.libraryTarget=0;state.libraryVelocity=state.journeyVelocity=0;state.aboutOffset=0;resetTableSequence();
  if(historyChange)routeTo('living');document.title='Donte Miller — Make yourself at home.';
  if(state.reduce){state.libraryProgress=state.houseProgress=0;state.journeyNavigation=state.homeReturning=false;travelCamera();announce('Returned Home.');return;}
@@ -421,13 +427,13 @@ function makeBook(id,x,z,angle){const group=new THREE.Group();scene.add(group);c
  const paperMat=new THREE.MeshStandardMaterial({color:'#e6dac1',roughness:.95});const pageBlock=mesh(new THREE.BoxGeometry(w,h,thickness),paperMat,group);
  const lines=texture((ctx,W,H)=>{ctx.fillStyle='#e6dac1';ctx.fillRect(0,0,W,H);for(let y=0;y<H;y+=9){ctx.fillStyle='#bfb199';ctx.fillRect(0,y,W,1);}},128,128);pageBlock.material=[paperMat,paperMat,new THREE.MeshStandardMaterial({map:lines}),paperMat,paperMat,paperMat];
  const inner=mesh(new THREE.PlaneGeometry(w-.035,h-.025),new THREE.MeshBasicMaterial({map:innerTexture(id)}),group);inner.position.z=thickness/2+.003;inner.castShadow=false;
- const hinge=new THREE.Group();hinge.position.set(-w/2,0,thickness/2+.014);group.add(hinge);const coverMaterials=[new THREE.MeshStandardMaterial({color:id==='report'?'#203c2a':'#e5dbc4'}),paperMat,paperMat,paperMat,new THREE.MeshBasicMaterial({map:coverTexture(id)}),new THREE.MeshStandardMaterial({color:'#f0e6ce',roughness:1})];const cover=mesh(new THREE.BoxGeometry(w,h,.022),coverMaterials,hinge);cover.position.x=w/2;
+ const hinge=new THREE.Group(),topBound=id==='opportunities';hinge.position.set(topBound?0:-w/2,topBound?h/2:0,thickness/2+.014);group.add(hinge);const coverMaterials=[new THREE.MeshStandardMaterial({color:id==='report'?'#203c2a':'#e5dbc4'}),paperMat,paperMat,paperMat,new THREE.MeshBasicMaterial({map:coverTexture(id)}),new THREE.MeshStandardMaterial({color:'#f0e6ce',roughness:1})];const cover=mesh(new THREE.BoxGeometry(w,h,.022),coverMaterials,hinge);cover.position.set(topBound?0:w/2,topBound?-h/2:0,0);
  if(id==='opportunities'){for(let i=0;i<14;i++){const coil=mesh(new THREE.TorusGeometry(.048,.011,4,10),new THREE.MeshStandardMaterial({color:'#3c4037',metalness:.7,roughness:.4}),group);coil.position.set(-w/2+.07+i*(w-.14)/13,h/2-.035,thickness/2+.025);coil.rotation.x=Math.PI/2;}// The pen belongs to the table, not to the animated notepad rig.
  const penRig=new THREE.Group();penRig.name='Pen beside notepad — stays on table';scene.add(penRig);penRig.position.set(x+w/2+.3,.805,z);penRig.rotation.y=-.3;
  const pen=mesh(new THREE.CylinderGeometry(.025,.025,1.12,10),new THREE.MeshStandardMaterial({color:'#293b2d',roughness:.4}),penRig);pen.rotation.x=Math.PI/2;
  const clip=mesh(new THREE.BoxGeometry(.016,.018,.25),new THREE.MeshStandardMaterial({color:'#bb9c57',metalness:.7,roughness:.4}),penRig);clip.position.set(.018,.026,-.32);}
 
- group.userData.bookId=id;group.traverse(c=>{if(c.isMesh){c.userData.bookId=id;pickables.push(c);}});books.set(id,{group,hinge,w,h,home:{position:group.position.clone(),rotation:group.rotation.clone()}});}
+ group.userData.bookId=id;group.traverse(c=>{if(c.isMesh){c.userData.bookId=id;pickables.push(c);}});books.set(id,{group,hinge,hingeAxis:topBound?'x':'y',w,h,home:{position:group.position.clone(),rotation:group.rotation.clone()}});}
 function makeChair(x,z,rot){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rot;scene.add(group);const wood=new THREE.MeshStandardMaterial({color:'#684329',roughness:.85}),fabric=new THREE.MeshStandardMaterial({color:'#a95e36',roughness:1});const seat=mesh(new THREE.CylinderGeometry(.51,.5,.16,32),fabric,group);seat.scale.z=.85;seat.position.y=.39;for(const a of [-1,1])for(const b of [-1,1]){const leg=mesh(new THREE.BoxGeometry(.08,.44,.08),wood,group);leg.position.set(a*.32,.15,b*.27);}const back=mesh(new THREE.BoxGeometry(1.02,.08,.1),wood,group);back.position.set(0,1,-.38);for(const a of [-1,1]){const post=mesh(new THREE.BoxGeometry(.07,.85,.07),wood,group);post.position.set(a*.46,.61,-.38);}}
 function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('#e3d5bd');scene.fog=new THREE.Fog('#dfd0b7',50,95);camera=new THREE.PerspectiveCamera(40,viewport().width/viewport().height,.1,80);camera.position.set(0,9.8,6.8);camera.lookAt(target);
  const hemi=new THREE.HemisphereLight('#fff9e9','#846d4a',2.5);scene.add(hemi);const key=new THREE.DirectionalLight('#fff4d3',3);key.position.set(-5,10,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-29,right:15,top:16,bottom:-16,near:.5,far:65});key.shadow.bias=-.0004;key.shadow.normalBias=.025;key.shadow.radius=4;scene.add(key);const fill=new THREE.DirectionalLight('#c4d8ee',1.2);fill.position.set(6,4,-3);scene.add(fill);

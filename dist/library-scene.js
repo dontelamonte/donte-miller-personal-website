@@ -66,7 +66,7 @@ export function buildLibrary(scene){
   const foot=box(.05,.05,.65,20.52,-.27,3.25,dark);foot.rotation.y=angle;
  }
  // Small working materials and greenery keep the studio lived in without flattening it.
- for(const [z,count] of [[.35,5],[5.0,4]])for(let i=0;i<count;i++)box(.42,.06,.55,21.42,1.46+i*.063,z+i*.13,i%2?studioCream:studioWood);
+ for(const [z,count] of [[.35,5],[5.9,4]])for(let i=0;i<count;i++)box(.42,.06,.55,21.42,1.46+i*.063,z+i*.13,i%2?studioCream:studioWood);
  const plantGreen=new THREE.MeshStandardMaterial({color:'#4b6845',roughness:1});
  for(const z of [-.2,6.7]){
   const pot=mesh(new THREE.CylinderGeometry(.26,.19,.38,10),studioCream);pot.position.set(21.65,1.57,z);
