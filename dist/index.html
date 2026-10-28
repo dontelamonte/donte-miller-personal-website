@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ece3d2"><meta name="description" content="Pull up a chair. Explore Donte Miller’s work, the Village Micro Fund ten-year report, and ways to build together.">
+  <title>The Dining Table — Donte Miller</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%232c4538'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23f5efdf' font-family='Georgia' font-size='20'%3Ed%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/vendor/gsap.min.js" defer></script><script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div id="scene" aria-hidden="true"></div>
+  <div id="loading"><span class="loading-mark">dm.</span><span>Setting the table</span><span class="loading-line"></span></div>
+  <header class="site-header" id="site-header">
+    <a class="wordmark" href="#table" aria-label="Donte Miller, return to table">donte miller<span>.</span></a>
+    <div class="room-label"><span class="room-dot"></span>THE DINING ROOM</div>
+    <button id="motion-toggle" class="text-control" type="button" aria-pressed="false">Reduce motion</button>
+  </header>
+  <main id="table-view">
+    <div class="intro" id="intro"><p class="eyebrow">WELCOME. PULL UP A CHAIR.</p><h1>There’s a story<br>at every seat.</h1><p class="intro-note">A few things I’d like to share with you.</p></div>
+    <div id="hotspots" aria-label="Explore the objects on the table">
+      <button class="hotspot" data-open="press"><span class="hotspot-number">01</span><span>THE PRESS</span><span class="hotspot-plus" aria-hidden="true">+</span></button>
+      <button class="hotspot" data-open="report"><span class="hotspot-number">02</span><span>TEN-YEAR REPORT</span><span class="hotspot-plus" aria-hidden="true">+</span></button>
+      <button class="hotspot" data-open="opportunities"><span class="hotspot-number">03</span><span>LET’S BUILD</span><span class="hotspot-plus" aria-hidden="true">+</span></button>
+    </div>
+    <footer class="table-footer"><span class="edition-label">DONTE MILLER’S HOUSE <span> / </span> AN INTERACTION STUDY</span><span class="table-hint"><span aria-hidden="true">↓</span> Scroll closer. Select something that speaks to you.</span><button id="simple-view" class="text-control" type="button">Read the press ↗</button></footer>
+  </main>
+  <section id="reader-shell" class="reader-shell" hidden aria-label="Open publication">
+    <header class="reader-toolbar"><button id="return-table" type="button" class="back-control"><span aria-hidden="true">↙</span> Back to the table</button><span id="reader-label">THE PRESS</span><span id="reader-counter">01 / 03</span></header>
+    <div id="reader-scroll" class="reader-scroll"><article id="reader-content" class="reader-paper"></article></div>
+    <div class="read-progress" aria-hidden="true"><span id="read-progress-fill"></span></div>
+  </section>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+  <div id="scene-error" hidden><h2>The table is taking a moment.</h2><p>You can still explore everything here.</p><button data-open="press">Read the press</button><button data-open="report">Read the report</button><button data-open="opportunities">Let’s build</button></div>
+  <noscript><div class="noscript"><h1>Donte Miller</h1><p>Explore <a href="https://www.forbes.com/profile/donte-miller/">Forbes</a>, <a href="/assets/vmf-10-year-report.pdf">the ten-year report</a>, or <a href="mailto:donte@villagemicrofund.com">get in touch</a>.</p></div></noscript>
+</body>
+</html>
