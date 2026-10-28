@@ -15,11 +15,58 @@ export function buildLibrary(scene){
  function canvasTexture(draw,w=512,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
  // The dining-room doorway opens directly into this room, so the camera never fades between spaces.
  box(15.4,8.8,.3,15.3,3.9,-6,blue);box(.3,8.8,15.8,23.1,3.9,1.8,blue);
- // The workshop is a picture-window in the blue wall, encountered before the shelves.
- const workshopMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>{window.dispatchEvent(new Event('scene-asset-ready'));});workshopMap.colorSpace=THREE.SRGBColorSpace;
- const workshopArt=mesh(new THREE.PlaneGeometry(7.25,7.25),new THREE.MeshBasicMaterial({map:workshopMap,side:THREE.DoubleSide}));workshopArt.position.set(22.91,3.65,3.25);workshopArt.rotation.y=-Math.PI/2;workshopArt.castShadow=false;
- for(const z of [-.43,6.93])box(.1,7.4,.09,22.86,3.65,z,edge);
- for(const y of [-.05,7.35])box(.1,.09,7.4,22.86,y,3.25,edge);
+ // The reference describes a room. Only its central painting is mapped onto the wall;
+ // the desk, chair, computer and surrounding decor are separate 3D objects.
+ const studioWood=new THREE.MeshStandardMaterial({color:'#94633e',roughness:.88});
+ const deskBlue=new THREE.MeshStandardMaterial({color:'#245474',roughness:.9});
+ const studioCream=new THREE.MeshStandardMaterial({color:'#e4d4b8',roughness:1});
+ const screen=new THREE.MeshStandardMaterial({color:'#d7d0bb',roughness:.75,emissive:'#786e5c',emissiveIntensity:.14});
+ const upholstery=new THREE.MeshStandardMaterial({color:'#385d75',roughness:1});
+ for(const z of [-.95,7.45])box(.11,8.2,1.4,22.87,3.55,z,studioCream);
+ box(.12,.14,7.4,22.85,7.75,3.25,studioWood);box(.12,.14,7.4,22.85,.08,3.25,studioWood);
+ const paintingMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>window.dispatchEvent(new Event('scene-asset-ready')));
+ paintingMap.colorSpace=THREE.SRGBColorSpace;
+ // UV crop of the framed painting in the supplied composition (not the desk or wall).
+ paintingMap.repeat.set(.445,.38);paintingMap.offset.set(.273,.493);
+ const painting=mesh(new THREE.PlaneGeometry(4.1,3.5),new THREE.MeshBasicMaterial({map:paintingMap,side:THREE.DoubleSide}));painting.position.set(22.79,5.4,3.25);painting.rotation.y=-Math.PI/2;painting.castShadow=false;
+ for(const z of [1.13,5.37])box(.16,3.63,.12,22.72,5.4,z,studioWood);
+ for(const y of [3.6,7.2])box(.16,.12,4.26,22.72,y,3.25,studioWood);
+ // Work surface and two drawer pedestals sit in front of the wall.
+ box(1.28,.16,6.7,21.76,1.33,3.25,studioWood);
+ for(const z of [.94,5.56]){
+  box(.95,1.58,1.58,21.95,.25,z,deskBlue);
+  for(const y of [-.25,.23,.71]){box(.025,.39,1.42,21.46,y,z,deskBlue);box(.035,.035,.37,21.43,y,z,edge);}
+ }
+ box(.08,.82,1.35,21.5,2.08,3.25,dark);box(.012,.68,1.18,21.45,2.08,3.25,screen);
+ box(.08,.49,.08,21.57,1.55,3.25,edge);box(.44,.035,.46,21.57,1.44,3.25,dark);
+ box(.46,.028,1.02,21.12,1.43,3.25,studioCream);
+ // A swiveling desk chair has its own depth and silhouette during camera travel.
+ box(.78,.12,.96,20.52,.55,3.25,upholstery);
+ box(.15,1.05,1.03,20.06,1.02,3.25,studioWood);
+ box(.025,.72,.83,19.97,1.04,3.25,upholstery);
+ box(.1,.09,1.02,20.04,1.43,3.25,upholstery);
+ for(const z of [2.7,3.8]){box(.7,.065,.07,20.43,.93,z,studioWood);box(.07,.35,.07,20.75,.74,z,studioWood);}
+ const chairPost=mesh(new THREE.CylinderGeometry(.065,.08,.68,10),dark);chairPost.position.set(20.52,.1,3.25);
+ for(const angle of [0,Math.PI*.4,Math.PI*.8,Math.PI*1.2,Math.PI*1.6]){
+  const foot=box(.05,.05,.65,20.52,-.27,3.25,dark);foot.rotation.y=angle;
+ }
+ // Small working materials and greenery keep the studio lived in without flattening it.
+ for(const [z,count] of [[.35,5],[5.0,4]])for(let i=0;i<count;i++)box(.42,.06,.55,21.42,1.46+i*.063,z+i*.13,i%2?studioCream:studioWood);
+ const plantGreen=new THREE.MeshStandardMaterial({color:'#4b6845',roughness:1});
+ for(const z of [-.2,6.7]){
+  const pot=mesh(new THREE.CylinderGeometry(.26,.19,.38,10),studioCream);pot.position.set(21.65,1.57,z);
+  for(let i=0;i<7;i++){const leaf=mesh(new THREE.SphereGeometry(.29,7,5),plantGreen);leaf.scale.set(.48,1.9,.38);leaf.position.set(21.65+(i%3-1)*.2,1.97+(i%2)*.3,z+(i-3)*.13);leaf.rotation.z=(i-3)*.17;}
+ }
+ for(const z of [.25,6.25]){
+  box(.025,1.3,.025,21.9,7.63,z,dark);
+  const lamp=mesh(new THREE.CylinderGeometry(.18,.42,.34,14),studioCream);lamp.position.set(21.9,6.85,z);
+ }
+ for(let i=0;i<18;i++){
+  const leaf=mesh(new THREE.SphereGeometry(.25,7,5),plantGreen);leaf.scale.set(.7,1.5,.75);
+  leaf.position.set(22.45-(i%3)*.18,7.85-(i%5)*.22,.2+i*.34);
+  leaf.rotation.z=(i%4-1.5)*.35;
+ }
+ const studioLight=new THREE.PointLight('#ffcc91',7,12,2);studioLight.position.set(20.5,5.6,3.25);root.add(studioLight);
  box(15.2,.25,15.8,15.3,8.45,1.8,dark);
  for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,15.6,x,8.26,1.8,wood);
  for(const y of [-.12,.26,7.95])box(15.2,.12,.35,15.3,y,-5.77,edge);

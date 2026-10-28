@@ -5,7 +5,7 @@ const stops=[
  {at:.22,position:[-1.3,3.3,8.1],target:[2.5,3.1,3.3]},
  {at:.48,position:[5.2,3.3,3.3],target:[10.5,3.3,3.3]},
  {at:.68,position:[9.8,3.3,3.3],target:[15,3.3,1.4]},
- {at:.76,position:[12.4,3.4,3.3],target:[23,3.4,3.3]},
+ {at:.76,position:[11.4,3.4,3.3],target:[23,3.4,3.3]},
  {at:.85,position:[13.8,3.35,5.8],target:[15,3.35,-3.5]},
  {at:1,...LIBRARY_CAMERA}
 ];
