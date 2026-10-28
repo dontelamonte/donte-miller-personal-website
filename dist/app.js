@@ -13,9 +13,9 @@ const intro = $('intro');
 const gsap = window.gsap;
 const BOOKS = ['press','report','opportunities'];
 const aboutParagraphs=[...livingItems.about.body.matchAll(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/g)].map(m=>m[1]);
-const aboutChapters=[{label:'WELCOME TO MY HOUSE',title:'Make yourself at home.',body:'Scroll through my story, then join me at the table.'},...aboutParagraphs.map((body,i)=>({label:'ABOUT DONTE MILLER',title:['I’m Donte Miller.','Where the work began.','Knowledge. Community. Possibility.','What we might build next.'][i]||'The work keeps growing.',body}))];
-const ABOUT_DISTANCE=aboutChapters.length*ABOUT_CHAPTER_DISTANCE;
-let storyIndex=-1;
+const aboutText=aboutParagraphs.join(' ');
+const ABOUT_DISTANCE=(aboutParagraphs.length+1)*ABOUT_CHAPTER_DISTANCE;
+let storyStage='';
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
 const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null};
 const scrollFlow=new ScrollFlow();
@@ -196,10 +196,12 @@ document.addEventListener('touchend',()=>{sceneTouch=null;},{passive:true});
 document.addEventListener('keydown',e=>{if(state.mode==='living-detail'){if(e.key==='Escape'){e.preventDefault();closeLiving();}if(e.key==='Tab'){const nodes=[...$('living-panel').querySelectorAll('button,a,[tabindex="0"]')],first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}if(e.key==='Escape'&&state.mode==='reading'){closeBook();return;}if(state.mode!=='exploring'||e.ctrlKey||e.metaKey||e.target.closest('button,a,input,textarea,select'))return;const delta={ArrowDown:100,PageDown:650,' ':e.shiftKey?-650:650,ArrowUp:-100,PageUp:-650}[e.key];if(delta!==undefined){e.preventDefault();advanceTable(delta);}});
 document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>goRoom(b.dataset.roomGo)));
 function updateAboutStory(){
- const view=storyFrame(state.aboutOffset,aboutChapters.length),chapter=aboutChapters[view.index];
- $('about-story').dataset.chapter=String(view.index);
- if(view.index!==storyIndex){storyIndex=view.index;$('about-story-label').textContent=chapter.label;$('about-story-title').textContent=chapter.title;$('about-story-text').innerHTML=chapter.body;$('about-story-counter').textContent=`${String(view.index+1).padStart(2,'0')} / ${String(aboutChapters.length).padStart(2,'0')}`;}
- $('about-story-copy').style.transform=`translateY(${view.lift}px)`;$('about-story-copy').style.opacity=String(view.opacity);
+ const view=storyFrame(state.aboutOffset,ABOUT_DISTANCE),stage=view.welcome?'welcome':'story';
+ $('about-story').dataset.stage=stage;
+ if(stage!==storyStage){storyStage=stage;$('about-story-label').textContent=view.welcome?'WELCOME TO MY HOUSE':'ABOUT DONTE MILLER';$('about-story-title').textContent=view.welcome?'Make yourself at home.':'A little about me.';$('about-story-text').textContent=view.welcome?'Scroll through my story, then join me at the table.':aboutText;}
+ $('about-story-counter').textContent=view.welcome?'SCROLL TO READ':`${Math.round(view.progress*100)}% OF MY STORY`;
+ const passage=$('about-story-text'),window=$('about-story-viewport');
+ passage.style.transform=`translateY(${-Math.max(0,passage.scrollHeight-window.clientHeight)*view.progress}px)`;
 }
 function showAbout(){goRoom('living');state.aboutOffset=ABOUT_CHAPTER_DISTANCE*1.25;updateAboutStory();}
 function openLiving(id,{historyChange=true}={}){
