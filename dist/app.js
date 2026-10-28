@@ -7,6 +7,7 @@ import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
+import {navigationViews} from './navigation-route.js';
 import {buildLibrary} from './library-scene.js';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
@@ -29,7 +30,7 @@ const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,hou
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 const modelFlow=new ScrollFlow({settleTime:0});
-let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, homeReturnTween=null;
+let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, homeReturnTween=null, navigationTween=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
 const pickables = [];
@@ -232,7 +233,7 @@ $('course-shell').addEventListener('touchmove',e=>{if(!['course-reading','course
 for(const event of ['touchend','touchcancel'])$('course-shell').addEventListener(event,()=>{state.courseTouchY=null;},{passive:true});
 $('course-shell').addEventListener('keydown',e=>{if(state.mode!=='course-reading'||e.target.closest('button,a,input,textarea,select')||e.ctrlKey||e.metaKey||e.altKey)return;const page=Math.max(100,$('course-scroll').clientHeight*.9),delta={ArrowUp:-48,PageUp:-page,ArrowDown:48,PageDown:page,' ':e.shiftKey?-page:page}[e.key];if(delta!==undefined){e.preventDefault();moveCourseReader(delta);}});
 courseControls.forEach(button=>button.addEventListener('click',()=>openCourse(button.dataset.course)));
-function setMotion(reduce){state.reduce=reduce;if(reduce&&state.mode==='exploring'){gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=state.libraryVelocity=0;state.houseProgress=state.houseTarget;state.libraryProgress=state.libraryTarget;travelCamera();}$('motion-toggle').setAttribute('aria-pressed',String(reduce));$('motion-toggle').textContent=reduce?'Motion reduced':'Reduce motion';}
+function setMotion(reduce){state.reduce=reduce;if(reduce&&navigationTween)navigationTween.progress(1);if(reduce&&state.mode==='exploring'){gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=state.libraryVelocity=0;state.houseProgress=state.houseTarget;state.libraryProgress=state.libraryTarget;travelCamera();}$('motion-toggle').setAttribute('aria-pressed',String(reduce));$('motion-toggle').textContent=reduce?'Motion reduced':'Reduce motion';}
 setMotion(state.reduce);$('motion-toggle').addEventListener('click',()=>setMotion(!state.reduce));prefs.addEventListener('change',e=>setMotion(e.matches));
 function applyRoute(){
  const id=location.hash.slice(1);
@@ -283,6 +284,68 @@ function resetTableSequence(){
  document.documentElement.dataset.tableProgress='0';updateTableHint();
 }
 function cancelHomeReturn(){if(homeReturnTween){homeReturnTween.kill();homeReturnTween=null;}state.homeReturning=false;}
+function cancelNavigationFlight(){if(navigationTween){navigationTween.kill();navigationTween=null;}document.body.classList.remove('room-travelling');}
+function navigationOrigin(destination){
+ if(navigationTween){
+  if(camera.position.y>6)return 'table';
+  if(camera.position.x>13)return 'library';
+  if(camera.position.x>7)return 'workshop';
+  if(camera.position.x>-8&&destination==='living')return 'workshop';
+  if(camera.position.x>0&&destination==='table')return 'workshop';
+  return 'living';
+ }
+ if(state.libraryProgress>.9)return 'library';
+ if(state.libraryProgress>.35)return 'workshop';
+ return state.houseProgress>.8?'table':'living';
+}
+function settleNavigation(id){
+ resetTableSequence();state.houseProgress=state.houseTarget=id==='living'?0:1;
+ state.libraryProgress=state.libraryTarget=id==='library'?1:id==='workshop'?WORKSHOP_STOP:0;
+ state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;
+ state.workshopOffset=id==='library'?WORKSHOP_STORY_DISTANCE:0;
+ state.modelSequenceComplete=id==='library';state.modelScrollTarget='workers-equity';
+ state.scrollTarget=state.libraryTarget?'library':'press';state.courseScrollTarget='flourish';
+ state.journeyVelocity=state.libraryVelocity=state.libraryScrollAmount=state.modelCarry=state.courseCarry=0;
+ state.journeyNavigation=false;state.autoCooldown=performance.now()+500;
+ navigationTween=null;document.body.classList.remove('room-travelling');
+ document.documentElement.dataset.room=id==='living'?'living':id;
+ travelCamera();
+ announce(id==='living'?'Home.':id==='table'?'The Table.':id==='workshop'?'The Workshop. Scroll to explore the models.':'The Library. Keep scrolling or choose a book.');
+}
+function navigateRoom(id,{historyChange=true}={}){
+ if(!['living','table','workshop','library'].includes(id)||state.mode!=='exploring')return;
+ const from=navigationOrigin(id),startPosition=camera.position.clone(),startTarget=target.clone(),startFov=camera.fov;
+ cancelHomeReturn();cancelNavigationFlight();gsap.killTweensOf(state);
+ if(historyChange)routeTo(id);
+ document.title={living:'Donte Miller — Make yourself at home.',table:'Donte Miller — The Dining Table',workshop:'Donte Miller — The Workshop',library:'Donte Miller — The Library'}[id];
+ state.journeyNavigation=true;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=Infinity;
+ if(state.reduce||startPosition.distanceTo(new THREE.Vector3(...navigationViews(id,id,viewport().width/viewport().height)[0].position))<.03){settleNavigation(id);return;}
+ const aspect=viewport().width/viewport().height,views=navigationViews(from,id,aspect);
+ const distances=views.map(v=>startPosition.distanceTo(new THREE.Vector3(...v.position)));
+ let nearest=distances.indexOf(Math.min(...distances));
+ const points=[startPosition,...views.slice(nearest+1).map(v=>new THREE.Vector3(...v.position))];
+ const finalView=views.at(-1),finalPosition=new THREE.Vector3(...finalView.position);
+ if(points.at(-1).distanceTo(finalPosition)>.001)points.push(finalPosition);
+ if(points.length<2){settleNavigation(id);return;}
+ const path=new THREE.CatmullRomCurve3(points,false,'centripetal');
+ const finalTarget=new THREE.Vector3(...finalView.target),flight={t:0};
+ const smooth=t=>t*t*(3-2*t);
+ const distance=path.getLength(),duration=Math.min(5,Math.max(.75,distance/5.3));
+ document.body.classList.add('room-travelling');document.documentElement.dataset.room='travelling';
+ $('library-ui').hidden=$('workshop-ui').hidden=true;
+ document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo===id)));
+ navigationTween=gsap.to(flight,{t:1,duration,ease:'power1.inOut',onUpdate:()=>{
+  const p=path.getPointAt(flight.t),ahead=path.getPointAt(Math.min(1,flight.t+.04));
+  const direction=ahead.sub(p).normalize();
+  if(direction.lengthSq()<.01)direction.copy(p).sub(path.getPointAt(Math.max(0,flight.t-.04))).normalize();
+  const forward=p.clone().addScaledVector(direction,8);
+  target.copy(forward);
+  if(flight.t<.13)target.lerpVectors(startTarget,forward,smooth(flight.t/.13));
+  if(flight.t>.72)target.lerp(finalTarget,smooth((flight.t-.72)/.28));
+  camera.position.copy(p);camera.fov=THREE.MathUtils.lerp(startFov,finalView.fov,flight.t);
+  const r=viewport();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();look();
+ },onComplete:()=>settleNavigation(id)});
+}
 function returnHomeFromLibrary({historyChange=true}={}){
  // Fly back through the doorway at standing height. Skip the table's overhead
  // camera stop entirely, so the final book leads directly into the living room.
@@ -302,42 +365,24 @@ function returnHomeFromLibrary({historyChange=true}={}){
  homeReturnTween=gsap.to(travel,{t:1,duration:3.4,ease:'power1.inOut',onUpdate:()=>{camera.position.copy(positions.getPoint(travel.t));target.copy(gazes.getPoint(travel.t));camera.fov=THREE.MathUtils.lerp(46,40,travel.t);camera.updateProjectionMatrix();look();updateHouseUI(travel.t<.64?'dining':'living');},onComplete:()=>{homeReturnTween=null;state.libraryProgress=state.houseProgress=0;state.journeyNavigation=state.homeReturning=false;travelCamera();announce('Returned Home.');}});
 }
 function goRoom(id,{historyChange=true}={}){
- cancelHomeReturn();
  if(id==='dining')id='table';
  if(id==='workshop'){goWorkshop({historyChange});return;}
  if(id==='library'){goLibrary({historyChange});return;}
  if(!['living','table'].includes(id))return;
  if(state.mode==='living-detail')closeLiving({historyChange:false});
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:id});if(historyChange)routeTo(id);return;}
- if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);
- resetTableSequence();
- const progress=id==='living'?0:1;state.houseProgress=state.houseTarget=progress;state.libraryProgress=state.libraryTarget=0;
- state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;state.workshopOffset=0;state.modelSequenceComplete=false;state.modelScrollTarget='workers-equity';
- state.journeyNavigation=false;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+500;
- if(historyChange)routeTo(id);
- document.title=id==='living'?'Donte Miller — Make yourself at home.':'Donte Miller — The Dining Table';
- travelCamera();announce(`${id==='living'?'Home':'The Table'}.`);
+ navigateRoom(id,{historyChange});
 }
 function goLibrary({historyChange=true}={}){
- cancelHomeReturn();
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:'library'});if(historyChange)routeTo('library');return;}
- if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);state.houseProgress=state.houseTarget=1;state.libraryProgress=state.libraryTarget=1;state.aboutOffset=ABOUT_DISTANCE;state.progress=0;state.workshopOffset=WORKSHOP_STORY_DISTANCE;state.modelSequenceComplete=true;state.scrollTarget='library';state.courseScrollTarget='flourish';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.journeyNavigation=false;state.autoCooldown=performance.now()+500;
- if(historyChange)routeTo('library');
- document.title='Donte Miller — The Library';
- travelCamera();announce('The library. Keep scrolling or choose a book.');
+ navigateRoom('library',{historyChange});
 }
 function goWorkshop({historyChange=true}={}){
- cancelHomeReturn();
- if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);state.houseProgress=state.houseTarget=1;state.libraryProgress=state.libraryTarget=WORKSHOP_STOP;state.aboutOffset=ABOUT_DISTANCE;state.progress=0;state.workshopOffset=0;state.modelScrollTarget='workers-equity';state.modelSequenceComplete=false;state.scrollTarget='library';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.journeyNavigation=false;state.autoCooldown=performance.now()+350;
- if(historyChange)routeTo('workshop');document.title='Donte Miller — The Workshop';
- travelCamera();announce('The Workshop. Scroll to explore the models.');
+ navigateRoom('workshop',{historyChange});
 }
 function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad',library:'the library'};$('table-scroll-hint').textContent=`Keep scrolling to ${state.scrollTarget==='library'?'visit':'open'} ${names[state.scrollTarget]}.`;}
 function advanceTable(delta){
- if(state.mode!=='exploring'||state.homeReturning||performance.now()<state.autoCooldown||!Number.isFinite(delta))return;
+ if(state.mode!=='exploring'||state.journeyNavigation||state.homeReturning||performance.now()<state.autoCooldown||!Number.isFinite(delta))return;
  if(state.houseTarget===0&&state.houseProgress<.001&&(state.aboutOffset<ABOUT_DISTANCE||delta<0)){
   const intro=advanceAbout(state.aboutOffset,delta,ABOUT_DISTANCE);state.aboutOffset=intro.offset;updateAboutStory();updateHouseUI('living');delta=intro.overflow;if(!delta)return;
  }

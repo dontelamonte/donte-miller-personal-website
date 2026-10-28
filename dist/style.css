@@ -59,6 +59,7 @@ html:not([data-room=table]) .site-header{color:#f6ead2;text-shadow:0 1px 16px #1
 html:not([data-room=table]) .wordmark span{color:#d7aa72}
 html:not([data-room=table]) #table-view{visibility:hidden;pointer-events:none}
 html[data-room=table] #living-ui,html[data-room=table] .house-footer{visibility:hidden;pointer-events:none}
+body.room-travelling #living-ui,body.room-travelling #table-view,body.room-travelling .house-footer,body.room-travelling .library-ui,body.room-travelling .workshop-ui{visibility:hidden;pointer-events:none}
 .house-footer{position:fixed;z-index:5;bottom:25px;left:40px;right:40px;display:flex;align-items:center;justify-content:space-between;gap:25px;color:#f8eed9;text-shadow:0 1px 10px #18324199;font-size:9px;letter-spacing:1.1px;pointer-events:none}
 #house-scroll-hint{font-size:11px;letter-spacing:.4px}
 .journey-track{width:90px;height:1px;background:#f7edd74d;position:relative}.journey-track i{position:absolute;inset:0 auto 0 0;width:0;background:#f7edd7}
