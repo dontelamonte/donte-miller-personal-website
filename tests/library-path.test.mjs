@@ -28,3 +28,11 @@ test('library progress is reversible, clamped, and fits narrower viewports',()=>
  assert.equal(moveLibrary(1,100),1);
  assert.ok(libraryCameraAt(1,.9).position[2]>libraryCameraAt(1,16/9).position[2]);
 });
+
+test('camera and gaze velocity stay continuous through each library turn',()=>{
+ const epsilon=.000001;
+ for(const aspect of [.6,16/9])for(const p of [.22,.48,.68,.85])for(const field of ['position','target']){
+  const a=libraryCameraAt(p-epsilon,aspect)[field],b=libraryCameraAt(p,aspect)[field],c=libraryCameraAt(p+epsilon,aspect)[field];
+  for(let j=0;j<3;j++)assert.ok(Math.abs((b[j]-a[j])/epsilon-(c[j]-b[j])/epsilon)<.03,`${field} axis ${j} at ${p}`);
+ }
+});
