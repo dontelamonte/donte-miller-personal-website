@@ -7,6 +7,13 @@ import {WORKSHOP_STOP} from './workshop-route.js';
 export function navigationViews(from,to,aspect){
  const home=cameraAt(0,aspect),table=cameraAt(1,aspect);
  const house=p=>cameraAt(p,aspect),east=p=>libraryCameraAt(p,aspect);
+ if((from==='living'&&to==='library')||(from==='library'&&to==='living')){
+  const route=[home,
+   {position:[-7.5,3.3,3.3],target:[-1.5,3.3,3.3],fov:46,room:'living'},
+   {position:[7.6,3.3,3.3],target:[13.6,3.3,3.3],fov:46,room:'dining'},
+   east(1)];
+  return from==='living'?route:route.slice().reverse();
+ }
  let rooms,views;
  if((from==='living'&&to==='table')||(from==='table'&&to==='living')){
   rooms={living:0,table:5};

@@ -8,3 +8,7 @@ export function storyFrame(offset,total){
  const clamped=Math.max(0,Math.min(total,offset));
  return {welcome:clamped<start,progress:Math.max(0,Math.min(1,(clamped-start)/(total-start)))};
 }
+export function storyReveal(offset,duration=260){
+ const t=Math.max(0,Math.min(1,(offset-ABOUT_CHAPTER_DISTANCE)/duration));
+ return t*t*(3-2*t);
+}

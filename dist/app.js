@@ -3,7 +3,7 @@ import {ScrollFlow} from './scroll-flow.js';
 import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=smooth-house-6';
 import {buildHouse} from './house-scene.js';
 import {livingItems} from './living-content.js';
-import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame} from './about-story.js';
+import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
@@ -412,7 +412,7 @@ function navigateTab(id){
 document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>navigateTab(b.dataset.roomGo)));
 function updateAboutStory(){
  const view=storyFrame(state.aboutOffset,ABOUT_DISTANCE),stage=view.welcome?'welcome':'story';
- $('about-story').dataset.stage=stage;
+ const story=$('about-story'),reveal=view.welcome?0:storyReveal(state.aboutOffset);story.dataset.stage=stage;story.style.opacity=String(view.welcome?1:reveal);story.style.transform=`translateY(${view.welcome?0:(1-reveal)*22}px)`;
  if(stage!==storyStage){storyStage=stage;$('about-story-label').textContent=view.welcome?'WELCOME TO MY HOUSE':'ABOUT DONTE MILLER';$('about-story-title').textContent=view.welcome?'Make yourself at home.':'A little about me.';$('about-story-text').textContent=view.welcome?'Scroll through my story, then join me at the table.':aboutText;}
  $('about-story-counter').textContent=view.welcome?'SCROLL TO READ':`${Math.round(view.progress*100)}% OF MY STORY`;
  const passage=$('about-story-text'),window=$('about-story-viewport');

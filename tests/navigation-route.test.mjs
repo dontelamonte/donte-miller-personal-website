@@ -10,13 +10,14 @@ test('every room tab has a connected travel route in either direction',()=>{
   assert.ok(views.every(v=>v.position.every(Number.isFinite)&&v.target.every(Number.isFinite)));
  }
 });
-test('Home to Library and back pass the table at walking height',()=>{
- for(const [from,to] of [['living','library'],['library','living']]){
-  const views=navigationViews(from,to,16/9);
-  assert.ok(views.some(v=>v.room==='dining'));
-  assert.ok(views.every(v=>v.position[1]<6),`${from} to ${to} rose into the overhead table view`);
-  assert.ok(views.some(v=>v.room==='workshop'));
- }
+test('Home to Library and back use one direct walking-height route through both doorways',()=>{
+ const forward=navigationViews('living','library',16/9),back=navigationViews('library','living',16/9);
+ assert.equal(forward.length,4);
+ assert.deepEqual(back,forward.slice().reverse());
+ assert.deepEqual(forward[1].position,[-7.5,3.3,3.3]);
+ assert.deepEqual(forward[2].position,[7.6,3.3,3.3]);
+ assert.ok(forward.every(v=>v.position[1]<6));
+ assert.ok(!forward.some(v=>v.room==='workshop'||v.room==='table'));
 });
 test('Table travel uses its overhead pose only at the selected endpoint',()=>{
  for(const other of ['living','workshop','library']){

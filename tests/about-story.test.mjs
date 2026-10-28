@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {advanceAbout,storyFrame,ABOUT_CHAPTER_DISTANCE as D} from '../dist/about-story.js';
+import {advanceAbout,storyFrame,storyReveal,ABOUT_CHAPTER_DISTANCE as D} from '../dist/about-story.js';
 
 test('the entire story consumes scroll before room travel receives overflow',()=>{
  let offset=0,overflow=0;
@@ -19,4 +19,10 @@ test('the passage advances continuously and reaches its end before room travel',
  assert.equal(storyFrame(2*D,total).progress,.25);
  assert.equal(storyFrame(3*D,total).progress,.5);
  assert.equal(storyFrame(total,total).progress,1);
+});
+test('the About story fades in and rises smoothly from the welcome transition',()=>{
+ assert.equal(storyReveal(D),0);
+ assert.equal(storyReveal(D+130),.5);
+ assert.equal(storyReveal(D+260),1);
+ assert.ok(storyReveal(D+1)>0&&storyReveal(D+1)<.01);
 });

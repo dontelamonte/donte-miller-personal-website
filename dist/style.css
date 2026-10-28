@@ -90,10 +90,23 @@ body.room-travelling #living-ui,body.room-travelling #table-view,body.room-trave
 .living-link{display:block;font:11px/1.8 'DM Sans',sans-serif;border:0;border-bottom:1px solid #9eac9570;background:none;text-align:left;padding:11px 0;margin:8px 0 0;color:#2c4937;text-decoration:none;cursor:pointer}
 .living-link:hover{color:#a45232;border-color:#a45232}
 .living-panel-paper>footer{padding:20px 30px;font-size:7px;letter-spacing:1px;border-top:1px solid #d8c9ae;display:flex;justify-content:space-between}
-.scene-reading #living-ui,.scene-reading .house-footer,html[data-mode=living-detail] #living-ui,html[data-mode=living-detail] .house-footer,html[data-mode=living-detail] .site-header{visibility:hidden}
+.scene-reading #living-ui,.scene-reading .house-footer,html[data-mode=living-detail] #living-ui,html[data-mode=living-detail] .house-footer{visibility:hidden}
+.scene-reading .site-header{visibility:visible;z-index:15;height:58px;padding:9px 26px;background:#102a3bd9;color:#f6ead2;text-shadow:0 1px 12px #09192488}
+html[data-mode=reading] .site-header{background:#f1e7d5f5;color:#29404a;text-shadow:none}
+.scene-reading .room-navigation{gap:16px}
+.scene-reading .room-navigation button{font-size:9px}
+.scene-reading .reader-toolbar,.scene-reading .course-toolbar,.scene-reading .model-toolbar{margin-top:58px}
+.scene-reading .book-stage,.scene-reading .course-stage,.scene-reading .model-stage{top:140px}
 .scene-opening #living-ui,.scene-opening .house-footer{opacity:0;pointer-events:none}.scene-opening .site-header{pointer-events:none}
 @media(max-width:850px){.room-navigation{gap:14px}.room-navigation button{font-size:9px}.house-footer{left:23px;right:23px}.living-welcome{left:23px;bottom:80px}.living-welcome h1{font-size:38px}.living-welcome>p:last-child{display:none}}
 @media(max-width:560px){
+ .scene-reading .site-header{height:48px;padding:7px 10px;flex-wrap:nowrap;gap:8px}
+ .scene-reading .wordmark{font-size:20px;letter-spacing:-1px;white-space:nowrap}
+ .scene-reading .room-navigation{order:0;width:auto;gap:9px;white-space:nowrap}
+ .scene-reading .room-navigation button{font-size:8px;padding:7px 0;letter-spacing:0}
+ .scene-reading .site-header>.text-control{display:none}
+ .scene-reading .reader-toolbar,.scene-reading .course-toolbar,.scene-reading .model-toolbar{margin-top:48px}
+ .scene-reading .book-stage,.scene-reading .course-stage,.scene-reading .model-stage{top:124px}
  #scene{inset:0;mask-image:none}.site-header{padding:19px 18px;flex-wrap:wrap;gap:14px}.wordmark{font-size:26px}.room-navigation{order:3;width:100%;justify-content:center;gap:27px}.room-navigation button{font-size:9px;padding:7px 0}.site-header>.text-control{margin-left:auto;font-size:9px}.living-welcome{left:20px;bottom:85px}.living-welcome h1{font-size:36px}.living-welcome .eyebrow{font-size:7px}.house-footer{left:20px;right:20px;bottom:25px;gap:14px;flex-wrap:wrap}.house-footer>span:first-child{font-size:8px}#house-scroll-hint{font-size:9px}.journey-track{display:none}.portrait-control{font-size:9px;padding:8px 10px;min-height:38px;gap:14px}.frame-control span{font-size:8px;padding:6px}.living-panel{padding:13px}.living-panel-paper>header{padding:17px 23px}.living-panel-scroll{padding:28px 27px 35px}.living-panel-scroll h1{font-size:46px}.living-panel-paper>footer{padding:17px 23px;font-size:6px}.living-panel-paper>footer span{max-width:150px;text-align:right;line-height:1.6}
  html[data-room=table] .site-header{background:linear-gradient(#e5d7bfcc,transparent)}
 }
@@ -119,6 +132,7 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 
 /* About unfolds in the room before the camera starts its journey. */
 .about-story{position:absolute;left:40px;bottom:66px;width:min(610px,calc(100% - 80px));height:min(214px,29vh);padding:15px 22px 30px;color:#fff1d9;background:linear-gradient(110deg,#1229369c,#1229366e 74%,#12293645);backdrop-filter:blur(3px);pointer-events:auto;overflow:hidden;text-shadow:0 1px 8px #102632b0}
+.about-story[data-stage="story"]{will-change:opacity,transform}
 .about-story:focus-visible{outline:1px solid #ebcd9b;outline-offset:5px}
 .about-story-copy{height:100%;display:flex;flex-direction:column}
 .about-story .eyebrow{font-size:8px;letter-spacing:2px;margin:0 0 5px;color:#f5d4a6}
