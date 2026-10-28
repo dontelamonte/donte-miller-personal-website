@@ -166,6 +166,12 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 .library-controls button span{display:block;color:#e8bf8d;font-size:8px;letter-spacing:.6px;margin-top:3px}
 .library-controls button:hover,.library-controls button:focus-visible{background:#284c60}
 .library-ui .library-controls button[hidden]{display:none}
+.workshop-ui{position:fixed;inset:0;z-index:4;pointer-events:none;color:#f7ecd7}
+.workshop-ui[hidden]{display:none}
+.workshop-card{position:absolute;left:40px;bottom:67px;width:min(390px,calc(100vw - 80px));padding:24px 27px;background:#102e42dc;border:1px solid #e3bd85a6;box-shadow:0 16px 55px #0e22359c;backdrop-filter:blur(12px);pointer-events:auto}
+.workshop-card .eyebrow{color:#edbc83;margin-bottom:10px}.workshop-card h1{font:clamp(28px,3vw,43px)/1.05 'Libre Caslon Display',Georgia,serif;margin:0 0 10px}.workshop-card>p:not(.eyebrow){font-size:12px;line-height:1.65;margin:0 0 13px}
+.workshop-models{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0}.workshop-models button,.workshop-continue{border:1px solid #e3bd8588;background:#f2e2c91a;color:#f7ecd7;padding:8px 10px;font-size:9px;line-height:1.3}.workshop-models button[aria-current=true],.workshop-models button:hover,.workshop-continue:hover{background:#e2b67d;color:#173448}.workshop-card .workshop-hint{font-size:10px!important;color:#e4cbaa;margin-top:11px!important}.workshop-continue{background:#d8a86a;color:#173448;font-weight:600}
+@media(max-width:650px){.workshop-card{left:16px;bottom:68px;width:calc(100vw - 32px);padding:15px 17px}.workshop-card h1{font-size:28px}.workshop-card>p:not(.eyebrow){font-size:11px}.workshop-models{margin:9px 0}.workshop-models button{font-size:8px;padding:6px}.workshop-card .workshop-hint{display:none}}
 .course-shell{position:fixed;inset:0;z-index:11;background:radial-gradient(ellipse at 50% 42%,#162c38bd,#0c1a25ee);backdrop-filter:blur(5px);color:#243d32}
 .course-shell[hidden]{display:none}
 .course-toolbar{height:69px;display:flex;justify-content:space-between;align-items:center;padding:0 38px;color:#f8edda;font-size:9px;letter-spacing:1.5px}

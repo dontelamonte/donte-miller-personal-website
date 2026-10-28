@@ -5,6 +5,7 @@ const stops=[
  {at:.22,position:[-1.3,3.3,8.1],target:[2.5,3.1,3.3]},
  {at:.48,position:[5.2,3.3,3.3],target:[10.5,3.3,3.3]},
  {at:.68,position:[9.8,3.3,3.3],target:[15,3.3,1.4]},
+ {at:.76,position:[12.4,3.4,3.3],target:[23,3.4,3.3]},
  {at:.85,position:[13.8,3.35,5.8],target:[15,3.35,-3.5]},
  {at:1,...LIBRARY_CAMERA}
 ];
@@ -35,7 +36,7 @@ export function libraryCameraAt(progress,aspect=16/9){
  const baseDistance=LIBRARY_CAMERA.position[2]-LIBRARY_CAMERA.target[2];
  const fit=Math.min(7,Math.max(0,requiredDistance-baseDistance));
  position[2]+=fit*smooth(Math.max(0,(p-.68)/.32));
- return {position,target,fov:46,room:p>.94?'library':'dining'};
+ return {position,target,fov:46,room:p>.94?'library':p>.7&&p<.84?'workshop':'dining'};
 }
 export function moveLibrary(progress,delta){
  return Math.max(0,Math.min(1,progress+delta/LIBRARY_SCROLL_DISTANCE));

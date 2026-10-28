@@ -15,6 +15,11 @@ export function buildLibrary(scene){
  function canvasTexture(draw,w=512,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
  // The dining-room doorway opens directly into this room, so the camera never fades between spaces.
  box(15.4,8.8,.3,15.3,3.9,-6,blue);box(.3,8.8,15.8,23.1,3.9,1.8,blue);
+ // The workshop is a picture-window in the blue wall, encountered before the shelves.
+ const workshopMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>{window.dispatchEvent(new Event('scene-asset-ready'));});workshopMap.colorSpace=THREE.SRGBColorSpace;
+ const workshopArt=mesh(new THREE.PlaneGeometry(7.25,7.25),new THREE.MeshBasicMaterial({map:workshopMap,side:THREE.DoubleSide}));workshopArt.position.set(22.91,3.65,3.25);workshopArt.rotation.y=-Math.PI/2;workshopArt.castShadow=false;
+ for(const z of [-.43,6.93])box(.1,7.4,.09,22.86,3.65,z,edge);
+ for(const y of [-.05,7.35])box(.1,.09,7.4,22.86,y,3.25,edge);
  box(15.2,.25,15.8,15.3,8.45,1.8,dark);
  for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,15.6,x,8.26,1.8,wood);
  for(const y of [-.12,.26,7.95])box(15.2,.12,.35,15.3,y,-5.77,edge);

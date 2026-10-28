@@ -5,7 +5,8 @@ import {buildHouse} from './house-scene.js';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
-import {advanceLibraryScroll,libraryBookReady} from './library-scroll.js';
+import {libraryBookReady} from './library-scroll.js';
+import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
 import {buildLibrary} from './library-scene.js';
 import {curricula,curriculumById} from './library-content.js';
 
@@ -23,7 +24,12 @@ let storyStage='';
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
 const courseIds=curricula.map(item=>item.id);
 const nextCourse=id=>courseIds[courseIds.indexOf(id)+1]||null;
-const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,courseScrollTarget:'flourish',courseCarry:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
+const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,workshopOffset:0,courseScrollTarget:'flourish',courseCarry:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
+const workshopModels=[
+ {title:'The Worker’s Equity Fund.',description:'An investment model designed to stabilize and grow local businesses, then transition ownership toward the people who work there. The aim is lasting community wealth, not a quick exit.'},
+ {title:'EnDAO.',description:'A community finance model for pooling resources and making decisions together. Members can propose, discuss and vote on the assets and projects they want to shape.'},
+ {title:'The Time Bank.',description:'A concept for valuing time and skills as contributions to community development. It explores ways for people to earn credits or equity through work, even without upfront cash.'}
+];
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null;
@@ -60,6 +66,7 @@ function setMode(mode){state.mode=mode;document.documentElement.dataset.mode=mod
 function announce(text){$('announcer').textContent=text;}
 const invalidate=()=>{dirty=true;};
 const invalidateShadows=()=>{if(renderer)renderer.shadowMap.needsUpdate=true;invalidate();};
+window.addEventListener('scene-asset-ready',invalidate);
 function duration(n){return state.reduce?0.01:n;}
 function look(){camera.lookAt(target);invalidate();}
 function routeTo(id,replace=false){const hash=id?'#'+id:'#table';if(location.hash!==hash)history[replace?'replaceState':'pushState']({reader:id},'',hash);}
@@ -132,6 +139,8 @@ $('return-table').addEventListener('click',()=>closeBook());
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openBook(b.dataset.open)));
 $('simple-view').addEventListener('click',()=>openBook('press'));
 $('library-shortcut').addEventListener('click',()=>goLibrary());
+document.querySelectorAll('[data-workshop-model]').forEach(button=>button.addEventListener('click',()=>{state.workshopOffset=Number(button.dataset.workshopModel)*WORKSHOP_STORY_DISTANCE/3;updateWorkshopUI();}));
+$('workshop-continue').addEventListener('click',()=>goLibrary());
 document.querySelector('.wordmark').addEventListener('click',e=>{e.preventDefault();goRoom('living');});
 function courseMarkup(item){
  const title=escapeHTML(item.title),overview=escapeHTML(item.overview);
@@ -188,6 +197,7 @@ function applyRoute(){
  if(BOOKS.includes(id)){if(state.mode==='exploring')openBook(id,{historyChange:false});else if(state.mode==='reading'&&state.active!==id)closeBook(id,{historyChange:false});}
  else if(id.startsWith('course-')&&curriculumById[id.slice(7)]){if(state.mode==='exploring'){state.houseProgress=state.houseTarget=1;state.libraryProgress=state.libraryTarget=1;travelCamera();openCourse(id.slice(7),{historyChange:false});}}
  else if(id==='library'&&state.mode==='exploring')goLibrary({historyChange:false});
+ else if(id==='workshop'&&state.mode==='exploring')goWorkshop({historyChange:false});
  else if(id==='about'&&state.mode==='exploring'){showAbout();}
  else if(livingItems[id]){if(state.mode==='exploring'){state.houseProgress=state.houseTarget=0;travelCamera();openLiving(id,{historyChange:false});}else if(state.mode==='reading')closeBook(null,{historyChange:false,roomAfter:'living'});}
  else if(['living','dining','table',''].includes(id))goRoom(id||'living',{historyChange:false});
@@ -199,7 +209,14 @@ function travelCamera(){
  camera.position.set(...v.position);target.set(...v.target);camera.fov=v.fov;
  if(inLibrary&&state.libraryProgress<.22){const fade=1-(state.libraryProgress/.22)**2*(3-2*state.libraryProgress/.22);camera.position.y-=.8*state.progress*fade;camera.position.z-=1.5*state.progress*fade;}
  if(!inLibrary&&state.houseProgress>.999){const mobile=r.width/r.height<.9;camera.position.set(mobile?0:-1.3,TABLE_CAMERA.position[1]-.8*state.progress,TABLE_CAMERA.position[2]-1.5*state.progress);target.set(mobile?0:-1.3,0,0);}
- camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!state.journeyNavigation&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))&&!location.hash.startsWith('#course-')){if(state.libraryProgress>.999&&state.libraryTarget===1){routeTo('library',true);document.title='Donte Miller — The Library';}else if(state.houseProgress>.999&&state.houseTarget===1&&state.libraryProgress<.001&&state.libraryTarget===0){routeTo('table',true);document.title='Donte Miller — The Dining Table';}else if(state.houseProgress<.001&&state.houseTarget===0){routeTo('living',true);document.title='Donte Miller — Make yourself at home.';}}
+ camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!state.journeyNavigation&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))&&!location.hash.startsWith('#course-')){if(state.libraryProgress>.999&&state.libraryTarget===1){routeTo('library',true);document.title='Donte Miller — The Library';}else if(Math.abs(state.libraryProgress-WORKSHOP_STOP)<.004&&state.libraryTarget===WORKSHOP_STOP){routeTo('workshop',true);document.title='Donte Miller — The Workshop';}else if(state.houseProgress>.999&&state.houseTarget===1&&state.libraryProgress<.001&&state.libraryTarget===0){routeTo('table',true);document.title='Donte Miller — The Dining Table';}else if(state.houseProgress<.001&&state.houseTarget===0){routeTo('living',true);document.title='Donte Miller — Make yourself at home.';}}
+}
+function updateWorkshopUI(){
+ const index=Math.min(2,Math.floor(state.workshopOffset/(WORKSHOP_STORY_DISTANCE/3)));
+ $('workshop-title').textContent=workshopModels[index].title;$('workshop-description').textContent=workshopModels[index].description;
+ document.querySelectorAll('[data-workshop-model]').forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));
+ const visible=state.mode==='exploring'&&state.libraryTarget===WORKSHOP_STOP&&state.libraryProgress>.69&&state.libraryProgress<.84;
+ $('workshop-ui').hidden=!visible;
 }
 function updateHouseUI(room){
  const changed=document.documentElement.dataset.room!==room;document.documentElement.dataset.room=room;
@@ -208,22 +225,24 @@ function updateHouseUI(room){
  $('living-ui').style.opacity=String(Math.max(0,1-p/.24));
  $('living-ui').inert=p>.24||state.mode!=='exploring';
  $('library-ui').hidden=room!=='library'||state.mode!=='exploring';
+ updateWorkshopUI();
  $('table-view').style.opacity=String(Math.max(0,1-state.libraryProgress*5));
- $('house-room-label').textContent=room==='living'?'01 / THE LIVING ROOM':room==='library'?'03 / THE LIBRARY':'02 / THE DINING ROOM';
- $('house-scroll-hint').textContent=room==='library'?`Keep scrolling to open ${curriculumById[state.courseScrollTarget].title} ↓`:state.libraryProgress>0?'Through the library doorway →':p<.001&&state.aboutOffset<ABOUT_DISTANCE?'Scroll to read my story ↓':p<.16?'Select a plaque, or keep scrolling ↓':p<.5?'Through the archway →':p<.8?'A seat at the table. Keep scrolling ↓':'A few things to share. Keep scrolling ↓';
- $('journey-progress').style.width=`${100*(state.aboutOffset+p*3400+state.libraryProgress*LIBRARY_SCROLL_DISTANCE)/(ABOUT_DISTANCE+3400+LIBRARY_SCROLL_DISTANCE)}%`;
- document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo==='living'?room==='living':b.dataset.roomGo==='library'?room==='library':room==='table'||room==='dining')));
+ $('house-room-label').textContent=room==='living'?'01 / THE LIVING ROOM':room==='library'?'04 / THE LIBRARY':room==='workshop'?'03 / THE WORKSHOP':'02 / THE DINING ROOM';
+ $('house-scroll-hint').textContent=room==='library'?`Keep scrolling to open ${curriculumById[state.courseScrollTarget].title} ↓`:room==='workshop'?'Keep scrolling through the models ↓':state.libraryProgress>0?'Toward the workshop →':p<.001&&state.aboutOffset<ABOUT_DISTANCE?'Scroll to read my story ↓':p<.16?'Select a plaque, or keep scrolling ↓':p<.5?'Through the archway →':p<.8?'A seat at the table. Keep scrolling ↓':'A few things to share. Keep scrolling ↓';
+ $('journey-progress').style.width=`${100*(state.aboutOffset+p*3400+state.libraryProgress*LIBRARY_SCROLL_DISTANCE+state.workshopOffset)/(ABOUT_DISTANCE+3400+LIBRARY_SCROLL_DISTANCE+WORKSHOP_STORY_DISTANCE)}%`;
+ document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo==='living'?room==='living':b.dataset.roomGo==='workshop'?room==='workshop':b.dataset.roomGo==='library'?room==='library':room==='table'||room==='dining')));
  hotspots.forEach(b=>b.disabled=state.mode!=='exploring'||room!=='table');
  intro.style.opacity=String(1-state.progress*.85);
 }
 function goRoom(id,{historyChange=true}={}){
  if(id==='dining')id='table';
+ if(id==='workshop'){goWorkshop({historyChange});return;}
  if(id==='library'){goLibrary({historyChange});return;}
  if(!['living','table'].includes(id))return;
  if(state.mode==='living-detail')closeLiving({historyChange:false});
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:id});if(historyChange)routeTo(id);return;}
  if(state.mode!=='exploring')return;
- if(state.libraryProgress>.001||state.libraryTarget>0){gsap.killTweensOf(state);state.libraryTarget=0;state.journeyNavigation=true;state.scrollAmount=0;if(historyChange)routeTo(id);document.title=id==='living'?'Donte Miller — Make yourself at home.':'Donte Miller — The Dining Table';if(state.reduce){state.libraryProgress=0;state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else travelCamera();return;}gsap.to(state,{libraryProgress:0,duration:Math.max(.7,state.libraryProgress*2.1),ease:'power1.inOut',onUpdate:travelCamera,onComplete:()=>{state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else{travelCamera();announce('Returned to the table.');}}});return;}
+ if(state.libraryProgress>.001||state.libraryTarget>0){gsap.killTweensOf(state);state.libraryTarget=0;state.workshopOffset=0;state.journeyNavigation=true;state.scrollAmount=0;if(historyChange)routeTo(id);document.title=id==='living'?'Donte Miller — Make yourself at home.':'Donte Miller — The Dining Table';if(state.reduce){state.libraryProgress=0;state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else travelCamera();return;}gsap.to(state,{libraryProgress:0,duration:Math.max(.7,state.libraryProgress*2.1),ease:'power1.inOut',onUpdate:travelCamera,onComplete:()=>{state.journeyNavigation=false;if(id==='living')goRoom('living',{historyChange:false});else{travelCamera();announce('Returned to the table.');}}});return;}
  const progress=id==='living'?0:1;state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;
  state.houseTarget=progress;state.journeyVelocity=0;state.progress=0;state.scrollAmount=0;state.autoCooldown=performance.now()+500;
  gsap.killTweensOf(state);
@@ -236,13 +255,22 @@ function goRoom(id,{historyChange=true}={}){
 function goLibrary({historyChange=true}={}){
  if(state.mode==='reading'){closeBook(null,{historyChange:false,roomAfter:'library'});if(historyChange)routeTo('library');return;}
  if(state.mode!=='exploring')return;
- gsap.killTweensOf(state);const needsTable=state.houseProgress<.999;state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;if(needsTable)state.progress=0;state.libraryTarget=1;state.scrollTarget='library';state.courseScrollTarget='flourish';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+500;
+ gsap.killTweensOf(state);const needsTable=state.houseProgress<.999;state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;if(needsTable)state.progress=0;state.libraryTarget=1;state.workshopOffset=WORKSHOP_STORY_DISTANCE;state.scrollTarget='library';state.courseScrollTarget='flourish';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+500;
  if(historyChange)routeTo('library');
  document.title='Donte Miller — The Library';
  if(state.reduce){state.houseProgress=state.libraryProgress=1;travelCamera();announce('The library.');return;}
  state.journeyNavigation=true;const tl=gsap.timeline({onComplete:()=>{state.journeyNavigation=false;travelCamera();announce('The library. Keep scrolling or choose a book.');}});
  if(needsTable)tl.to(state,{houseProgress:1,duration:Math.max(.7,(1-state.houseProgress)*4.2),ease:'power1.inOut',onUpdate:travelCamera});
  tl.to(state,{libraryProgress:1,duration:Math.max(.8,(1-state.libraryProgress)*3.5),ease:'power1.inOut',onUpdate:travelCamera});
+}
+function goWorkshop({historyChange=true}={}){
+ if(state.mode!=='exploring')return;
+ gsap.killTweensOf(state);const needsTable=state.houseProgress<.999;state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;state.libraryTarget=WORKSHOP_STOP;state.workshopOffset=0;state.scrollTarget='library';state.libraryScrollAmount=0;state.scrollAmount=0;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=performance.now()+350;
+ if(historyChange)routeTo('workshop');document.title='Donte Miller — The Workshop';
+ if(state.reduce){state.houseProgress=1;state.libraryProgress=WORKSHOP_STOP;travelCamera();announce('The Workshop.');return;}
+ state.journeyNavigation=true;const tl=gsap.timeline({onComplete:()=>{state.journeyNavigation=false;travelCamera();announce('The Workshop. Scroll to explore the models.');}});
+ if(needsTable)tl.to(state,{houseProgress:1,duration:Math.max(.7,(1-state.houseProgress)*4.2),ease:'power1.inOut',onUpdate:travelCamera});
+ tl.to(state,{libraryProgress:WORKSHOP_STOP,duration:Math.max(.8,Math.abs(WORKSHOP_STOP-state.libraryProgress)*3.5),ease:'power1.inOut',onUpdate:travelCamera});
 }
 function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad',library:'the library'};$('table-scroll-hint').textContent=`Keep scrolling to ${state.scrollTarget==='library'?'visit':'open'} ${names[state.scrollTarget]}.`;}
 function advanceTable(delta){
@@ -253,7 +281,8 @@ function advanceTable(delta){
  if(state.libraryTarget>0||state.libraryProgress>.001){
   if(state.journeyNavigation){gsap.killTweensOf(state);state.journeyNavigation=false;}
   state.scrollTarget='library';
-  const next=advanceLibraryScroll(state.libraryTarget,state.libraryScrollAmount,delta);state.libraryTarget=next.target;state.libraryScrollAmount=next.pending;
+  const next=advanceWorkshopRoute(state.libraryTarget,state.workshopOffset,delta);state.libraryTarget=next.target;state.workshopOffset=next.offset;state.libraryScrollAmount=delta>0?Math.min(1000,state.libraryScrollAmount+Math.max(0,next.overflow)):0;
+  updateWorkshopUI();
   if(state.reduce){state.libraryProgress=state.libraryTarget;travelCamera();}
   return;
  }
@@ -267,7 +296,7 @@ function advanceTable(delta){
  state.progress=THREE.MathUtils.clamp(state.progress+delta*.0007,0,1);
  state.scrollAmount=Math.max(0,state.scrollAmount+delta);
  document.documentElement.dataset.tableProgress=String(Math.min(1,state.scrollAmount/620));travelCamera();
- if(state.scrollAmount>=620){const excess=state.scrollAmount-620;state.scrollAmount=0;if(state.scrollTarget==='library'){const next=advanceLibraryScroll(0,0,excess);state.libraryTarget=next.target;state.libraryScrollAmount=next.pending;state.libraryVelocity=0;document.title='Donte Miller — The Library';travelCamera();}else{savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}}
+ if(state.scrollAmount>=620){const excess=state.scrollAmount-620;state.scrollAmount=0;if(state.scrollTarget==='library'){const next=advanceWorkshopRoute(0,0,excess);state.libraryTarget=next.target;state.workshopOffset=next.offset;state.libraryScrollAmount=Math.max(0,next.overflow);state.libraryVelocity=0;document.title='Donte Miller — The Workshop';travelCamera();}else{savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}}
 }
 window.addEventListener('wheel',e=>{if(e.ctrlKey||e.target.closest('.reader-shell,.course-shell,.living-panel,.room-navigation'))return;const delta=e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1);if(['course-opening','course-closing'].includes(state.mode)){queueCourseScroll(delta);return;}if(state.mode==='exploring')advanceTable(delta);},{passive:true});
 let sceneTouch=null;
@@ -372,12 +401,14 @@ async function start(){
   const loadImage=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});
   [photo,portraitImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg')]);
   const direct=location.hash.slice(1);
-  state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'||direct==='library'||direct.startsWith('course-')?1:0;
-  state.libraryProgress=state.libraryTarget=direct==='library'||direct.startsWith('course-')?1:0;
+  state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'||direct==='workshop'||direct==='library'||direct.startsWith('course-')?1:0;
+  state.libraryProgress=state.libraryTarget=direct==='workshop'?WORKSHOP_STOP:direct==='library'||direct.startsWith('course-')?1:0;
+  state.workshopOffset=direct==='library'||direct.startsWith('course-')?WORKSHOP_STORY_DISTANCE:0;
   if(state.libraryTarget)state.scrollTarget='library';
   state.aboutOffset=state.houseTarget===1?ABOUT_DISTANCE:direct==='about'?ABOUT_CHAPTER_DISTANCE*1.25:0;
   buildScene();setMode('exploring');travelCamera();frame();
   if(direct==='library')document.title='Donte Miller — The Library';
+  else if(direct==='workshop')document.title='Donte Miller — The Workshop';
   else if(direct==='table'||direct==='dining')document.title='Donte Miller — The Dining Table';
   gsap.to($('loading'),{autoAlpha:0,duration:.6,onComplete:()=>{$('loading').hidden=true;}});
   if(BOOKS.includes(direct))openBook(direct,{historyChange:false});else if(direct.startsWith('course-')&&curriculumById[direct.slice(7)])openCourse(direct.slice(7),{historyChange:false});else if(livingItems[direct]&&direct!=='about')openLiving(direct,{historyChange:false});
