@@ -3,3 +3,49 @@
 
 @media(max-width:560px){#scene{top:225px;bottom:85px}.hotspot{font-size:8px;min-height:44px;padding:8px 9px;letter-spacing:.3px}.intro-note{color:#4e5d4f}.intro h1{font-size:43px}}
 @media(max-width:560px){#scene{mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 86%,transparent 100%)}#hotspots{position:absolute;left:20px;right:20px;bottom:100px;height:44px;display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:6px}#hotspots .hotspot{position:static;transform:none;white-space:normal;justify-content:center;box-shadow:none;font-size:8px;padding:7px;line-height:1.5}.hotspot-number{display:none}}
+
+/* Reading happens inside a physical spread, with the table still behind it. */
+.reader-shell{background:radial-gradient(ellipse at center,#18281f38,#14261e99);backdrop-filter:blur(3px)}
+.reader-toolbar{height:70px;background:transparent;border:0;color:#f7f0df;padding:0 38px;text-shadow:0 1px 10px #14251b80}
+.reader-toolbar .back-control{color:#f7f0df}
+.book-stage{position:absolute;inset:80px 34px 32px;display:flex;align-items:center;justify-content:center;perspective:1800px}
+.open-publication{position:relative;display:grid;grid-template-columns:1fr 1fr;width:min(1120px,100%);height:100%;max-height:760px;isolation:isolate;filter:drop-shadow(0 24px 25px #14201865);border-radius:5px 12px 12px 5px;transform:rotateX(2deg);background:#f7f0df;border-bottom:8px solid #e8ddc7;box-shadow:0 2px 0 #c4b59b,0 5px 0 #f6edda,0 7px 0 #bcae94,0 10px 0 #263c2d}
+.open-publication:before{content:'';position:absolute;inset:-7px -9px -14px;background:#294332;z-index:-2;border-radius:9px 16px 16px 9px;box-shadow:0 9px 30px #101d1b66}
+.open-publication:after{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:inset 2px 0 3px #fff7e9b0,inset -4px 0 9px #997a493b;pointer-events:none;z-index:4}
+.inside-cover{position:relative;overflow:hidden;padding:36px 44px 40px;background:linear-gradient(90deg,#eee4cc 0%,#f7f0df 12%,#faf4e4 78%,#e2d4ba 98%,#bda88a 100%);border-radius:4px 0 0 4px;display:flex;flex-direction:column}
+.inside-cover:after{content:'';position:absolute;inset:0;opacity:.28;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.12' filter='url(%23p)'/%3E%3C/svg%3E")}
+.inside-eyebrow{font-size:9px;letter-spacing:1.7px;border-bottom:1px solid #87917c;padding-bottom:18px;margin:0 0 25px;display:flex;justify-content:space-between}
+.inside-title{font:clamp(37px,4.6vw,66px)/.98 'Libre Caslon Display',Georgia,serif;letter-spacing:-1.5px;margin:0 0 17px;position:relative;z-index:1}
+.inside-deck{font:17px/1.55 'Libre Caslon Display',Georgia,serif;max-width:330px;margin:0 0 20px}
+.inside-photo{width:100%;flex:1;min-height:0;object-fit:cover;object-position:55% 45%;filter:saturate(.87);margin-bottom:17px}
+.inside-caption{font-size:9px;line-height:1.6;color:#63705d;margin:0 0 13px}
+.inside-folio{font-size:8px;letter-spacing:1.6px;display:flex;justify-content:space-between;border-top:1px solid #b2b9a6;padding-top:12px;margin-top:auto}
+.book-gutter{position:absolute;top:0;bottom:0;left:calc(50% - 18px);width:36px;background:linear-gradient(90deg,transparent,#a38a6738 30%,#4e3b274d 48%,#fdf8e554 54%,#ccb79d2e 72%,transparent);z-index:4;pointer-events:none}
+.right-page{position:relative;min-width:0;min-height:0;background:linear-gradient(90deg,#e5d8be 0%,#f7f0df 5%,#f9f3e4 94%,#e7dac0 100%);border-radius:0 10px 10px 0;overflow:hidden;display:flex;flex-direction:column}
+.reader-scroll{height:auto;flex:1;min-height:0;padding:0 0 4px;scrollbar-width:thin;scrollbar-color:#b9a37a66 transparent;overscroll-behavior:contain;outline-offset:-5px}
+.reader-paper{max-width:none;margin:0;padding:32px 38px 0 42px;box-shadow:none;background:transparent;min-height:100%}
+.reader-paper>.paper-masthead{font-size:7px;letter-spacing:1px;gap:12px;line-height:1.7;border-color:#b5bba6;padding-bottom:15px}
+.reader-paper>.paper-masthead>span:first-child{display:none}
+.reader-paper>.paper-heading{font-size:42px;line-height:1;letter-spacing:-.8px;margin:24px 0 17px}
+.reader-paper>.paper-subtitle{font-size:16px;line-height:1.6;margin-bottom:22px}
+.reader-paper>.paper-hero,.reader-paper>.image-caption{display:none}
+.press-row{grid-template-columns:28px 1fr 20px;gap:8px;padding:22px 0}
+.press-number{font-size:22px}.press-row h2{font-size:28px}.press-row p{font-size:12px;line-height:1.8}.press-row .press-publication{font-size:8px;letter-spacing:1.1px}.press-arrow{font-size:20px}
+.paper-section{padding:25px 0}.paper-section h2{font-size:30px}.paper-section p{font-size:13px;line-height:1.85}.report-grid{grid-template-columns:1fr;gap:0}.pullquote{font-size:28px;margin:23px 0;padding-left:18px}
+.report-original{grid-template-columns:75px 1fr;gap:16px;padding:18px;margin:23px 0}.report-original img{width:75px}.report-original h2{font-size:24px}.report-original .paper-link{font-size:10px;margin-right:12px}
+.continuation{margin-top:22px;padding:27px 0 38px;min-height:200px}.continue-button{font-size:31px;gap:16px}.continue-button span{font-size:27px}.continue-hint{font-size:9px;line-height:1.8}.source-note{font-size:10px;line-height:1.8}
+.page-foot{height:35px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;margin:0 34px 0 40px;font-size:7px;letter-spacing:1.3px;border-top:1px solid #c1c3ae;color:#67705a}
+.read-progress{top:auto;bottom:0;left:0;right:0;height:2px}.read-progress span{background:#a35232}
+.notepad-binding{display:none}
+.reader-shell[data-publication='opportunities'] .open-publication{grid-template-columns:1fr;max-width:680px;border-radius:4px;box-shadow:0 3px 0 #b9ae97,0 7px 0 #e5dbc4,0 10px 0 #b9ae97;transform:rotateX(2deg) rotate(-.5deg)}
+.reader-shell[data-publication='opportunities'] .open-publication:before{background:#826446;border-radius:6px;inset:-6px -7px -13px}
+.reader-shell[data-publication='opportunities'] .inside-cover,.reader-shell[data-publication='opportunities'] .book-gutter{display:none}
+.reader-shell[data-publication='opportunities'] .right-page{border-radius:4px;padding-top:28px;background:repeating-linear-gradient(0deg,transparent 0 31px,#a4b7bd26 31px 32px),#f8f0dc}
+.reader-shell[data-publication='opportunities'] .right-page:before{content:'';position:absolute;top:0;bottom:0;left:33px;width:1px;background:#bc746343;pointer-events:none}
+.reader-shell[data-publication='opportunities'] .notepad-binding{display:flex;position:absolute;z-index:6;left:25px;right:25px;top:-13px;justify-content:space-between;pointer-events:none}
+.notepad-binding i{display:block;width:9px;height:30px;border:2px solid #514c3e;border-radius:7px;background:linear-gradient(90deg,#f2e8ce66,transparent);box-shadow:1px 3px 2px #3d342333}
+.reader-shell[data-publication='opportunities'] .reader-paper{padding:26px 46px 0 57px}.reader-shell[data-publication='opportunities'] .paper-heading{font-size:66px}.reader-shell[data-publication='opportunities'] .paper-subtitle{font-size:19px}.opportunity{padding:24px 0}.opportunity h2{font-size:32px}.opportunity p{font-size:13px;line-height:1.85}
+.table-hint>span#table-scroll-hint{font:inherit;padding:0;display:inline}.table-hint>span[aria-hidden]{font-size:18px}
+@media(max-width:850px){.book-stage{inset:76px 19px 26px}.inside-cover{padding:27px 28px}.inside-title{font-size:45px}.inside-deck{font-size:16px}.reader-paper{padding:26px 26px 0 28px}.reader-paper>.paper-heading{font-size:35px}.press-row h2{font-size:25px}.page-foot{margin:0 24px}}
+@media(max-width:650px){.reader-toolbar{height:64px;padding:0 20px;gap:12px}.reader-toolbar>span{font-size:8px}.book-stage{inset:76px 16px 27px}.open-publication{display:block;max-width:500px;height:100%;border-radius:3px 10px 10px 3px;transform:none;border-bottom-width:6px}.open-publication:before{inset:-5px -6px -11px}.inside-cover{display:none}.book-gutter{left:0;width:17px;background:linear-gradient(90deg,#56452d5c,#a88f6438 30%,transparent)}.right-page{height:100%;border-radius:3px 9px 9px 3px}.reader-paper{padding:25px 25px 0 29px}.reader-paper>.paper-heading{font-size:45px;margin-top:25px}.reader-paper>.paper-subtitle{font-size:17px}.reader-paper>.paper-hero{display:block;height:155px;margin:23px 0 18px}.reader-paper>.image-caption{display:block;font-size:9px}.reader-paper>.paper-masthead{font-size:7px}.press-row{grid-template-columns:23px 1fr 17px;gap:7px}.press-row h2{font-size:28px}.press-row p{font-size:12px}.page-foot{height:33px;margin:0 21px 0 28px;font-size:6px}.reader-shell[data-publication='opportunities'] .open-publication{display:block;transform:none}.reader-shell[data-publication='opportunities'] .reader-paper{padding:23px 23px 0 37px}.reader-shell[data-publication='opportunities'] .right-page:before{left:24px}.reader-shell[data-publication='opportunities'] .paper-heading{font-size:52px}.notepad-binding i{width:7px;height:26px}.reader-shell[data-publication='opportunities'] .notepad-binding{left:17px;right:17px}.reader-shell[data-publication='opportunities'] .paper-subtitle{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.open-publication{transform:none!important}}

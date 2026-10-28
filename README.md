@@ -8,13 +8,13 @@ From this folder, run `npm run dev` and open `http://127.0.0.1:8788`. `PORT` can
 
 ## Interaction
 
-Select a physical object or its labeled control. After reading, continue downward once more at the end, or use the continuation control, to return the publication and open the next. Escape or “Back to the table” closes the reader. Direct destinations use `#press`, `#report`, and `#opportunities`.
+Select a physical object or its labeled control, or keep scrolling down from the table to open the next object. Magazine and report content stays inside an open two-page book with a fixed left page, center crease and paper edges; the notepad uses spiral-bound ruled paper. Narrow screens show one framed page. After reading, continue downward once more at the end, or use the continuation control, to return the publication and open the next. Scroll back to the beginning and make another upward gesture to close the publication and return to the table. A new downward table gesture then reopens that same object. Returning and opening require separate gestures so scroll momentum does not bounce between states. Upward touch swipes and Page Up/Arrow Up are also supported at the beginning; physical-device touch testing remains outstanding. Escape or “Back to the table” remains available. Direct destinations use `#press`, `#report`, and `#opportunities`.
 
 The report reader is a clearly labeled condensed web edition. The complete supplied PDF is available from that reader. Photo/PDF originals are copied without alteration. Cover type and images are composed as browser-native 3D textures.
 
 ## Scope and next work
 
-Implemented: table, three object rigs, open/close/camera transitions, three readers, guided continuation, hash navigation, reduced-motion option, original PDF access, desktop and narrow layouts.
+Implemented: table, three object rigs, single-approach camera transitions without overhead turning, three publication-styled readers, guided continuation, hash navigation, reduced-motion option, original PDF access, desktop and narrow layouts.
 
 Future: connected room geometry, living-room content, library/course books, accounts/payment services, more precise paper-to-reader alignment, and production art fidelity. The first version uses a matched paper-colored dissolve during the final reader handoff. Physical-device touch testing remains outstanding.
 

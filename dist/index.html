@@ -23,12 +23,22 @@
       <button class="hotspot" data-open="report"><span class="hotspot-number">02</span><span>TEN-YEAR REPORT</span><span class="hotspot-plus" aria-hidden="true">+</span></button>
       <button class="hotspot" data-open="opportunities"><span class="hotspot-number">03</span><span>LET’S BUILD</span><span class="hotspot-plus" aria-hidden="true">+</span></button>
     </div>
-    <footer class="table-footer"><span class="edition-label">DONTE MILLER’S HOUSE <span> / </span> AN INTERACTION STUDY</span><span class="table-hint"><span aria-hidden="true">↓</span> Scroll closer. Select something that speaks to you.</span><button id="simple-view" class="text-control" type="button">Read the press ↗</button></footer>
+    <footer class="table-footer"><span class="edition-label">DONTE MILLER’S HOUSE <span> / </span> AN INTERACTION STUDY</span><span class="table-hint"><span aria-hidden="true">↓</span> <span id="table-scroll-hint">Keep scrolling to open the press magazine.</span></span><button id="simple-view" class="text-control" type="button">Read the press ↗</button></footer>
   </main>
   <section id="reader-shell" class="reader-shell" hidden aria-label="Open publication">
     <header class="reader-toolbar"><button id="return-table" type="button" class="back-control"><span aria-hidden="true">↙</span> Back to the table</button><span id="reader-label">THE PRESS</span><span id="reader-counter">01 / 03</span></header>
-    <div id="reader-scroll" class="reader-scroll"><article id="reader-content" class="reader-paper"></article></div>
-    <div class="read-progress" aria-hidden="true"><span id="read-progress-fill"></span></div>
+    <div class="book-stage">
+      <div class="open-publication" id="open-publication">
+        <div class="inside-cover" id="inside-cover" aria-hidden="true"></div>
+        <div class="book-gutter" aria-hidden="true"></div>
+        <div class="notepad-binding" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="right-page">
+          <div id="reader-scroll" class="reader-scroll" role="region" aria-label="Publication text" tabindex="0"><article id="reader-content" class="reader-paper"></article></div>
+          <div class="page-foot" aria-hidden="true"><span id="page-foot-title">THE PRESS</span><span>READ ↓ · AT TOP, SCROLL ↑ TO CLOSE</span></div>
+          <div class="read-progress" aria-hidden="true"><span id="read-progress-fill"></span></div>
+        </div>
+      </div>
+    </div>
   </section>
   <div id="announcer" class="sr-only" aria-live="polite"></div>
   <div id="scene-error" hidden><h2>The table is taking a moment.</h2><p>You can still explore everything here.</p><button data-open="press">Read the press</button><button data-open="report">Read the report</button><button data-open="opportunities">Let’s build</button></div>

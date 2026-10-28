@@ -8,7 +8,7 @@ const intro = $('intro');
 const gsap = window.gsap;
 const BOOKS = ['press','report','opportunities'];
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
-const state = {mode:'loading',active:null,token:0,progress:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,bottomReady:false,bottomAt:0,lastWheel:0,touchY:0,touchAtBottom:false};
+const state = {mode:'loading',active:null,token:0,progress:0,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,bottomReady:false,bottomAt:0,topReady:false,topAt:0,lastWheel:0,touchY:0,touchAtBottom:false,touchAtTop:false};
 let renderer, scene, camera, photo, dirty=true, hovered=null, lastFocus=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
@@ -43,26 +43,42 @@ const invalidate=()=>{dirty=true;};
 function duration(n){return state.reduce?0.01:n;}
 function look(){camera.lookAt(target);invalidate();}
 function routeTo(id,replace=false){const hash=id?'#'+id:'#table';if(location.hash!==hash)history[replace?'replaceState':'pushState']({reader:id},'',hash);}
-function readingReady(id,token){if(token!==state.token)return;setMode('reading');shell.hidden=false;paper.innerHTML=content(id);$('reader-label').textContent=labels[id];$('reader-counter').textContent=`0${BOOKS.indexOf(id)+1} / 03`;scroller.scrollTop=savedReader.get(id)||0;state.bottomReady=false;state.lastWheel=0;gsap.fromTo(shell,{autoAlpha:0},{autoAlpha:1,duration:duration(.32)});updateProgress();$('reader-heading').focus({preventScroll:true});announce(`${labels[id]}. Publication open.`);}
+function decoratePublication(id){
+ const details=id==='report'?{eyebrow:'VILLAGE MICRO FUND · 2015–2025',title:'Ten years.<br>One Village.',deck:'The people, ideas, and possibilities behind a decade of building together.',caption:'The ten-year report · A condensed web edition.'}:{eyebrow:'VOL. 01 · SELECTED PRESS',title:'The Village,<br>in the world.',deck:'Conversations and stories from the work of building community wealth.',caption:'From the Village archive · Photograph supplied by Donte Miller.'};
+ shell.dataset.publication=id;
+ shell.setAttribute('aria-label',id==='opportunities'?'Open opportunities notepad':`Open ${id==='press'?'press magazine':'ten-year report'}`);
+ $('inside-cover').innerHTML=`<p class="inside-eyebrow"><span>${details.eyebrow}</span><span>DM.</span></p><h2 class="inside-title">${details.title}</h2><p class="inside-deck">${details.deck}</p><img class="inside-photo" src="/assets/akua-ribbon.jpg" alt=""><p class="inside-caption">${details.caption}</p><div class="inside-folio"><span>DONTE MILLER / THE DINING TABLE</span><span>01</span></div>`;
+ $('page-foot-title').textContent=labels[id];
+}
+function readingReady(id,token){
+ if(token!==state.token)return;
+ setMode('reading');decoratePublication(id);shell.hidden=false;paper.innerHTML=content(id);
+ if(innerWidth>650){if(id==='press')$('reader-heading').innerHTML='Selected<br>conversations.';if(id==='report')$('reader-heading').innerHTML='The story<br>of the Village.';}
+ $('reader-label').textContent=labels[id];$('reader-counter').textContent=`0${BOOKS.indexOf(id)+1} / 03`;
+ document.title=`${labels[id]} — Donte Miller`;
+ scroller.scrollTop=savedReader.get(id)||0;state.bottomReady=false;state.topReady=false;state.lastWheel=0;
+ gsap.fromTo(shell,{autoAlpha:0},{autoAlpha:1,duration:duration(.32)});
+ gsap.fromTo($('open-publication'),{scale:.96},{scale:1,duration:duration(.5),ease:'power2.out'});
+ updateProgress();$('reader-heading').focus({preventScroll:true});announce(`${labels[id]}. Publication open.`);
+}
 function openBook(id,{historyChange=true}={}){
  if(!BOOKS.includes(id)||!['exploring','reading'].includes(state.mode))return;
  if(state.mode==='reading'){if(state.active!==id)closeBook(id,{historyChange});return;}
  const token=++state.token;lastFocus=document.activeElement;state.active=id;setMode('opening');if(historyChange)routeTo(id);
- const b=books.get(id);if(!b||!camera||state.reduce){readingReady(id,token);return;}
- canvasHome.position.copy(camera.position);canvasHome.target.copy(target);
+ const b=books.get(id);if(camera){canvasHome.position.copy(camera.position);canvasHome.target.copy(target);}if(!b||!camera||state.reduce){readingReady(id,token);return;}
  const tl=gsap.timeline({onUpdate:invalidate,onComplete:()=>readingReady(id,token)});
  tl.to(b.group.position,{x:0,y:2.8,z:0,duration:duration(.9),ease:'power2.inOut'},0);
- tl.to(b.group.rotation,{x:-Math.PI/2,y:0,z:0,duration:duration(.9),ease:'power2.inOut'},0);
  tl.to(b.hinge.rotation,{y:-Math.PI*.96,duration:duration(.7),ease:'power2.inOut'},.3);
  tl.to(target,{x:0,y:2.8,z:0,duration:duration(1),ease:'power2.inOut',onUpdate:look},.1);
- tl.to(camera.position,{x:0,y:4.9,z:.001,duration:duration(1.1),ease:'power2.inOut',onUpdate:look},.1);
- tl.to(camera.position,{y:3.83,duration:duration(.42),ease:'power2.in'},.99);
+ // Keep the camera in front of its target throughout a single approach.
+ // Passing directly overhead and then sideways caused the pre-opening twist.
+ tl.to(camera.position,{x:0,y:5.45,z:1.8,duration:duration(1.1),ease:'power2.inOut',onUpdate:look},.1);
 }
-function closeBook(next=null,{historyChange=true}={}){
+function closeBook(next=null,{historyChange=true,fromStart=false}={}){
  if(state.mode!=='reading')return;
  const previous=state.active,token=++state.token;bumpBottom();savedReader.set(previous,scroller.scrollTop);setMode('closing');
  const b=books.get(previous);
- const finish=()=>{if(token!==state.token)return;shell.hidden=true;paper.innerHTML='';state.active=null;setMode('exploring');if(historyChange&&!next)routeTo(null);invalidate();if(next){openBook(next,{historyChange});}else{announce('Returned to the dining table.');const restore=lastFocus?.isConnected&&lastFocus.matches('button,a')?lastFocus:document.querySelector(`[data-open="${previous}"]`);restore?.focus({preventScroll:true});}};
+ const finish=()=>{if(token!==state.token)return;shell.hidden=true;paper.innerHTML='';state.active=null;setMode('exploring');if(historyChange&&!next)routeTo(null);invalidate();if(next){openBook(next,{historyChange});}else{state.scrollAmount=0;state.scrollTarget=fromStart?previous:BOOKS[(BOOKS.indexOf(previous)+1)%BOOKS.length];state.autoCooldown=performance.now()+900;updateTableHint();document.title='The Dining Table — Donte Miller';announce(fromStart?'Returned to the dining table. Scroll down to reopen this publication.':'Returned to the dining table. Keep scrolling to open the next object.');const restore=lastFocus?.isConnected&&lastFocus.matches('button,a')?lastFocus:document.querySelector(`[data-open="${previous}"]`);restore?.focus({preventScroll:true});}};
  if(!b||!camera||state.reduce){gsap.to(shell,{autoAlpha:0,duration:duration(.2),onComplete:finish});return;}
  const tl=gsap.timeline({onUpdate:invalidate,onComplete:finish});
  tl.to(shell,{autoAlpha:0,duration:duration(.2)},0);
@@ -73,25 +89,42 @@ function closeBook(next=null,{historyChange=true}={}){
  tl.to(b.group.rotation,{x:b.home.rotation.x,y:b.home.rotation.y,z:b.home.rotation.z,duration:duration(.9),ease:'power2.inOut'},.3);
 }
 function bumpBottom(){state.bottomReady=false;state.bottomAt=0;}
-function updateProgress(){if(state.mode!=='reading')return;const max=scroller.scrollHeight-scroller.clientHeight;$('read-progress-fill').style.width=`${max>0?100*scroller.scrollTop/max:100}%`;const bottom=max-scroller.scrollTop<8;if(bottom&&!state.bottomReady){state.bottomAt=performance.now();state.bottomReady=true;}if(!bottom)bumpBottom();}
+function updateProgress(){if(state.mode!=='reading')return;const max=scroller.scrollHeight-scroller.clientHeight;$('read-progress-fill').style.width=`${max>0?100*scroller.scrollTop/max:100}%`;const bottom=max-scroller.scrollTop<8;if(bottom&&!state.bottomReady){state.bottomAt=performance.now();state.bottomReady=true;}if(!bottom)bumpBottom();const top=scroller.scrollTop<8;if(top&&!state.topReady){state.topAt=performance.now();state.topReady=true;}if(!top){state.topReady=false;state.topAt=0;}}
 function continueReading(){if(state.mode!=='reading')return;const footer=paper.querySelector('[data-next]');closeBook(footer?.dataset.next||null);}
 scroller.addEventListener('scroll',updateProgress,{passive:true});
-scroller.addEventListener('wheel',e=>{if(state.mode!=='reading')return;const now=performance.now(),gap=now-state.lastWheel;state.lastWheel=now;if(e.deltaY>5&&state.bottomReady&&now-state.bottomAt>650&&gap>140){e.preventDefault();continueReading();}},{passive:false});
-scroller.addEventListener('touchstart',e=>{state.touchY=e.touches[0].clientY;state.touchAtBottom=state.bottomReady&&performance.now()-state.bottomAt>500;},{passive:true});
-scroller.addEventListener('touchmove',e=>{if(state.mode==='reading'&&state.touchAtBottom&&state.touchY-e.touches[0].clientY>80){state.touchAtBottom=false;e.preventDefault();continueReading();}},{passive:false});
-scroller.addEventListener('keydown',e=>{if(['ArrowDown','PageDown',' '].includes(e.key)&&state.bottomReady&&performance.now()-state.bottomAt>500&&!e.target.closest('button,a,input,textarea')){e.preventDefault();continueReading();}});
+shell.addEventListener('wheel',e=>{
+ if(state.mode!=='reading')return;
+ const now=performance.now(),gap=now-state.lastWheel;state.lastWheel=now;
+ if(e.deltaY < -5&&state.topReady&&now-state.topAt>650&&gap>140){e.preventDefault();closeBook(null,{fromStart:true});return;}
+ if(e.deltaY>5&&state.bottomReady&&now-state.bottomAt>650&&gap>140){e.preventDefault();continueReading();return;}
+ if(!scroller.contains(e.target)){e.preventDefault();scroller.scrollBy(0,e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?scroller.clientHeight:1));}
+},{passive:false});
+scroller.addEventListener('touchstart',e=>{state.touchY=e.touches[0].clientY;state.touchAtBottom=state.bottomReady&&performance.now()-state.bottomAt>500;state.touchAtTop=state.topReady&&performance.now()-state.topAt>500;},{passive:true});
+scroller.addEventListener('touchmove',e=>{if(state.mode!=='reading')return;const delta=state.touchY-e.touches[0].clientY;if(state.touchAtTop&&delta < -80){state.touchAtTop=false;e.preventDefault();closeBook(null,{fromStart:true});}else if(state.touchAtBottom&&delta>80){state.touchAtBottom=false;e.preventDefault();continueReading();}},{passive:false});
+scroller.addEventListener('keydown',e=>{if(e.target.closest('button,a,input,textarea'))return;if((['ArrowUp','PageUp'].includes(e.key)||(e.key===' '&&e.shiftKey))&&state.topReady&&performance.now()-state.topAt>500){e.preventDefault();closeBook(null,{fromStart:true});}else if((['ArrowDown','PageDown'].includes(e.key)||(e.key===' '&&!e.shiftKey))&&state.bottomReady&&performance.now()-state.bottomAt>500){e.preventDefault();continueReading();}});
 paper.addEventListener('click',e=>{const button=e.target.closest('[data-continue]');if(button)continueReading();});
 $('return-table').addEventListener('click',()=>closeBook());
 document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openBook(b.dataset.open)));
 $('simple-view').addEventListener('click',()=>openBook('press'));
-document.querySelector('.wordmark').addEventListener('click',e=>{e.preventDefault();if(state.mode==='reading')closeBook();else if(state.mode==='exploring'){state.progress=0;travelCamera();routeTo(null);}});
+document.querySelector('.wordmark').addEventListener('click',e=>{e.preventDefault();if(state.mode==='reading')closeBook();else if(state.mode==='exploring'){state.progress=0;state.scrollAmount=0;state.scrollTarget='press';updateTableHint();travelCamera();routeTo(null);}});
 function setMotion(reduce){state.reduce=reduce;$('motion-toggle').setAttribute('aria-pressed',String(reduce));$('motion-toggle').textContent=reduce?'Motion reduced':'Reduce motion';}
 setMotion(state.reduce);$('motion-toggle').addEventListener('click',()=>setMotion(!state.reduce));prefs.addEventListener('change',e=>setMotion(e.matches));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.mode==='reading')closeBook();});
 window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(BOOKS.includes(id)){if(state.mode==='exploring')openBook(id,{historyChange:false});else if(state.mode==='reading'&&state.active!==id)closeBook(id,{historyChange:false});}else if(state.mode==='reading')closeBook(null,{historyChange:false});});
 function travelCamera(){if(!camera||state.mode!=='exploring'||state.reduce)return;const mobile=innerWidth<600;const offset=mobile?0:-1.3;const a=mobile?new THREE.Vector3(0,9.8,6.8):new THREE.Vector3(offset,9.8,6.8);const b=mobile?new THREE.Vector3(0,8.1,3.6):new THREE.Vector3(offset,8.1,3.6);camera.position.copy(a.lerp(b,state.progress));target.set(offset,0,0);look();intro.style.opacity=String(1-state.progress*.85);}
-window.addEventListener('wheel',e=>{if(state.mode!=='exploring'||e.target.closest('.reader-shell'))return;state.progress=THREE.MathUtils.clamp(state.progress+e.deltaY*.0007,0,1);travelCamera();},{passive:true});
-let sceneTouch=0;document.addEventListener('touchstart',e=>{if(state.mode==='exploring')sceneTouch=e.touches[0].clientY;},{passive:true});document.addEventListener('touchmove',e=>{if(state.mode!=='exploring')return;state.progress=THREE.MathUtils.clamp(state.progress+(sceneTouch-e.touches[0].clientY)*.002,0,1);sceneTouch=e.touches[0].clientY;travelCamera();},{passive:true});
+function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad'};$('table-scroll-hint').textContent=`Keep scrolling to open ${names[state.scrollTarget]}.`;}
+function advanceTable(delta){
+ if(state.mode!=='exploring'||performance.now()<state.autoCooldown)return;
+ state.progress=THREE.MathUtils.clamp(state.progress+delta*.0007,0,1);
+ state.scrollAmount=Math.max(0,state.scrollAmount+delta);
+ document.documentElement.dataset.tableProgress=String(Math.min(1,state.scrollAmount/620));
+ travelCamera();
+ if(state.scrollAmount>=620){state.scrollAmount=0;openBook(state.scrollTarget);}
+}
+window.addEventListener('wheel',e=>{if(state.mode!=='exploring'||e.target.closest('.reader-shell'))return;advanceTable(e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1));},{passive:true});
+let sceneTouch=0;document.addEventListener('touchstart',e=>{if(state.mode==='exploring')sceneTouch=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchmove',e=>{if(state.mode!=='exploring')return;advanceTable((sceneTouch-e.touches[0].clientY)*2);sceneTouch=e.touches[0].clientY;},{passive:true});
+document.addEventListener('keydown',e=>{if(state.mode!=='exploring'||e.target.closest('button,a,input,textarea,select'))return;const delta={ArrowDown:100,PageDown:650,' ':650,ArrowUp:-100,PageUp:-650}[e.key];if(delta!==undefined){e.preventDefault();advanceTable(delta);}});
 
 // Browser-native procedural surfaces keep the scene independent of a flat tabletop image.
 function seeded(seed=1){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};}
