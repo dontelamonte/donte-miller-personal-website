@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-text-style>
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#ece3d2"><meta name="description" content="Make yourself at home. Explore Donte Miller’s story, community-centered work, and ideas for what we might build together.">
   <title>Donte Miller — Make yourself at home.</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%232c4538'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23f5efdf' font-family='Georgia' font-size='20'%3Ed%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="/style.css?v=enclosure-23">
+  <link rel="stylesheet" href="/style.css?v=enclosure-23"><link rel="stylesheet" href="/text-styles.css?v=readability-10">
   <script src="/vendor/gsap.min.js" defer></script><script type="module" src="/app.js?v=environment-31"></script>
 </head>
 <body>
@@ -13,19 +13,19 @@
   <div id="loading"><span class="loading-mark">dm.</span><span>Opening the door</span><span class="loading-line"></span></div>
   <header class="site-header" id="site-header">
     <a class="wordmark" href="#living" aria-label="Donte Miller, return to Home">donte miller<span>.</span></a>
-    <nav class="room-navigation" aria-label="Explore the house"><button data-room-go="living">Home</button><button data-room-go="table">The Table</button><button data-room-go="workshop">The Workshop</button><button data-room-go="library">The Library</button></nav>
+    <nav class="room-navigation" aria-label="Explore the house"><button data-room-go="living">Home</button><button data-room-go="table"><span class="nav-article">The </span>Table</button><button data-room-go="workshop"><span class="nav-article">The </span>Workshop</button><button data-room-go="library"><span class="nav-article">The </span>Library</button></nav>
     <button id="motion-toggle" class="text-control" type="button" aria-pressed="false">Reduce motion</button>
   </header>
   <div id="living-ui">
     <section class="about-story" id="about-story" data-stage="welcome" aria-label="About Donte — scroll to read" tabindex="0"><div class="about-story-copy" id="about-story-copy"><p class="eyebrow" id="about-story-label">WELCOME TO MY HOUSE</p><h1 id="about-story-title">Make yourself at home.</h1><div class="about-story-viewport" id="about-story-viewport"><p id="about-story-text">Scroll through my story, then join me at the table.</p></div></div><div class="about-story-position"><span id="about-story-counter">SCROLL TO READ</span><span>KEEP SCROLLING ↓</span></div></section>
     <div id="living-hotspots" aria-label="Portrait, recognition and education">
       <div id="credential-controls">
-      <button class="frame-control" data-living="forbes" aria-label="Forbes 30 Under 30"><span>Forbes 30 Under 30 ↗</span></button>
-      <button class="frame-control" data-living="georgia" aria-label="Georgia Trend 500"><span>Georgia Trend 500 ↗</span></button>
-      <button class="frame-control" data-living="atlanta" aria-label="Atlanta 500"><span>Atlanta 500 ↗</span></button>
-      <button class="frame-control" data-living="morehouse" aria-label="Morehouse College education"><span>Morehouse College ↗</span></button>
-      <button class="frame-control" data-living="echoing" aria-label="Echoing Green fellowship"><span>Echoing Green ↗</span></button>
-      <button class="frame-control" data-living="village" aria-label="Village Micro Fund"><span>Village Micro Fund ↗</span></button>
+      <button class="frame-control" data-living="forbes" data-kind="Recognition" aria-label="Forbes 30 Under 30"><span>Forbes 30 Under 30&nbsp;↗</span></button>
+      <button class="frame-control" data-living="georgia" data-kind="Recognition" aria-label="Georgia Trend 500"><span>Georgia Trend 500&nbsp;↗</span></button>
+      <button class="frame-control" data-living="atlanta" data-kind="Recognition" aria-label="Atlanta 500"><span>Atlanta 500&nbsp;↗</span></button>
+      <button class="frame-control" data-living="morehouse" data-kind="Education" aria-label="Morehouse College education"><span>Morehouse College&nbsp;↗</span></button>
+      <button class="frame-control" data-living="echoing" data-kind="Fellowship" aria-label="Echoing Green fellowship"><span>Echoing Green&nbsp;↗</span></button>
+      <button class="frame-control" data-living="village" data-kind="Founder" aria-label="Village Micro Fund"><span>Village Micro Fund&nbsp;↗</span></button>
       </div>
     </div>
   </div>
