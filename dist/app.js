@@ -7,7 +7,7 @@ import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './abou
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
-import {navigationViews,blendViewDirections} from './navigation-route.js?v=direction-turn-24';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=table-library-25';
 import {buildLibrary} from './library-scene.js?v=compact-shell-24';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
@@ -329,18 +329,14 @@ function navigateRoom(id,{historyChange=true}={}){
  if(points.length<2){settleNavigation(id);return;}
  const path=new THREE.CatmullRomCurve3(points,false,'centripetal');
  const finalTarget=new THREE.Vector3(...finalView.target),startDirection=startTarget.clone().sub(startPosition).normalize(),flight={t:0};
- const smooth=t=>t*t*(3-2*t);
+ const endDirection=finalTarget.clone().sub(finalPosition).normalize();
  const distance=path.getLength(),duration=Math.min(5,Math.max(.75,distance/5.3));
  document.body.classList.add('room-travelling');document.documentElement.dataset.room='travelling';
  $('library-ui').hidden=$('workshop-ui').hidden=true;
  document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo===id)));
  navigationTween=gsap.to(flight,{t:1,duration,ease:'power1.inOut',onUpdate:()=>{
-  const p=path.getPointAt(flight.t),ahead=path.getPointAt(Math.min(1,flight.t+.04));
-  const direction=ahead.sub(p).normalize();
-  if(direction.lengthSq()<.01)direction.copy(p).sub(path.getPointAt(Math.max(0,flight.t-.04))).normalize();
-  let gaze=direction.clone();
-  if(flight.t<.16)gaze.fromArray(blendViewDirections(startDirection.toArray(),direction.toArray(),smooth(flight.t/.16)));
-  if(flight.t>.72){const destinationDirection=finalTarget.clone().sub(p).normalize();gaze.fromArray(blendViewDirections(gaze.toArray(),destinationDirection.toArray(),smooth((flight.t-.72)/.28)));}
+  const p=path.getPointAt(flight.t);
+  const gaze=new THREE.Vector3(...navigationDirection(startDirection.toArray(),endDirection.toArray(),from,id,flight.t));
   target.copy(p).addScaledVector(gaze,8);
   camera.position.copy(p);camera.fov=THREE.MathUtils.lerp(startFov,finalView.fov,flight.t);
   const r=viewport();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();look();

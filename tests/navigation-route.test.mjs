@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {navigationViews,blendViewDirections} from '../dist/navigation-route.js';
+import {navigationViews,blendViewDirections,navigationDirection} from '../dist/navigation-route.js';
 
 const rooms=['living','table','workshop','library'];
 test('every room tab has a connected travel route in either direction',()=>{
@@ -12,10 +12,10 @@ test('every room tab has a connected travel route in either direction',()=>{
 });
 test('Home to Library and back use one direct walking-height route through both doorways',()=>{
  const forward=navigationViews('living','library',16/9),back=navigationViews('library','living',16/9);
- assert.equal(forward.length,4);
+ assert.equal(forward.length,6);
  assert.deepEqual(back,forward.slice().reverse());
- assert.deepEqual(forward[1].position,[-7.5,3.3,3.3]);
- assert.deepEqual(forward[2].position,[7.6,3.3,3.3]);
+ assert.deepEqual(forward[1].position,[-10.1,3.3,3.3]);
+ assert.deepEqual(forward[4].position,[9.8,3.3,3.3]);
  assert.ok(forward.every(v=>v.position[1]<6));
  assert.ok(!forward.some(v=>v.room==='workshop'||v.room==='table'));
 });
@@ -38,3 +38,40 @@ test('reverse travel turns through a stable unit direction without a target-poin
  const midpoint=blendViewDirections([0,0,-1],[0,0,1],.5);
  assert.ok(Math.abs(midpoint[1])<1e-12,'an about-face must not dip or rise');
 });
+
+import * as THREE from '../dist/vendor/three.module.min.js';
+test('all twelve tab routes clear doorways without intermediate presentation poses',()=>{
+ for(const aspect of [.45,1,16/9])for(const from of rooms)for(const to of rooms)if(from!==to){
+  const views=navigationViews(from,to,aspect);
+  const path=new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal');
+  for(let n=0;n<=500;n++){
+   const p=path.getPointAt(n/500);
+   for(const wall of [-7.5,7.6])if(Math.abs(p.x-wall)<.35){
+    assert.ok(p.z>1.5&&p.z<5.1,`${from} to ${to}: doorway z ${p.z}`);
+    assert.ok(p.y>2&&p.y<4.9,`${from} to ${to}: doorway y ${p.y}`);
+   }
+  }
+ }
+});
+test('Table to Library leaves directly without backing away or visiting the desk',()=>{
+ const views=navigationViews('table','library',16/9);
+ assert.equal(views.length,4);
+ assert.ok(views[1].position[0]>views[0].position[0]);
+ assert.ok(views[1].position[2]<views[0].position[2]);
+ assert.ok(!views.some(v=>v.room==='workshop'));
+ assert.deepEqual(navigationViews('library','table',16/9),views.slice().reverse());
+});
+test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
+ for(const from of rooms)for(const to of rooms)if(from!==to){
+  const views=navigationViews(from,to,16/9),first=views[0],last=views.at(-1);
+  const dir=v=>v.target.map((x,i)=>x-v.position[i]);
+  const start=dir(first),end=dir(last),sy=normalizeForTest(start)[1],ey=normalizeForTest(end)[1];
+  for(let n=0;n<=200;n++){
+   const d=navigationDirection(start,end,from,to,n/200);
+   assert.ok(Math.abs(Math.hypot(...d)-1)<1e-10);
+   assert.ok(d[1]>=Math.min(sy,ey,0)-1e-9&&d[1]<=Math.max(sy,ey,0)+1e-9);
+  }
+  if(![from,to].every(r=>r==='workshop'||r==='library'))assert.equal(navigationDirection(start,end,from,to,.5)[1],0);
+ }
+});
+function normalizeForTest(v){const length=Math.hypot(...v);return v.map(x=>x/length);}
