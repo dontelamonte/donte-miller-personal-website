@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Readability release is live** (October 29, 2026, `main` merge `c7a581c7f279ec54978a16da4e5690f2f31e9d75`): lighter blue text style and phone plaque buttons, on top of version 31. See the Change log.
+
 **Version 31 (environment first pass) is live** at https://www.dontelamonte.com (Vercel), released October 29, 2026 from `main` merge commit `324827a2139be399d69d5287ab7398c83cfdaad9`; cache identifier `environment-31`. See the Change log.
 
 **Version 30 is publicly deployed.** Room boundaries now trigger the entire existing camera journey with one nonzero scroll/swipe: Home (after About) → Table → Workshop (after notepad) → Library (after models), and reverse. Book/story reading remains distance-based. Momentum and held-touch guards prevent chaining rooms after arrival. Uses the existing tab-flight path and yaw rules, including left Workshop returns. Fresh arrivals reset sequences as before.
@@ -224,7 +226,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Donte reviews branch `readability-preview` (lighter blue, plaque buttons); on approval merge to `main` and verify live, then Phase 4. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–3 are live; next is Phase 4 (7–9 px text inside detail panels and readers), then a real-device check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -241,6 +243,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Readability release is live** at Donte's explicit request ("Release it"). Merged `readability-preview` into `main` as `c7a581c7f279ec54978a16da4e5690f2f31e9d75` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. Verified live on `https://www.dontelamonte.com`: page loads `text-styles.css?v=readability-10` (200), `<html data-text-style>` is set, the tab bar background computes to `rgba(16, 42, 59, 0.45)`, all six `data-kind` plaque labels are present, `/compare.html` returns 404, and the console has no errors. Browser screenshots of live Home at desktop width and at 390×844 show the lighter blue tabs and placards and the phone plaque buttons. Only Home was re-checked live. The app cache identifier is still `environment-31` (`app.js` unchanged). Rollback: revert `c7a581c` on `main` and push, or promote the previous Vercel deployment. Remaining: Phase 4 small text in panels and readers, real-device check.
 - October 29, 2026 (Claude Code session): **Donte chose the lighter blue.** On branch `readability-preview` (`f5d44065115e63cc917e130aa969b1ab19740a80`, Vercel preview `success`; not merged, not live):
   - Lighter indigo glass (`#102a3b` at 45%, 14 px blur, soft text shadow) is now the default via `<html data-text-style>`. The `?text=` switch, the other variants and `compare.html` were removed. Stylesheet `text-styles.css?v=readability-10`.
   - Fixes found in browser QA: the About story card uses a deeper tint of the same blue (76%) because its long passage was hard to read over the sofa fringe on phones; the Workshop card was moved onto the lighter glass and raised on phones to clear its hint; the tab hover underline applies only on mouse devices (it stuck on Home); the Library card widened to 640 px so its heading fits on one line and clears the course covers.
