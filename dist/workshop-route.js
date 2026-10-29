@@ -1,4 +1,4 @@
-import {LIBRARY_SCROLL_DISTANCE} from './library-path.js?v=direct-workshop-27';
+import {LIBRARY_SCROLL_DISTANCE} from './library-path.js?v=left-return-28';
 
 export const WORKSHOP_STOP=.76;
 export const WORKSHOP_STORY_DISTANCE=1500;

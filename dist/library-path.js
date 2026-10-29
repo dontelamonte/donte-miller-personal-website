@@ -30,6 +30,15 @@ export function libraryCameraAt(progress,aspect=16/9){
  const a=stops[i],b=stops[i+1],t=(p-a.at)/(b.at-a.at);
  const position=curve(i,'position',t);
  const target=curve(i,'target',t);
+ // A single direction-space turn avoids tiny gaze reversals caused by
+ // independently interpolating world-space targets and camera positions.
+ if(p>0&&p<.68){
+  const turn=smooth(clamp(p/.22));
+  const yaw=Math.PI-turn*Math.PI/2,pitch=-Math.atan2(7.8,6)*(1-turn);
+  const distance=Math.hypot(...target.map((value,j)=>value-position[j]));
+  const direction=[Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),Math.cos(yaw)*Math.cos(pitch)];
+  direction.forEach((value,j)=>target[j]=position[j]+value*distance);
+ }
  // Keep the full shelf wall in view on square and narrow screens.
  const halfWidth=7.7;
  const requiredDistance=halfWidth/(Math.tan(46*Math.PI/360)*Math.max(.45,aspect));

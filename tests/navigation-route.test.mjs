@@ -71,7 +71,7 @@ test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
    assert.ok(Math.abs(Math.hypot(...d)-1)<1e-10);
    assert.ok(d[1]>=Math.min(sy,ey,0)-1e-9&&d[1]<=Math.max(sy,ey,0)+1e-9);
   }
-  if(![from,to].every(r=>r==='workshop'||r==='library'))assert.equal(navigationDirection(start,end,from,to,.5)[1],0);
+  if(!(from==='workshop'&&to==='table')&&![from,to].every(r=>r==='workshop'||r==='library'))assert.equal(navigationDirection(start,end,from,to,.5)[1],0);
  }
 });
 function normalizeForTest(v){const length=Math.hypot(...v);return v.map(x=>x/length);}
@@ -87,6 +87,20 @@ test('Table to Workshop turns right once and holds its desk heading',()=>{
    assert.ok(d[0]>=-1e-10,'must not face backward toward Home');
    if(t>=.38)d.forEach((value,j)=>assert.ok(Math.abs(value-normalizeForTest(end)[j])<1e-10));
    previousYaw=yaw;
+  }
+ }
+});
+
+test('Workshop to Table turns left continuously without an about-face',()=>{
+ for(const aspect of [.45,1,16/9]){
+  const views=navigationViews('workshop','table',aspect),dir=v=>v.target.map((x,i)=>x-v.position[i]);
+  let last=Math.atan2(dir(views[0])[0],dir(views[0])[2]);
+  for(let i=0;i<=300;i++){
+   const d=navigationDirection(dir(views[0]),dir(views.at(-1)),'workshop','table',i/300);
+   const yaw=Math.atan2(d[0],d[2]);
+   assert.ok(yaw>=last-1e-9,'must turn left, not right');
+   assert.ok(yaw<=Math.PI+1e-9,'must not turn past the table');
+   last=yaw;
   }
  }
 });

@@ -63,3 +63,13 @@ test('the Table to Library camera rail remains inside the dining and east-room s
    previous=current;
   }
  });
+
+test('reverse scroll from the Workshop turns left toward the Table',()=>{
+ let last=Math.PI/2;
+ for(let i=0;i<=300;i++){
+  const v=libraryCameraAt(.76*(1-i/300)),d=v.target.map((x,j)=>x-v.position[j]);
+  const yaw=Math.atan2(d[0],d[2]);
+  assert.ok(yaw>=last-1e-9,'reverse scroll must turn left');
+  last=yaw;
+ }
+});

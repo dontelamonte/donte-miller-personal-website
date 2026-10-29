@@ -1,5 +1,5 @@
 import {cameraAt} from './house-path.js?v=compact-shell-24';
-import {libraryCameraAt} from './library-path.js?v=direct-workshop-27';
+import {libraryCameraAt} from './library-path.js?v=left-return-28';
 import {WORKSHOP_STOP} from './workshop-route.js';
 
 const clamp01=value=>Math.max(0,Math.min(1,value));
@@ -24,6 +24,9 @@ export function navigationDirection(start,end,from,to,t){
  // Turn right once toward the desk, then hold that heading for the approach.
  if(from==='table'&&to==='workshop')
   return blendViewDirections(start,end,ease(t/.38));
+ // Return with one left turn toward the table, avoiding the west-facing about-face.
+ if(from==='workshop'&&to==='table')
+  return blendViewDirections(start,end,ease(t));
  const order={living:0,table:1,workshop:2,library:3};
  if([from,to].every(room=>room==='workshop'||room==='library'))
   return blendViewDirections(start,end,ease(t));
