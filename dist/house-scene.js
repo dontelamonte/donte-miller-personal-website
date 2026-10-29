@@ -53,7 +53,7 @@ export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
  box(7.45,.07,.1,0,2.16,-.62,rust,sofa);
  for(const x of [-2.48,0,2.48]){const cushion=roundBox(2.4,.27,1.63,.12,fabric,sofa);cushion.position.set(x,.77,.16);const seam=box(2.33,.025,.035,x,.85,.98,rust,sofa);seam.castShadow=false;const pad=roundBox(2.36,1.3,.31,.2,fabric,sofa);pad.position.set(x,1.5,-.4);for(const u of [-.55,.55]){const button=mesh(new THREE.SphereGeometry(.045,8,6),navy,sofa);button.position.set(x+u,1.6,-.18);}}
  for(const x of [-3.82,3.82]){const arm=mesh(new THREE.CylinderGeometry(.34,.34,1.9,20),fabric,sofa);arm.rotation.x=Math.PI/2;arm.position.set(x,1.12,.02);const end=mesh(new THREE.TorusGeometry(.3,.025,6,24),rust,sofa);end.position.set(x,1.12,1.01);}
- for(let i=0;i<27;i++){const tassel=mesh(new THREE.CylinderGeometry(.045,.09,.23,8),rust,sofa);tassel.rotation.z=Math.PI;tassel.position.set(-3.65+i*.28,-.02,1.02);}
+ for(let i=0;i<27;i++){const tassel=mesh(new THREE.CylinderGeometry(.045,.09,.23,8),rust,sofa);tassel.position.set(-3.65+i*.28,-.02,1.02);}
  for(const x of [-3.5,3.5])for(const z of [-.6,.65])box(.12,.32,.12,x,-.18,z,wood,sofa);
  for(const x of [-1.5,1.65]){const p=mesh(new THREE.SphereGeometry(.48,18,12),rust,sofa);p.scale.set(1.1,1,.58);p.position.set(x,1.22,.05);p.rotation.z=x*.13;}
  const bolster=mesh(new THREE.CylinderGeometry(.31,.31,1.6,20),rust,sofa);bolster.rotation.z=Math.PI/2;bolster.position.set(0,1.1,.3);
