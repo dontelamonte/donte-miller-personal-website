@@ -42,7 +42,7 @@ A cream paper card (`#f6eddb` at about 88–92%) with the same ink color as the 
 
 Soft gradients at the top (behind the tabs) and bottom (behind the footer and hints) of the screen, fading from about 55% indigo to transparent over 120–160 px. No boxes; the scene stays open. On its own it doesn't guarantee contrast in every frame, so use it **together with** A or B, not instead of them.
 
-**Decision, October 29:** Donte chose the lighter blue (indigo at 45%). The About story card keeps a deeper tint (76%) of the same blue for its long reading text. Phone Recognition & Education buttons were also restyled as small indigo plaques. Phases 1–3 are implemented on branch `readability-preview`; Phase 4 (panel and reader small text) and Phase 5 device QA remain.
+**Decision, October 29:** Donte chose the lighter blue (indigo at 45%). The About story card keeps a deeper tint (76%) of the same blue for its long reading text. Phone Recognition & Education buttons were also restyled as small indigo plaques. Phases 1–3 are live (released October 29). Phase 4 is on branch `readability-phase-4`. Phase 5 device QA remains.
 
 **Preview, October 29:** branch `readability-preview` adds `?text=glass | glass-light | grey-light | paper | glass-scrim` and a side-by-side `compare.html`. Donte found the first glass draft too prominent; lighter blue (indigo at 45%) and lighter grey (charcoal at 40%) were added. The lighter tints rely on a stronger blur and a soft text shadow, so they fall below the worst-case 4.5:1 rule over pure white; confirm on real scenes and phones before choosing.
 

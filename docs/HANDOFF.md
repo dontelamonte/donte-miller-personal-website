@@ -226,7 +226,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–3 are live; next is Phase 4 (7–9 px text inside detail panels and readers), then a real-device check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–3 are live; Phase 4 is on branch `readability-phase-4` awaiting Donte's review and approval to merge; then a real-device check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -243,6 +243,14 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Readability Phase 4** on branch `readability-phase-4` (`ef6ad009ade51e7dd65cedfcf8937a560970b599`, Vercel preview `success`; not merged, not live). `dist/text-styles.css` (cache `readability-15`):
+  - Labels raised from 6–10 px to at least 11 px: reader, course and sketchpad toolbars; mastheads; folios; page footers; section eyebrows; panel headers and footers.
+  - 13 px: notes, hints and links, including the sketchpad continuation hint that had a forced 11 px.
+  - Reading copy: press 14 px; report sections 16 / 15 px; sketchpad and course 16 / 15 px; panel body 15 px. The panel lead paragraph stays at 22 px (a first version accidentally shrank it; fixed).
+  - Reading-header tabs 13 px.
+  - Phones: the reader title is hidden in the page footer (it's already in the toolbar) and the panel footer label is hidden, so both footers stay on one line.
+  - Verified in the browser at 390×844: press, report, opportunities, Flourish course, EnDAO sketchpad and Forbes panel, with the reading header fitting (no overflow) and footers measured on one line. At 1280×800: press, Morehouse panel, Time Bank sketchpad. No console errors. `npm run check` passed, `npm test` 50/50.
+  - Not checked: every report and press section to the end, scroll-to-next flow with the taller content, real devices.
 - October 29, 2026 (Claude Code session): **Readability release is live** at Donte's explicit request ("Release it"). Merged `readability-preview` into `main` as `c7a581c7f279ec54978a16da4e5690f2f31e9d75` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. Verified live on `https://www.dontelamonte.com`: page loads `text-styles.css?v=readability-10` (200), `<html data-text-style>` is set, the tab bar background computes to `rgba(16, 42, 59, 0.45)`, all six `data-kind` plaque labels are present, `/compare.html` returns 404, and the console has no errors. Browser screenshots of live Home at desktop width and at 390×844 show the lighter blue tabs and placards and the phone plaque buttons. Only Home was re-checked live. The app cache identifier is still `environment-31` (`app.js` unchanged). Rollback: revert `c7a581c` on `main` and push, or promote the previous Vercel deployment. Remaining: Phase 4 small text in panels and readers, real-device check.
 - October 29, 2026 (Claude Code session): **Donte chose the lighter blue.** On branch `readability-preview` (`f5d44065115e63cc917e130aa969b1ab19740a80`, Vercel preview `success`; not merged, not live):
   - Lighter indigo glass (`#102a3b` at 45%, 14 px blur, soft text shadow) is now the default via `<html data-text-style>`. The `?text=` switch, the other variants and `compare.html` were removed. Stylesheet `text-styles.css?v=readability-10`.
