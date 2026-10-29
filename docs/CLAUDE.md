@@ -24,8 +24,8 @@ Also keep the top **Current status** block and the **Exact next action** section
 
 Remote: `https://github.com/dontelamonte/donte-miller-personal-website` (public).
 
-- `main` always equals the source of the **live deployed** site.
-- Work that is not yet deployed is committed and pushed to a version branch (e.g. `v31-environment`); merge it into `main` when it is deployed.
+- **Pushing to `main` publishes the live site** (Vercel auto-deploys `main`). `main` always equals the live site.
+- Work that is not ready to go live is committed and pushed to a version branch (e.g. `v31-environment`); Vercel builds each branch as a preview. Merge into `main` only after QA passes **and Donte approves that release**.
 - Run `npm run check`, `npm test` and `git diff --check` in `prototype/` before every commit. Do not push failing work to `main`.
 - Write descriptive commit messages (what changed), not "Update Site source".
 - After pushing, record the branch and SHA in the handoff (see above).
@@ -38,6 +38,12 @@ The planning docs are mirrored into the repo's `docs/` folder (public). The copi
 - Mirrored: `HANDOFF.md`, `CLAUDE.md`, `build-plan.md`, `camera-storyboard.md`, `environment-audit.md`, `reference-manifest.csv`, `../personal-website-strategy.md`. Images, research snapshots and workbooks are not mirrored.
 - The repo is public: never put private or sensitive personal details in these docs.
 
-## Deployment note
+## Deployment
 
-The live site (`https://donte-miller-table-study.creamhero2050.chatgpt.site`, project `appgprj_6ae15bcc240481919bd78aed4965cba4`) is published through the ChatGPT Sites tool, which Claude Code cannot run. When Claude Code does the work, push to GitHub, record it as "not deployed" in the handoff, and tell Donte a Sites publish is still needed.
+Since October 29, 2026 the live site is **https://www.dontelamonte.com** (apex redirects to www), hosted on Vercel project `donte-8096s-projects/donte-miller-personal-website`, connected to this GitHub repo.
+
+- Vercel serves only `dist/` (site root). `docs/`, `scripts/`, `tests/` and `README.md` return 404 on the live site, but they are public on GitHub.
+- A push to `main` deploys to production; a push to any other branch builds a preview. Pushing `docs/` changes to `main` triggers a redeploy, but the site content is identical.
+- After each production release, confirm it went live: the "Vercel" commit status for the SHA is `success` (`gh api repos/dontelamonte/donte-miller-personal-website/commits/<sha>/status`), and the live page loads the new `app.js?v=` cache identifier. Record both in the handoff.
+- Rollback: revert the commit on `main` and push, or promote an earlier deployment in the Vercel dashboard.
+- The old ChatGPT Sites host (`donte-miller-table-study.creamhero2050.chatgpt.site`) and `.openai/hosting.json` are legacy. Don't publish there.

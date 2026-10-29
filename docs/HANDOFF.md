@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Version 31 (environment first pass) is built, committed and pushed to GitHub branch `v31-environment` (`0f50fec813ad13524c70b0205d7d1cd36bfe0c69`). It is NOT deployed and has had no browser visual QA.** `main` still holds live version 30 in `dist/` (later `main` commits only add `docs/` and `scripts/`). See the October 29 Claude Code entry in the Change log.
+**Version 31 (environment first pass) is built, committed and pushed to GitHub branch `v31-environment` (`0f50fec813ad13524c70b0205d7d1cd36bfe0c69`). It is NOT deployed and has had no browser visual QA.** Live site is now https://www.dontelamonte.com on Vercel (auto-deploys `main`). `main` still holds live version 30 in `dist/` (later `main` commits only add `docs/` and `scripts/`). See the October 29 Claude Code entry in the Change log.
 
 **Version 30 is publicly deployed.** Room boundaries now trigger the entire existing camera journey with one nonzero scroll/swipe: Home (after About) → Table → Workshop (after notepad) → Library (after models), and reverse. Book/story reading remains distance-based. Momentum and held-touch guards prevent chaining rooms after arrival. Uses the existing tab-flight path and yaw rules, including left Workshop returns. Fresh arrivals reset sequences as before.
 
@@ -30,7 +30,7 @@ All 46 automated tests, syntax and whitespace checks pass. New regression sample
 
 Publication: source `3a11f85a09b2db60b456b8e121e0c3bf79320ab3`, saved version `appgprj_6ae15bcc240481919bd78aed4965cba4~appgver_122e20d6b0b0819181bd087a5fd26200`, deployment `appgdep_6ae2a6893840819192e44dcb68fda91d` succeeded. GitHub main synced; public access preserved. Next action: user review of the left return in their usual browser/window.
 
-Live public URL: https://donte-miller-table-study.creamhero2050.chatgpt.site
+Live public URL: https://www.dontelamonte.com (Vercel, since October 29, 2026). Legacy ChatGPT Sites URL: https://donte-miller-table-study.creamhero2050.chatgpt.site
 
 Implemented house journey: root opens the living room; scroll shows a welcome and then moves the complete About text as one continuous serif passage before room travel. The portrait jumps into this inline story. Six plaques open recognition/education/work details. Further scroll follows continuous camera/gaze curves through the real arch into the dining room and down to a lower table view. Four navigation tabs: Home, The Table, The Workshop, and The Library. Each tab animates one uninterrupted 3D walk to its selected room; Home resets the narrative. Phone layouts retain all six credentials.
 
@@ -224,7 +224,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Run browser visual QA of branch `v31-environment` against the before screenshots in `research/environment-2026-10-29/` (Home, Table, Workshop, Library at desktop and 390×844), fix regressions, then publish v31 through ChatGPT Sites and merge the branch into `main`. (2) Continue `environment-audit.md` production order step 2: living-room hero furniture. (3) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Run browser visual QA of branch `v31-environment` against the before screenshots in `research/environment-2026-10-29/` (Home, Table, Workshop, Library at desktop and 390×844), fix regressions, then, with Donte's approval, merge the branch into `main` (Vercel deploys it) and confirm `environment-31` loads on www.dontelamonte.com. (2) Continue `environment-audit.md` production order step 2: living-room hero furniture. (3) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -241,6 +241,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): Donte moved hosting to Vercel at `dontelamonte.com`. Verified: apex redirects to `https://www.dontelamonte.com/` (served by Vercel), which loads `app.js?v=one-scroll-30` (version 30). Vercel commit status is `success` for `main` `26d6fb1` and for preview branch `v31-environment`. Only `dist/` is served; `/docs/HANDOFF.md`, `/README.md` and `/dist/index.html` return 404. Pushing to `main` now deploys production, so Claude Code can publish releases. `CLAUDE.md` deployment rules were rewritten for Vercel (merge to `main` only after QA and Donte's approval; verify status and cache identifier after release). The ChatGPT Sites host is legacy. The preview URL for v31 was not retrieved: the status link points to the Vercel dashboard and the Vercel CLI is not installed.
 - October 29, 2026 (Claude Code session, continued): Donte chose to publish the planning docs to the public GitHub repo. Added `prototype/scripts/sync-docs.sh`, which copies this handoff, `CLAUDE.md`, `build-plan.md`, `camera-storyboard.md`, `environment-audit.md`, `reference-manifest.csv` and `../personal-website-strategy.md` into the repo's `docs/` folder. Originals here stay canonical. Scanned the docs for secrets first and found none. Docs committed to `main` as `d8e304f`; that commit is outside `dist/`, so the live site and deployment are unchanged. `CLAUDE.md` now requires syncing the docs after every handoff update.
 - October 29, 2026 (Claude Code session): Read all planning docs and the prototype. Found version 31 environment work (`environment-materials.js` plus material/silhouette edits to `app.js`, `house-scene.js`, `library-scene.js`, `index.html` cache `environment-31`, `package.json` check script) uncommitted and unrecorded here, though `environment-audit.md` describes it as the "first pass implemented". `npm run check` passed; `npm test` 50/50 passed; `git diff --check` clean. No browser visual QA, live check or device test was done. Committed it as `0f50fec813ad13524c70b0205d7d1cd36bfe0c69` on new branch `v31-environment` and pushed it to GitHub; `main` (`29979bf`, live v30) unchanged. Not deployed. Added `CLAUDE.md` (handoff record + GitHub sync rules) and updated Current status and Exact next action. Workbooks referenced as `../../outputs/` resolve to `core/outputs/01a17e65-f2e8-7ff3-87ee-f74b56c4d69d/` and were confirmed present.
 - October 27, 2026: Confirmed three-room house, separate written-curriculum purchases, free first chapters and downloads.
