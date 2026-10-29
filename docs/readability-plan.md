@@ -42,6 +42,8 @@ A cream paper card (`#f6eddb` at about 88–92%) with the same ink color as the 
 
 Soft gradients at the top (behind the tabs) and bottom (behind the footer and hints) of the screen, fading from about 55% indigo to transparent over 120–160 px. No boxes; the scene stays open. On its own it doesn't guarantee contrast in every frame, so use it **together with** A or B, not instead of them.
 
+**Preview, October 29:** branch `readability-preview` adds `?text=glass | glass-light | grey-light | paper | glass-scrim` and a side-by-side `compare.html`. Donte found the first glass draft too prominent; lighter blue (indigo at 45%) and lighter grey (charcoal at 40%) were added. The lighter tints rely on a stronger blur and a soft text shadow, so they fall below the worst-case 4.5:1 rule over pure white; confirm on real scenes and phones before choosing.
+
 **Recommendation:** an A-style glass bar for the tabs everywhere, A-style placards for room text, B-style paper only where a light scene suits it better (the Table intro), and a C-style top scrim on phones only, so the tab bar blends into the scene.
 
 ## Type and contrast rules
