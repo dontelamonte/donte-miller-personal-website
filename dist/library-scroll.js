@@ -1,4 +1,4 @@
-import {LIBRARY_SCROLL_DISTANCE} from './library-path.js';
+import {LIBRARY_SCROLL_DISTANCE} from './library-path.js?v=direct-workshop-27';
 
 export const LIBRARY_BOOK_THRESHOLD=160;
 

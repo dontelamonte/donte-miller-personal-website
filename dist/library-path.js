@@ -2,7 +2,7 @@ export const LIBRARY_SCROLL_DISTANCE=2500;
 export const LIBRARY_CAMERA={position:[15,3.35,8.8],target:[15,3.35,-4.8],fov:46};
 const stops=[
  {at:0,position:[-1.3,7.8,6],target:[-1.3,0,0]},
- {at:.22,position:[-1.3,3.3,8.1],target:[2.5,3.1,3.3]},
+ {at:.22,position:[1.2,4.5,4.6],target:[9,4.5,4.6]},
  {at:.48,position:[5.2,3.3,3.3],target:[10.5,3.3,3.3]},
  {at:.68,position:[9.8,3.3,3.3],target:[20.5,3.3,3.3]},
  {at:.76,position:[11.4,3.4,3.3],target:[23,3.4,3.3]},

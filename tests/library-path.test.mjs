@@ -53,3 +53,13 @@ test('the Table to Library camera rail remains inside the dining and east-room s
   assert.ok(z>-6&&z<houseShellFrontZ(aspect)-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
  }
 });
+
+ test('Table to Workshop scroll advances without the old backward step',()=>{
+  let previous=libraryCameraAt(0).position;
+  for(let i=1;i<=500;i++){
+   const current=libraryCameraAt(.76*i/500).position;
+   assert.ok(current[0]>=previous[0]-1e-9,'must keep approaching the desk');
+   assert.ok(current[2]<=previous[2]+1e-9,'must not step backward from the table');
+   previous=current;
+  }
+ });

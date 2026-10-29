@@ -76,19 +76,17 @@ test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
 });
 function normalizeForTest(v){const length=Math.hypot(...v);return v.map(x=>x/length);}
 
-test('Table and Workshop replay identical camera positions and gaze in reverse',()=>{
+test('Table to Workshop turns right once and holds its desk heading',()=>{
  for(const aspect of [.45,1,16/9]){
-  const outward=navigationViews('table','workshop',aspect),back=navigationViews('workshop','table',aspect);
-  assert.deepEqual(outward,back.slice().reverse());
-  const curve=views=>new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal');
-  const a=curve(outward),b=curve(back),direction=v=>v.target.map((x,i)=>x-v.position[i]);
-  const start=direction(outward[0]),end=direction(outward.at(-1));
+  const views=navigationViews('table','workshop',aspect),direction=v=>v.target.map((x,i)=>x-v.position[i]);
+  const start=direction(views[0]),end=direction(views.at(-1));
+  let previousYaw=Math.atan2(start[0],start[2]);
   for(let i=0;i<=200;i++){
-   const t=i/200;
-   assert.ok(a.getPointAt(t).distanceTo(b.getPointAt(1-t))<1e-8);
-   const forward=navigationDirection(start,end,'table','workshop',t);
-   const reverse=navigationDirection(end,start,'workshop','table',1-t);
-   forward.forEach((value,j)=>assert.ok(Math.abs(value-reverse[j])<1e-10));
+   const t=i/200,d=navigationDirection(start,end,'table','workshop',t),yaw=Math.atan2(d[0],d[2]);
+   assert.ok(yaw<=previousYaw+1e-10,'right turn must not reverse');
+   assert.ok(d[0]>=-1e-10,'must not face backward toward Home');
+   if(t>=.38)d.forEach((value,j)=>assert.ok(Math.abs(value-normalizeForTest(end)[j])<1e-10));
+   previousYaw=yaw;
   }
  }
 });

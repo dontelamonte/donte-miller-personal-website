@@ -1,5 +1,5 @@
 import {cameraAt} from './house-path.js?v=compact-shell-24';
-import {libraryCameraAt} from './library-path.js';
+import {libraryCameraAt} from './library-path.js?v=direct-workshop-27';
 import {WORKSHOP_STOP} from './workshop-route.js';
 
 const clamp01=value=>Math.max(0,Math.min(1,value));
@@ -20,11 +20,10 @@ export function blendViewDirections(start,end,amount){
 // Gaze is independent of path slope: lift from a reader, face the passage,
 // then turn once toward the destination. Same-room travel only blends endpoints.
 export function navigationDirection(start,end,from,to,t){
- // The Table departure replays the established Workshop return in reverse,
- // including its gaze and timing, rather than inventing an east-facing turn.
- if(from==='table'&&to==='workshop')
-  return navigationDirection(end,start,'workshop','table',1-clamp01(t));
  const ease=x=>{x=clamp01(x);return x*x*x*(x*(x*6-15)+10);};
+ // Turn right once toward the desk, then hold that heading for the approach.
+ if(from==='table'&&to==='workshop')
+  return blendViewDirections(start,end,ease(t/.38));
  const order={living:0,table:1,workshop:2,library:3};
  if([from,to].every(room=>room==='workshop'||room==='library'))
   return blendViewDirections(start,end,ease(t));
