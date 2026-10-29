@@ -4,6 +4,12 @@
 html[data-text-style]{--ts-blur:blur(10px) saturate(1.1);--ts-shadow:0 8px 30px #0f1d262e}
 html[data-text-style=glass],html[data-text-style=glass-scrim]{--ts-bg:#102a3bc7;--ts-fg:#f6ead2;--ts-muted:#eadfc9;--ts-border:#d7aa7273;--ts-accent:#e9bd85}
 html[data-text-style=paper]{--ts-bg:#f6eddbeb;--ts-fg:#243d32;--ts-muted:#3c4f43;--ts-border:#c5aa7a;--ts-accent:#a74d31}
+/* Lighter variants: less tint and shadow; a stronger blur and a soft text shadow carry the contrast. */
+html[data-text-style=glass-light],html[data-text-style=grey-light]{--ts-blur:blur(14px) saturate(1.05);--ts-shadow:0 4px 18px #0f1d2614;--ts-fg:#fbf3e3;--ts-muted:#f1e7d3}
+html[data-text-style=glass-light]{--ts-bg:#102a3b73;--ts-border:#d7aa7247;--ts-accent:#ecc48f}
+html[data-text-style=grey-light]{--ts-bg:#2a2a2a66;--ts-border:#ffffff2e;--ts-accent:#ecc48f}
+html[data-text-style=glass-light] :is(.room-navigation,#motion-toggle,#table-view .intro,.table-hint,.about-story,.library-intro,#house-scroll-hint),
+html[data-text-style=grey-light] :is(.room-navigation,#motion-toggle,#table-view .intro,.table-hint,.about-story,.library-intro,#house-scroll-hint){text-shadow:0 1px 8px #0b161f73}
 
 /* Shared backing: tab bar, room placards and footer chips. */
 html[data-text-style] .site-header .room-navigation,
