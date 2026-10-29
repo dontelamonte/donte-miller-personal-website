@@ -1,15 +1,16 @@
 import * as THREE from './vendor/three.module.min.js';
 import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
+import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
 import {cameraAt,followProgress,TABLE_CAMERA} from './house-path.js?v=compact-shell-24';
-import {buildHouse} from './house-scene.js?v=compact-shell-24';
+import {buildHouse} from './house-scene.js?v=environment-31';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
 import {navigationViews,navigationDirection} from './navigation-route.js?v=left-home-29';
-import {buildLibrary} from './library-scene.js?v=compact-shell-24';
+import {buildLibrary} from './library-scene.js?v=environment-31';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
 
@@ -456,7 +457,7 @@ function makeBook(id,x,z,angle){const group=new THREE.Group();scene.add(group);c
  const clip=mesh(new THREE.BoxGeometry(.016,.018,.25),new THREE.MeshStandardMaterial({color:'#bb9c57',metalness:.7,roughness:.4}),penRig);clip.position.set(.018,.026,-.32);}
 
  group.userData.bookId=id;group.traverse(c=>{if(c.isMesh){c.userData.bookId=id;pickables.push(c);}});books.set(id,{group,hinge,hingeAxis:topBound?'x':'y',w,h,home:{position:group.position.clone(),rotation:group.rotation.clone()}});}
-function makeChair(x,z,rot){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rot;scene.add(group);const wood=new THREE.MeshStandardMaterial({color:'#684329',roughness:.85}),fabric=new THREE.MeshStandardMaterial({color:'#a95e36',roughness:1});const seat=mesh(new THREE.CylinderGeometry(.51,.5,.16,32),fabric,group);seat.scale.z=.85;seat.position.y=.39;for(const a of [-1,1])for(const b of [-1,1]){const leg=mesh(new THREE.BoxGeometry(.08,.44,.08),wood,group);leg.position.set(a*.32,.15,b*.27);}const back=mesh(new THREE.BoxGeometry(1.02,.08,.1),wood,group);back.position.set(0,1,-.38);for(const a of [-1,1]){const post=mesh(new THREE.BoxGeometry(.07,.85,.07),wood,group);post.position.set(a*.46,.61,-.38);}}
+function makeChair(x,z,rot){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rot;scene.add(group);const wood=environmentMaterial('#875a36','wood'),fabric=environmentMaterial('#bf7244','fabric');const seat=mesh(new THREE.CylinderGeometry(.51,.5,.16,32),fabric,group);seat.scale.z=.85;seat.position.y=.39;for(const a of [-1,1])for(const b of [-1,1]){const leg=mesh(new THREE.BoxGeometry(.08,.44,.08),wood,group);leg.position.set(a*.32,.15,b*.27);}const back=mesh(new THREE.BoxGeometry(1.02,.08,.1),wood,group);back.position.set(0,1,-.38);for(const a of [-1,1]){const post=mesh(new THREE.BoxGeometry(.07,.85,.07),wood,group);post.position.set(a*.46,.61,-.38);}}
 function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('#e3d5bd');scene.fog=new THREE.Fog('#dfd0b7',50,95);camera=new THREE.PerspectiveCamera(40,viewport().width/viewport().height,.1,80);camera.position.set(0,9.8,6.8);camera.lookAt(target);
  const hemi=new THREE.HemisphereLight('#fff9e9','#846d4a',2.5);scene.add(hemi);const key=new THREE.DirectionalLight('#fff4d3',3);key.position.set(-5,10,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-29,right:15,top:16,bottom:-16,near:.5,far:65});key.shadow.bias=-.0004;key.shadow.normalBias=.025;key.shadow.radius=4;scene.add(key);const fill=new THREE.DirectionalLight('#c4d8ee',1.2);fill.position.set(6,4,-3);scene.add(fill);
  const floor=mesh(new THREE.PlaneGeometry(80,80),new THREE.MeshStandardMaterial({color:'#dfcfb1',roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-.5;floor.castShadow=false;

@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {environmentMaterial} from './environment-materials.js';
 import {houseShellFrontZ} from './house-path.js?v=compact-shell-24';
 
 // Connected architecture and independent objects; the room is not a backdrop.
@@ -7,8 +8,7 @@ export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
  const pickables=[],anchors=new Map();
  let seed=21;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
  function tex(draw,w=768,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
- function paint(color){const base=new THREE.Color(color).convertLinearToSRGB();const map=tex((c,w,h)=>{c.fillStyle=color;c.fillRect(0,0,w,h);for(let i=0;i<9000;i++){const v=.92+rand()*.16;c.fillStyle=`rgba(${Math.round(base.r*255*v)},${Math.round(base.g*255*v)},${Math.round(base.b*255*v)},${.04+rand()*.08})`;c.save();c.translate(rand()*w,rand()*h);c.rotate(-.45+rand()*.4);c.fillRect(0,0,4+rand()*42,1+rand()*8);c.restore();}},512,512);return new THREE.MeshStandardMaterial({map,roughness:1});}
- const red=paint('#a84629'),blue=paint('#183b54'),navy=paint('#243f55'),cream=paint('#d9c3a0'),wood=paint('#633d27'),fabric=paint('#214e70'),rust=paint('#b9562f');
+ const red=environmentMaterial('#bd5030'),blue=environmentMaterial('#204b65','painted-wood'),navy=environmentMaterial('#294d65','painted-wood'),cream=environmentMaterial('#e3cfad'),wood=environmentMaterial('#805334','wood'),fabric=environmentMaterial('#30668a','fabric'),rust=environmentMaterial('#cb6b3e','fabric');
  const gold=new THREE.MeshStandardMaterial({color:'#ae793b',metalness:.55,roughness:.52});
  const paleGold=new THREE.MeshStandardMaterial({color:'#d0ab66',metalness:.4,roughness:.6});
  const dark=new THREE.MeshStandardMaterial({color:'#28231b',roughness:.8});
@@ -53,14 +53,14 @@ export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
  box(7.45,.07,.1,0,2.16,-.62,rust,sofa);
  for(const x of [-2.48,0,2.48]){const cushion=roundBox(2.4,.27,1.63,.12,fabric,sofa);cushion.position.set(x,.77,.16);const seam=box(2.33,.025,.035,x,.85,.98,rust,sofa);seam.castShadow=false;const pad=roundBox(2.36,1.3,.31,.2,fabric,sofa);pad.position.set(x,1.5,-.4);for(const u of [-.55,.55]){const button=mesh(new THREE.SphereGeometry(.045,8,6),navy,sofa);button.position.set(x+u,1.6,-.18);}}
  for(const x of [-3.82,3.82]){const arm=mesh(new THREE.CylinderGeometry(.34,.34,1.9,20),fabric,sofa);arm.rotation.x=Math.PI/2;arm.position.set(x,1.12,.02);const end=mesh(new THREE.TorusGeometry(.3,.025,6,24),rust,sofa);end.position.set(x,1.12,1.01);}
- for(let i=0;i<27;i++){const tassel=mesh(new THREE.ConeGeometry(.1,.3,8),rust,sofa);tassel.rotation.z=Math.PI;tassel.position.set(-3.65+i*.28,-.02,1.02);}
+ for(let i=0;i<27;i++){const tassel=mesh(new THREE.CylinderGeometry(.045,.09,.23,8),rust,sofa);tassel.position.set(-3.65+i*.28,-.02,1.02);}
  for(const x of [-3.5,3.5])for(const z of [-.6,.65])box(.12,.32,.12,x,-.18,z,wood,sofa);
  for(const x of [-1.5,1.65]){const p=mesh(new THREE.SphereGeometry(.48,18,12),rust,sofa);p.scale.set(1.1,1,.58);p.position.set(x,1.22,.05);p.rotation.z=x*.13;}
  const bolster=mesh(new THREE.CylinderGeometry(.31,.31,1.6,20),rust,sofa);bolster.rotation.z=Math.PI/2;bolster.position.set(0,1.1,.3);
  // Blue-and-white porcelain lamps echo the supplied room.
  const chinaMap=tex((c,W,H)=>{c.fillStyle='#e7ddc5';c.fillRect(0,0,W,H);c.strokeStyle='#24476a';for(let i=0;i<120;i++){const x=rand()*W,y=rand()*H;c.beginPath();c.ellipse(x,y,8+rand()*10,14+rand()*18,rand()*3,0,Math.PI*2);c.lineWidth=3;c.stroke();}for(const y of [10,30,H-30,H-10]){c.fillStyle='#214768';c.fillRect(0,y,W,5);}},512,768);
  const china=new THREE.MeshStandardMaterial({map:chinaMap,roughness:.6});
- function lamp(x,z){box(1.45,.13,1.1,x,.72,z,wood);for(const a of [-.54,.54])for(const b of [-.38,.38])box(.07,1.18,.07,x+a,.1,z+b,wood);const points=[[.12,0],[.35,.12],[.36,.55],[.21,.9],[.14,1.02]].map(p=>new THREE.Vector2(...p));const vase=mesh(new THREE.LatheGeometry(points,24),china);vase.position.set(x,.8,z);const stem=mesh(new THREE.CylinderGeometry(.035,.035,.5,10),gold);stem.position.set(x,1.95,z);const shade=mesh(new THREE.ConeGeometry(.58,.65,14,1,true),new THREE.MeshStandardMaterial({color:'#f6dbad',roughness:1,side:THREE.DoubleSide,emissive:'#bd782b',emissiveIntensity:.25}));shade.position.set(x,2.35,z);const rim=mesh(new THREE.TorusGeometry(.58,.022,6,28),dark);rim.rotation.x=Math.PI/2;rim.position.set(x,2.03,z);const light=new THREE.PointLight('#ffd19a',7,5,2);light.position.set(x,2.12,z);root.add(light);const jar=mesh(new THREE.LatheGeometry(points,20),china);jar.scale.set(.7,.7,.7);jar.position.set(x,-.45,z);}
+ function lamp(x,z){box(1.45,.13,1.1,x,.72,z,wood);for(const a of [-.54,.54])for(const b of [-.38,.38])box(.07,1.18,.07,x+a,.1,z+b,wood);const points=[[.12,0],[.35,.12],[.36,.55],[.21,.9],[.14,1.02]].map(p=>new THREE.Vector2(...p));const vase=mesh(new THREE.LatheGeometry(points,24),china);vase.position.set(x,.8,z);const stem=mesh(new THREE.CylinderGeometry(.035,.035,.5,10),gold);stem.position.set(x,1.95,z);const shade=mesh(new THREE.LatheGeometry([[.58,-.32],[.55,-.19],[.46,.02],[.31,.19],[.12,.28],[.05,.3]].map(p=>new THREE.Vector2(...p)),24),new THREE.MeshStandardMaterial({color:'#f6dbad',roughness:1,side:THREE.DoubleSide,emissive:'#bd782b',emissiveIntensity:.25}));shade.position.set(x,2.35,z);for(let i=0;i<10;i++){const a=i*Math.PI/5;const curve=new THREE.CatmullRomCurve3([[.58,-.32],[.46,.02],[.12,.28]].map(([r,h])=>new THREE.Vector3(x+Math.cos(a)*r,2.35+h,z+Math.sin(a)*r)));mesh(new THREE.TubeGeometry(curve,8,.009,3,false),dark);}const rim=mesh(new THREE.TorusGeometry(.58,.022,6,28),dark);rim.rotation.x=Math.PI/2;rim.position.set(x,2.03,z);const light=new THREE.PointLight('#ffd19a',7,5,2);light.position.set(x,2.12,z);root.add(light);const jar=mesh(new THREE.LatheGeometry(points,20),china);jar.scale.set(.7,.7,.7);jar.position.set(x,-.45,z);}
  lamp(-19.9,-4.55);lamp(-10.1,-4.55);
  // The dividing wall has an actual opening: z=1.1..5.5, x=-7.5.
  box(.35,8.8,7.1,-7.5,3.9,-2.45,cream);box(.35,8.8,4.4,-7.5,3.9,7.7,cream);

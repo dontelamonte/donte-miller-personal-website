@@ -1,16 +1,17 @@
 import * as THREE from './vendor/three.module.min.js';
+import {environmentMaterial,addTrailingVine} from './environment-materials.js';
 import {curricula} from './library-content.js';
 import {houseShellFrontZ} from './house-path.js?v=compact-shell-24';
 
 export function buildLibrary(scene,{aspect=16/9}={}){
  const root=new THREE.Group();root.name='The library';scene.add(root);
  const pickables=[],books=new Map(),anchors=new Map(),modelPads=new Map(),modelPickables=[];
- const wood=new THREE.MeshStandardMaterial({color:'#633d29',roughness:.85});
- const edge=new THREE.MeshStandardMaterial({color:'#a66b3a',roughness:.7});
- const blue=new THREE.MeshStandardMaterial({color:'#183b54',roughness:1});
+ const wood=environmentMaterial('#875535','wood');
+ const edge=environmentMaterial('#bd874d','wood');
+ const blue=environmentMaterial('#26516d','plaster');
  const dark=new THREE.MeshStandardMaterial({color:'#162a38',roughness:1});
  const green=new THREE.MeshStandardMaterial({color:'#4d6547',roughness:1});
- const cream=new THREE.MeshStandardMaterial({color:'#d6c29e',roughness:1});
+ const cream=environmentMaterial('#e4d1ae');
  function mesh(geometry,material,parent=root){const m=new THREE.Mesh(geometry,material);parent.add(m);m.castShadow=true;m.receiveShadow=true;return m;}
  function box(w,h,d,x,y,z,material,parent=root){const m=mesh(new THREE.BoxGeometry(w,h,d),material,parent);m.position.set(x,y,z);return m;}
  function canvasTexture(draw,w=512,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
@@ -23,11 +24,11 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  box(15.4,8.8,.3,15.3,3.9,-6,blue);box(.3,8.8,15.8,23.1,3.9,1.8,blue);
  // The reference describes a room. Only its central painting is mapped onto the wall;
  // the desk, chair, computer and surrounding decor are separate 3D objects.
- const studioWood=new THREE.MeshStandardMaterial({color:'#94633e',roughness:.88});
- const deskBlue=new THREE.MeshStandardMaterial({color:'#245474',roughness:.9});
- const studioCream=new THREE.MeshStandardMaterial({color:'#e4d4b8',roughness:1});
+ const studioWood=environmentMaterial('#ac794b','wood');
+ const deskBlue=environmentMaterial('#386884','painted-wood');
+ const studioCream=environmentMaterial('#ead8b9');
  const screen=new THREE.MeshStandardMaterial({color:'#d7d0bb',roughness:.75,emissive:'#786e5c',emissiveIntensity:.14});
- const upholstery=new THREE.MeshStandardMaterial({color:'#385d75',roughness:1});
+ const upholstery=environmentMaterial('#446d89','fabric');
  for(const z of [-.95,7.45])box(.11,8.2,1.4,22.87,3.55,z,studioCream);
  box(.12,.14,7.4,22.85,7.75,3.25,studioWood);box(.12,.14,7.4,22.85,.08,3.25,studioWood);
  const paintingMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>window.dispatchEvent(new Event('scene-asset-ready')));
@@ -82,11 +83,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
   box(.025,1.3,.025,21.9,7.63,z,dark);
   const lamp=mesh(new THREE.CylinderGeometry(.18,.42,.34,14),studioCream);lamp.position.set(21.9,6.85,z);
  }
- for(let i=0;i<18;i++){
-  const leaf=mesh(new THREE.SphereGeometry(.25,7,5),plantGreen);leaf.scale.set(.7,1.5,.75);
-  leaf.position.set(22.45-(i%3)*.18,7.85-(i%5)*.22,.2+i*.34);
-  leaf.rotation.z=(i%4-1.5)*.35;
- }
+ for(const [z,length] of [[.25,2.5],[6.1,3.4],[6.75,2]])addTrailingVine(root,{x:22.38,y:8.05,z,length,seed:Math.round(z*20)+9});
  const studioLight=new THREE.PointLight('#ffcc91',7,12,2);studioLight.position.set(20.5,5.6,3.25);root.add(studioLight);
  box(15.2,.25,shellDepth,15.3,8.45,shellCenterZ,dark);
  // Complete the shared outer shell behind the camera path. This joins the
@@ -106,7 +103,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  for(const y of [.02,2.42,4.96,7.35]){box(14.05,.2,1.25,15.4,y,-4.9,wood);box(14.05,.06,.12,15.4,y-.1,-4.22,edge);}
  let seed=129;const random=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
  const colors=['#9c4d30','#cf9860','#d4b78d','#355a68','#6a754e','#7d5a48','#e0cba0','#ad6d41'];
- for(const row of [0,1,2]){const bottom=[.13,5.08,7.48][row],height=[1.9,1.65,.62][row];for(let x=8.75;x<22.05;){const w=.11+random()*.17,h=height*(.7+random()*.27),z=-4.52+random()*.15;const m=new THREE.MeshStandardMaterial({color:colors[Math.floor(random()*colors.length)],roughness:.9});const book=box(w,h,.58,x+w/2,bottom+h/2,z,m);book.rotation.z=(random()-.5)*.08;if(random()>.8)box(w*.7,.025,.61,x+w/2,bottom+h*.75,z,edge);x+=w+.018;}}
+ for(const row of [0,1,2]){const bottom=[.13,5.08,7.48][row],height=[1.9,1.65,.62][row];for(let x=8.75;x<22.05;){const w=.11+random()*.17,h=height*(.7+random()*.27),z=-4.52+random()*.15;if(row===2&&Math.abs(x-15.4)<.65){x+=.3;continue;}const m=environmentMaterial(colors[Math.floor(random()*colors.length)],'fabric');const book=box(w,h,.58,x+w/2,bottom+h/2,z,m);book.rotation.z=(random()-.5)*.08;if(random()>.8)box(w*.7,.025,.61,x+w/2,bottom+h*.75,z,edge);x+=w+.018;}}
  for(const [i,item] of curricula.entries()){
   const x=9.67+i*2.25,group=new THREE.Group();root.add(group);group.position.set(x,3.65,-4.55);group.rotation.y=(i%2?-.06:.06);
   const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=item.theme;c.fillRect(0,0,w,h);c.strokeStyle='#e6c18b';c.lineWidth=5;c.strokeRect(22,22,w-44,h-44);c.fillStyle='#f3e4c6';c.font='22px Georgia';c.fillText('DONTE MILLER',45,92);const parts=item.title==='Flourish Fellowship'?['Flourish','Fellowship']:[item.title];c.font=parts.length>1?'62px Georgia':'78px Georgia';parts.forEach((part,j)=>c.fillText(part,43,300+j*78));c.fillRect(45,575,w-90,2);c.font='24px Georgia';c.fillText(item.comingSoon?'COMING SOON':'CURRICULUM PREVIEW',45,622);},512,768);
@@ -119,7 +116,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  }
  // Globe, plant clusters and a bench give the library its own silhouette.
  box(3.8,.18,1.2,15.4,.53,-3.3,wood);for(const x of [13.7,17.1])box(.14,.65,.14,x,.18,-3.3,wood);
- const globe=mesh(new THREE.SphereGeometry(.43,20,12),new THREE.MeshStandardMaterial({color:'#bba26e',roughness:.8}));globe.position.set(15.4,6.3,-4.5);const stand=mesh(new THREE.CylinderGeometry(.025,.04,.32,8),edge);stand.position.set(15.4,5.78,-4.5);
+ const globe=mesh(new THREE.SphereGeometry(.32,20,12),new THREE.MeshStandardMaterial({color:'#bba26e',roughness:.8}));globe.position.set(15.4,7.99,-4.5);const stand=mesh(new THREE.CylinderGeometry(.025,.04,.32,8),edge);stand.position.set(15.4,7.54,-4.5);
  for(const x of [8.4,22.4]){const pot=mesh(new THREE.CylinderGeometry(.38,.28,.7,12),cream);pot.position.set(x,-.1,-2.8);for(let i=0;i<7;i++){const leaf=mesh(new THREE.SphereGeometry(1,7,5),green);leaf.scale.set(.22,.67,.13);leaf.position.set(x+(random()-.5)*.9,.75+random()*1.4,-2.8+(random()-.5)*.9);leaf.rotation.z=(random()-.5)*1.2;}};
  const light=new THREE.PointLight('#ffcf96',14,23,2);light.position.set(16,6,2);root.add(light);
  return {root,pickables,books,anchors,modelPads,modelPickables};
