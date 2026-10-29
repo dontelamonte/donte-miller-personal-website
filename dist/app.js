@@ -4,10 +4,10 @@ import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=
 import {buildHouse} from './house-scene.js?v=compact-shell-24';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
-import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-return-28';
+import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=left-return-28';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=left-home-29';
 import {buildLibrary} from './library-scene.js?v=compact-shell-24';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';

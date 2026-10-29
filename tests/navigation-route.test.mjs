@@ -104,3 +104,20 @@ test('Workshop to Table turns left continuously without an about-face',()=>{
   }
  }
 });
+
+test('Workshop to Home departs left toward the west doorway at every viewport',()=>{
+ for(const aspect of [.45,1,16/9]){
+  const views=navigationViews('workshop','living',aspect),dir=v=>v.target.map((x,i)=>x-v.position[i]);
+  const start=dir(views[0]),end=dir(views.at(-1));
+  let previous=navigationDirection(start,end,'workshop','living',0),total=0;
+  for(let i=1;i<=320;i++){
+   const current=navigationDirection(start,end,'workshop','living',i/1000);
+   const a=Math.atan2(previous[0],previous[2]),b=Math.atan2(current[0],current[2]);
+   const delta=Math.atan2(Math.sin(b-a),Math.cos(b-a));
+   assert.ok(delta>=-1e-9,'departure must turn left');
+   total+=delta;previous=current;
+  }
+  assert.ok(total>Math.PI*.9&&total<Math.PI*1.1,'one left about-face toward Home');
+  assert.deepEqual(navigationDirection(start,end,'workshop','living',.5),[-1,0,0]);
+ }
+});

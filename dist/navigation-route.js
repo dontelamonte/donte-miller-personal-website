@@ -9,11 +9,13 @@ const wrapAngle=angle=>Math.atan2(Math.sin(angle),Math.cos(angle));
 // Blend camera directions on yaw and pitch rather than interpolating two
 // world-space target points. A target-point blend can pass through the camera
 // when travel reverses, producing the visible left/down/right swing.
-export function blendViewDirections(start,end,amount){
+export function blendViewDirections(start,end,amount,turn='shortest'){
  const a=normalize(start),b=normalize(end),t=clamp01(amount);
  const yawA=Math.atan2(a[0],a[2]),yawB=Math.atan2(b[0],b[2]);
  const pitchA=Math.asin(Math.max(-1,Math.min(1,a[1]))),pitchB=Math.asin(Math.max(-1,Math.min(1,b[1])));
- const yaw=yawA+wrapAngle(yawB-yawA)*t,pitch=pitchA+(pitchB-pitchA)*t,level=Math.cos(pitch);
+ let delta=wrapAngle(yawB-yawA);
+ if(turn==='left'&&delta<0)delta+=2*Math.PI;
+ const yaw=yawA+delta*t,pitch=pitchA+(pitchB-pitchA)*t,level=Math.cos(pitch);
  return [Math.sin(yaw)*level,Math.sin(pitch),Math.cos(yaw)*level];
 }
 
@@ -31,7 +33,7 @@ export function navigationDirection(start,end,from,to,t){
  if([from,to].every(room=>room==='workshop'||room==='library'))
   return blendViewDirections(start,end,ease(t));
  const doorway=order[to]>order[from]?[1,0,0]:[-1,0,0];
- if(t<.32)return blendViewDirections(start,doorway,ease(t/.32));
+ if(t<.32)return blendViewDirections(start,doorway,ease(t/.32),from==='workshop'&&to==='living'?'left':'shortest');
  if(t>.62)return blendViewDirections(doorway,end,ease((t-.62)/.38));
  return doorway;
 }
