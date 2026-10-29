@@ -75,3 +75,20 @@ test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
  }
 });
 function normalizeForTest(v){const length=Math.hypot(...v);return v.map(x=>x/length);}
+
+test('Table and Workshop replay identical camera positions and gaze in reverse',()=>{
+ for(const aspect of [.45,1,16/9]){
+  const outward=navigationViews('table','workshop',aspect),back=navigationViews('workshop','table',aspect);
+  assert.deepEqual(outward,back.slice().reverse());
+  const curve=views=>new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal');
+  const a=curve(outward),b=curve(back),direction=v=>v.target.map((x,i)=>x-v.position[i]);
+  const start=direction(outward[0]),end=direction(outward.at(-1));
+  for(let i=0;i<=200;i++){
+   const t=i/200;
+   assert.ok(a.getPointAt(t).distanceTo(b.getPointAt(1-t))<1e-8);
+   const forward=navigationDirection(start,end,'table','workshop',t);
+   const reverse=navigationDirection(end,start,'workshop','table',1-t);
+   forward.forEach((value,j)=>assert.ok(Math.abs(value-reverse[j])<1e-10));
+  }
+ }
+});

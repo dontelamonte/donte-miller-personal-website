@@ -7,7 +7,7 @@ import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './abou
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=table-library-25';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=reversible-workshop-26';
 import {buildLibrary} from './library-scene.js?v=compact-shell-24';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
