@@ -35,7 +35,7 @@ Remote: `https://github.com/dontelamonte/donte-miller-personal-website` (public)
 The planning docs are mirrored into the repo's `docs/` folder (public). The copies in this folder stay canonical — edit these, never `prototype/docs/`.
 
 - After every handoff update, run `sh prototype/scripts/sync-docs.sh`, then commit `docs/` and push to `main`. `docs/` is outside the deployed `dist/` directory, so doc commits on `main` don't change the live site.
-- Mirrored: `HANDOFF.md`, `CLAUDE.md`, `build-plan.md`, `camera-storyboard.md`, `environment-audit.md`, `reference-manifest.csv`, `../personal-website-strategy.md`. Images, research snapshots and workbooks are not mirrored.
+- Mirrored: `HANDOFF.md`, `CLAUDE.md`, `build-plan.md`, `camera-storyboard.md`, `environment-audit.md`, `readability-plan.md`, `reference-manifest.csv`, `../personal-website-strategy.md`. Images, research snapshots and workbooks are not mirrored.
 - The repo is public: never put private or sensitive personal details in these docs.
 
 ## Deployment

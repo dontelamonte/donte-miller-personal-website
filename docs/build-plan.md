@@ -361,6 +361,8 @@ Respect reduced-motion preferences with still room views and direct content tran
 
 Phase 3 is active. The connected shell and most Phase 4 interactions were built before detailed environment production. Follow [environment-audit.md](environment-audit.md) for the evidence-based room findings, first material/silhouette pass, remaining furnishing work and acceptance gates. Next after this first pass: refine the living-room hero furniture, then dining, Workshop and library furnishings. Asset-catalog research is supporting work, not a replacement for this sequence. Phase 5 commerce is not implemented.
 
+Readability (added October 29, 2026): visitors struggle to read the room tabs and on-scene text, especially on phones. See [readability-plan.md](readability-plan.md) for the diagnosis, design options (indigo glass, paper placards, scrims), type and contrast rules, and phased implementation. Prioritised ahead of further furnishing passes.
+
 Room-boundary scrolling now starts a complete timed camera journey with one gesture on desktop or touch. About text and book content keep their own scrolling. This supersedes descriptions of distance-scrubbed room travel above; routes and room stops remain the same.
 
 
