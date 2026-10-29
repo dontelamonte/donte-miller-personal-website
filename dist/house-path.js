@@ -1,7 +1,17 @@
 export const HOUSE_SCROLL_DISTANCE=3400;
-// The front wall sits beyond every supported camera position, but close enough
-// that reverse travel still reads as an interior rather than an empty stage.
+// Maximum fallback used for the narrowest supported screens.
 export const HOUSE_SHELL_FRONT_Z=22;
+// Keep the wall just behind the farthest camera framing for the current screen.
+// Wide screens therefore get a compact room instead of a deep, unused stage,
+// while narrow screens retain the extra distance needed to frame the artwork.
+export function houseShellFrontZ(aspect=16/9){
+ const safeAspect=Math.max(.4,aspect);
+ const openingWidth=safeAspect<.85?8.5:13.6;
+ const homeFit=Math.max(0,openingWidth/(2*Math.tan(46*Math.PI/360)*safeAspect)-12.6);
+ const libraryDistance=7.7/(Math.tan(46*Math.PI/360)*Math.max(.45,safeAspect));
+ const libraryFit=Math.min(7,Math.max(0,libraryDistance-13.6));
+ return Math.min(HOUSE_SHELL_FRONT_Z,Math.max(10.5,8.8+homeFit+.9,8.8+libraryFit+.9));
+}
 export const TABLE_CAMERA={position:[-1.3,7.8,6],target:[-1.3,0,0],fov:46};
 const stops=[
  {at:0,position:[-15,3.1,7.0],target:[-15,3.15,-5.6]},

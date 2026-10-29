@@ -1,14 +1,14 @@
 import * as THREE from './vendor/three.module.min.js';
 import {ScrollFlow} from './scroll-flow.js';
-import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=smooth-house-6';
-import {buildHouse} from './house-scene.js';
+import {cameraAt,moveHouse,followProgress,TABLE_CAMERA} from './house-path.js?v=compact-shell-24';
+import {buildHouse} from './house-scene.js?v=compact-shell-24';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE,advanceWorkshopRoute} from './workshop-route.js';
-import {navigationViews} from './navigation-route.js';
-import {buildLibrary} from './library-scene.js';
+import {navigationViews,blendViewDirections} from './navigation-route.js?v=direction-turn-24';
+import {buildLibrary} from './library-scene.js?v=compact-shell-24';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
 
@@ -328,7 +328,7 @@ function navigateRoom(id,{historyChange=true}={}){
  if(points.at(-1).distanceTo(finalPosition)>.001)points.push(finalPosition);
  if(points.length<2){settleNavigation(id);return;}
  const path=new THREE.CatmullRomCurve3(points,false,'centripetal');
- const finalTarget=new THREE.Vector3(...finalView.target),flight={t:0};
+ const finalTarget=new THREE.Vector3(...finalView.target),startDirection=startTarget.clone().sub(startPosition).normalize(),flight={t:0};
  const smooth=t=>t*t*(3-2*t);
  const distance=path.getLength(),duration=Math.min(5,Math.max(.75,distance/5.3));
  document.body.classList.add('room-travelling');document.documentElement.dataset.room='travelling';
@@ -338,10 +338,10 @@ function navigateRoom(id,{historyChange=true}={}){
   const p=path.getPointAt(flight.t),ahead=path.getPointAt(Math.min(1,flight.t+.04));
   const direction=ahead.sub(p).normalize();
   if(direction.lengthSq()<.01)direction.copy(p).sub(path.getPointAt(Math.max(0,flight.t-.04))).normalize();
-  const forward=p.clone().addScaledVector(direction,8);
-  target.copy(forward);
-  if(flight.t<.13)target.lerpVectors(startTarget,forward,smooth(flight.t/.13));
-  if(flight.t>.72)target.lerp(finalTarget,smooth((flight.t-.72)/.28));
+  let gaze=direction.clone();
+  if(flight.t<.16)gaze.fromArray(blendViewDirections(startDirection.toArray(),direction.toArray(),smooth(flight.t/.16)));
+  if(flight.t>.72){const destinationDirection=finalTarget.clone().sub(p).normalize();gaze.fromArray(blendViewDirections(gaze.toArray(),destinationDirection.toArray(),smooth((flight.t-.72)/.28)));}
+  target.copy(p).addScaledVector(gaze,8);
   camera.position.copy(p);camera.fov=THREE.MathUtils.lerp(startFov,finalView.fov,flight.t);
   const r=viewport();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();look();
  },onComplete:()=>settleNavigation(id)});
@@ -473,7 +473,8 @@ function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('
  const legMat=new THREE.MeshStandardMaterial({color:'#29483e',roughness:.9});for(const x of [-1.9,1.9]){const leg=mesh(new THREE.CylinderGeometry(.48,.55,1,32),legMat);leg.position.set(x,.03,0);}
  makeChair(-4.8,0,Math.PI/2);makeChair(4.8,0,-Math.PI/2);for(const x of [-1.5,1.5])makeChair(x,3.4,0);for(const x of [-1.5,1.5])makeChair(x,-3.4,Math.PI);
  makeBook('press',-1.75,.05,-.13);makeBook('report',0,-.03,.07);makeBook('opportunities',1.72,.13,-.08);
- house=buildHouse(scene,{portrait:portraitImage,rugMap:rugTexture()});library=buildLibrary(scene);
+ const sceneAspect=viewport().width/viewport().height;
+ house=buildHouse(scene,{portrait:portraitImage,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
  travelCamera();
  function pick(e){updatePointer(e);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(state.libraryProgress>.94?library.pickables:Math.abs(state.libraryProgress-WORKSHOP_STOP)<.035?library.modelPickables:state.houseProgress<.25?house.pickables:state.houseProgress>.94?pickables:[],false)[0]?.object;}
  renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||hit?.userData.courseId||hit?.userData.modelId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));library.books.forEach((b,key)=>gsap.to(b.group.position,{z:b.home.position.z+(key===id ? .12 : 0),duration:.25,onUpdate:invalidateShadows}));library.modelPads.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));});

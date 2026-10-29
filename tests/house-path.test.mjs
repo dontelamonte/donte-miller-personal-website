@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {cameraAt,moveHouse,HOUSE_SCROLL_DISTANCE,followProgress,TABLE_CAMERA,HOUSE_SHELL_FRONT_Z} from '../dist/house-path.js';
+import {cameraAt,moveHouse,HOUSE_SCROLL_DISTANCE,followProgress,TABLE_CAMERA,houseShellFrontZ} from '../dist/house-path.js';
 
 test('journey ends at the lower table camera without changing the reading sequence',()=>{
  assert.deepEqual(cameraAt(1,16/9),{...TABLE_CAMERA,room:'table'});assert.ok(TABLE_CAMERA.position[1]<8);
@@ -12,15 +12,20 @@ test('opening camera fits the focused phone view or both desktop plaque columns'
  for(const aspect of [.5,.65,.95,16/9]){const {position,target,fov}=cameraAt(0,aspect);const distance=position[2]-target[2];const width=2*distance*Math.tan(fov*Math.PI/360)*aspect;assert.ok(width>=(aspect<.85?8.49:13.59));}
 });
 test('narrow-screen Home framing remains inside the connected house shell',()=>{
- for(const aspect of [.4,.5,.65,.85,.93])assert.ok(cameraAt(0,aspect).position[2]<HOUSE_SHELL_FRONT_Z-.4,`camera escaped the front wall at aspect ${aspect}`);
+ for(const aspect of [.4,.5,.65,.85,.93])assert.ok(cameraAt(0,aspect).position[2]<houseShellFrontZ(aspect)-.4,`camera escaped the front wall at aspect ${aspect}`);
 });
 test('the full Home to Table camera rail stays inside the four-wall shell',()=>{
  for(const aspect of [.4,.5,.65,.85,1,16/9,2])for(let p=0;p<=1;p+=.001){
   const [x,y,z]=cameraAt(p,aspect).position;
   assert.ok(x>-23.1&&x<7.6,`camera escaped a side wall at ${p} / ${aspect}`);
   assert.ok(y>-.5&&y<8.6,`camera escaped floor or ceiling at ${p} / ${aspect}`);
-  assert.ok(z>-6&&z<HOUSE_SHELL_FRONT_Z-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
+  assert.ok(z>-6&&z<houseShellFrontZ(aspect)-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
  }
+});
+test('wide-screen rooms end just beyond the visible camera route',()=>{
+ assert.ok(houseShellFrontZ(16/9)<=10.5);
+ assert.ok(houseShellFrontZ(16/9)-cameraAt(0,16/9).position[2]<4);
+ assert.ok(houseShellFrontZ(.45)>houseShellFrontZ(16/9));
 });
 test('all camera samples remain finite, keep a look direction and do not enter the couch',()=>{
  for(let p=0;p<=1;p+=.001){const {position,target,fov}=cameraAt(p,.6);assert.ok([...position,...target,fov].every(Number.isFinite));assert.ok(Math.hypot(...position.map((x,i)=>x-target[i]))>1);if(position[0]< -8)assert.ok(position[2]>1.5);}

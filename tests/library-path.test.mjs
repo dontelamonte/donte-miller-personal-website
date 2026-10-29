@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {libraryCameraAt,moveLibrary,LIBRARY_CAMERA,LIBRARY_SCROLL_DISTANCE} from '../dist/library-path.js';
-import {HOUSE_SHELL_FRONT_Z} from '../dist/house-path.js';
+import {houseShellFrontZ} from '../dist/house-path.js';
 
 test('the library route starts at the table and ends facing the shelves',()=>{
  const start=libraryCameraAt(0),end=libraryCameraAt(1);
@@ -50,6 +50,6 @@ test('the Table to Library camera rail remains inside the dining and east-room s
   const [x,y,z]=libraryCameraAt(p,aspect).position;
   assert.ok(x>-7.6&&x<23.1,`camera escaped a side wall at ${p} / ${aspect}`);
   assert.ok(y>-.5&&y<8.46,`camera escaped floor or ceiling at ${p} / ${aspect}`);
-  assert.ok(z>-6&&z<HOUSE_SHELL_FRONT_Z-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
+  assert.ok(z>-6&&z<houseShellFrontZ(aspect)-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
  }
 });

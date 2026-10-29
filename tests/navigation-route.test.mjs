@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {navigationViews} from '../dist/navigation-route.js';
+import {navigationViews,blendViewDirections} from '../dist/navigation-route.js';
 
 const rooms=['living','table','workshop','library'];
 test('every room tab has a connected travel route in either direction',()=>{
@@ -27,4 +27,14 @@ test('Table travel uses its overhead pose only at the selected endpoint',()=>{
   assert.ok(returnTrip.at(-1).position[1]>7);
   assert.ok(outward.slice(1).every(v=>v.position[1]<6));
  }
+});
+test('reverse travel turns through a stable unit direction without a target-point swing',()=>{
+ const starts=[[0,0,-1],[0,-.4,-.916],[1,0,0]],ends=[[0,0,1],[-1,0,0],[0,.2,-.98]];
+ for(let pair=0;pair<starts.length;pair++)for(let step=0;step<=20;step++){
+  const direction=blendViewDirections(starts[pair],ends[pair],step/20);
+  assert.ok(direction.every(Number.isFinite));
+  assert.ok(Math.abs(Math.hypot(...direction)-1)<1e-10);
+ }
+ const midpoint=blendViewDirections([0,0,-1],[0,0,1],.5);
+ assert.ok(Math.abs(midpoint[1])<1e-12,'an about-face must not dip or rise');
 });

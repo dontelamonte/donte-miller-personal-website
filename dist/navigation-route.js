@@ -1,6 +1,21 @@
-import {cameraAt} from './house-path.js';
+import {cameraAt} from './house-path.js?v=compact-shell-24';
 import {libraryCameraAt} from './library-path.js';
 import {WORKSHOP_STOP} from './workshop-route.js';
+
+const clamp01=value=>Math.max(0,Math.min(1,value));
+const normalize=vector=>{const length=Math.hypot(...vector)||1;return vector.map(value=>value/length);};
+const wrapAngle=angle=>Math.atan2(Math.sin(angle),Math.cos(angle));
+
+// Blend camera directions on yaw and pitch rather than interpolating two
+// world-space target points. A target-point blend can pass through the camera
+// when travel reverses, producing the visible left/down/right swing.
+export function blendViewDirections(start,end,amount){
+ const a=normalize(start),b=normalize(end),t=clamp01(amount);
+ const yawA=Math.atan2(a[0],a[2]),yawB=Math.atan2(b[0],b[2]);
+ const pitchA=Math.asin(Math.max(-1,Math.min(1,a[1]))),pitchB=Math.asin(Math.max(-1,Math.min(1,b[1])));
+ const yaw=yawA+wrapAngle(yawB-yawA)*t,pitch=pitchA+(pitchB-pitchA)*t,level=Math.cos(pitch);
+ return [Math.sin(yaw)*level,Math.sin(pitch),Math.cos(yaw)*level];
+}
 
 // Tab travel uses connected room passages, but only the chosen room is a stop.
 // The table pose is overhead, so routes passing the table stay at walking height.
