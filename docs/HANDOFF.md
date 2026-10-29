@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Version 31 (environment first pass) passed browser visual QA (one fringe fix) on branch `v31-environment` (`e36a75b7a88f84021f7a5b705ec7daa8f3fc24e3`). It is NOT live: awaiting Donte's approval to merge into `main`.** Live site is now https://www.dontelamonte.com on Vercel (auto-deploys `main`). `main` still holds live version 30 in `dist/` (later `main` commits only add `docs/` and `scripts/`). See the October 29 Claude Code entry in the Change log.
+**Version 31 (environment first pass) is live** at https://www.dontelamonte.com (Vercel), released October 29, 2026 from `main` merge commit `324827a2139be399d69d5287ab7398c83cfdaad9`; cache identifier `environment-31`. See the Change log.
 
 **Version 30 is publicly deployed.** Room boundaries now trigger the entire existing camera journey with one nonzero scroll/swipe: Home (after About) → Table → Workshop (after notepad) → Library (after models), and reverse. Book/story reading remains distance-based. Momentum and held-touch guards prevent chaining rooms after arrival. Uses the existing tab-flight path and yaw rules, including left Workshop returns. Fresh arrivals reset sequences as before.
 
@@ -224,7 +224,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) v31 visual QA is done (see Change log); with Donte's approval, merge the branch into `main` (Vercel deploys it) and confirm `environment-31` loads on www.dontelamonte.com. (2) Continue `environment-audit.md` production order step 2: living-room hero furniture. (3) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Continue `environment-audit.md` production order step 2: living-room hero furniture. (3) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -241,6 +241,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Version 31 released to production** at Donte's explicit request ("Release v31"). Merged `v31-environment` into `main` as merge commit `324827a2139be399d69d5287ab7398c83cfdaad9` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. Verified live: `https://www.dontelamonte.com` serves `app.js?v=environment-31`; `/environment-materials.js` and `/house-scene.js` return 200; the live `house-scene.js` contains the tassel fix (no `tassel.rotation`). Live Home loaded in the browser pane, the loading overlay cleared, and the console had no errors. Not re-tested on the live site: Table, Workshop, Library rooms, tab flights, physical devices. Rollback: revert `324827a` on `main` and push, or promote the previous deployment in Vercel.
 - October 29, 2026 (Claude Code session): **v31 browser visual QA** on local `v31-environment` (loads `app.js?v=environment-31`), compared with `research/environment-2026-10-29/` before screenshots. Viewports: 663×701 (matching the before shots), 1280×800, and 390×844 (Home, Table, Workshop, Library). Results:
   - Home: woven sofa fabric and ribbed domed shades read better than v30. **Regression found and fixed:** the new cylinder fringe was flipped (`rotation.z=PI`) and looked like a row of upturned flowerpots. Removed the flip in `dist/house-scene.js`, so the tassels are narrow at the hem and flared at the bottom; re-checked visually.
   - Table: composition unchanged from before; chairs show wood and fabric texture. Publications and controls in place.
