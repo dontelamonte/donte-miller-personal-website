@@ -1,0 +1,93 @@
+/* Readability preview (readability-plan.md). Inactive unless the page URL has
+   ?text=glass | paper | glass-scrim, which sets html[data-text-style]. */
+
+html[data-text-style]{--ts-blur:blur(10px) saturate(1.1);--ts-shadow:0 8px 30px #0f1d262e}
+html[data-text-style=glass],html[data-text-style=glass-scrim]{--ts-bg:#102a3bc7;--ts-fg:#f6ead2;--ts-muted:#eadfc9;--ts-border:#d7aa7273;--ts-accent:#e9bd85}
+html[data-text-style=paper]{--ts-bg:#f6eddbeb;--ts-fg:#243d32;--ts-muted:#3c4f43;--ts-border:#c5aa7a;--ts-accent:#a74d31}
+
+/* Shared backing: tab bar, room placards and footer chips. */
+html[data-text-style] .site-header .room-navigation,
+html[data-text-style] #motion-toggle,
+html[data-text-style] #table-view .intro,
+html[data-text-style] .table-footer .edition-label,
+html[data-text-style] .table-footer .table-hint,
+html[data-text-style] .about-story,
+html[data-text-style] .library-intro,
+html[data-text-style] .house-footer #house-room-label,
+html[data-text-style] .house-footer #house-scroll-hint{
+ background:var(--ts-bg);color:var(--ts-fg);border:1px solid var(--ts-border);
+ -webkit-backdrop-filter:var(--ts-blur);backdrop-filter:var(--ts-blur);text-shadow:none;box-shadow:var(--ts-shadow)}
+
+/* Tabs: full opacity, readable size, brass marker for the current room. */
+html[data-text-style] .site-header .room-navigation{border-radius:999px;padding:0 20px;gap:20px}
+html[data-text-style] .room-navigation button{font-size:13px;letter-spacing:.3px;opacity:1;padding:11px 2px 9px;border-bottom:2px solid transparent}
+html[data-text-style] .room-navigation button[aria-current=true]{font-weight:600;border-color:var(--ts-accent)}
+html[data-text-style] .room-navigation button:hover{border-color:var(--ts-accent)}
+html[data-text-style] #motion-toggle{font-size:13px;border-radius:999px;padding:9px 16px;text-decoration:none}
+html[data-text-style] .scene-reading .site-header .room-navigation{background:none;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:inherit}
+
+/* Type floor. */
+html[data-text-style] .eyebrow{font-size:11px;letter-spacing:1.4px}
+html[data-text-style] .intro-note{font-size:15px;max-width:none;color:var(--ts-muted)}
+html[data-text-style] .table-footer{font-size:12px}
+html[data-text-style] .table-hint{font-size:13px;color:var(--ts-fg)}
+html[data-text-style] .hotspot,html[data-text-style] #hotspots .hotspot{font-size:11px;letter-spacing:.6px}
+html[data-text-style] .house-footer{font-size:12px}
+html[data-text-style] #house-scroll-hint{font-size:13px}
+html[data-text-style] .library-intro>p:last-child{font-size:15px}
+html[data-text-style] .library-controls button{font-size:14px}
+html[data-text-style] .library-controls button span{font-size:12px}
+html[data-text-style] .workshop-card>p:not(.eyebrow){font-size:15px}
+html[data-text-style] .workshop-models button,html[data-text-style] .workshop-continue{font-size:13px}
+html[data-text-style] .workshop-card .workshop-hint{font-size:13px!important}
+
+/* Placard shapes. */
+html[data-text-style] #table-view .intro{border-radius:16px;padding:20px 24px;max-width:400px}
+html[data-text-style] .table-footer .edition-label,
+html[data-text-style] .table-footer .table-hint,
+html[data-text-style] .house-footer #house-room-label,
+html[data-text-style] .house-footer #house-scroll-hint{border-radius:999px;padding:7px 14px}
+html[data-text-style] .library-intro{border-radius:16px;padding:20px 24px}
+html[data-text-style] .library-intro .eyebrow{color:var(--ts-accent)}
+html[data-text-style] .about-story{border-radius:16px}
+html[data-text-style] .about-story .eyebrow{color:var(--ts-accent);font-size:11px}
+html[data-text-style] .about-story-position{font-size:11px;color:var(--ts-muted)}
+html[data-text-style] .about-story[data-stage="welcome"]{height:auto;width:auto;max-width:min(480px,calc(100% - 48px));padding:18px 24px}
+html[data-text-style] .about-story[data-stage="welcome"] .about-story-position{display:none}
+html[data-text-style] .about-story[data-stage="welcome"] #about-story-text{font-size:15px}
+
+/* Paper uses the reader's ink; glass needs cream type on the Table. */
+html[data-text-style] #table-view .intro h1{color:var(--ts-fg)}
+
+/* Option C: soft edge shading behind the tab bar and footer. */
+html[data-text-style=glass-scrim] body::before,
+html[data-text-style=glass-scrim] body::after{content:'';position:fixed;left:0;right:0;z-index:4;pointer-events:none}
+html[data-text-style=glass-scrim] body::before{top:0;height:160px;background:linear-gradient(#102a3b8c,#102a3b00)}
+html[data-text-style=glass-scrim] body::after{bottom:0;height:140px;background:linear-gradient(#102a3b00,#102a3b8c)}
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ html[data-text-style=glass],html[data-text-style=glass-scrim]{--ts-bg:#102a3be6}
+}
+
+@media(max-width:560px){
+ html[data-text-style] .nav-article{display:none}
+ html[data-text-style] .site-header .room-navigation{padding:0 14px;gap:14px}
+ html[data-text-style] .room-navigation button{font-size:14px;min-height:44px;padding:0 2px}
+ html[data-text-style] #motion-toggle{font-size:12px;padding:8px 12px}
+ html[data-text-style] #table-view .intro{top:132px;left:16px;right:16px;max-width:none;padding:14px 18px}
+ html[data-text-style] #table-view .intro h1{font-size:34px}
+ html[data-text-style] .about-story[data-stage="welcome"]{top:128px;left:16px;right:16px;max-width:none;padding:14px 18px}
+ html[data-text-style] .about-story[data-stage="welcome"] #about-story-text{font-size:15px;max-width:none}
+ html[data-text-style] .library-intro{top:128px;left:16px;right:16px;padding:14px 18px}
+ html[data-text-style] .library-intro>p:last-child{font-size:14px}
+ html[data-text-style] .library-controls button{font-size:13px}
+ html[data-text-style] .library-controls button span{font-size:11px}
+ html[data-text-style] .workshop-card>p:not(.eyebrow){font-size:14px}
+ html[data-text-style] .workshop-models button{font-size:12px;padding:8px}
+ html[data-text-style] #hotspots .hotspot{font-size:11px}
+ /* The room name is already in the tab bar; keep one hint chip so the footer clears the buttons above it. */
+ html[data-text-style] .house-footer #house-room-label,
+ html[data-text-style] .table-footer .edition-label{display:none}
+ html[data-text-style] #house-scroll-hint{font-size:13px}
+ html[data-text-style] .table-footer .table-hint{display:inline-block;max-width:none;font-size:13px;padding:7px 14px}
+}
