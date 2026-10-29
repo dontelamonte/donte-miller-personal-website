@@ -14,6 +14,11 @@ export function buildLibrary(scene){
  function mesh(geometry,material,parent=root){const m=new THREE.Mesh(geometry,material);parent.add(m);m.castShadow=true;m.receiveShadow=true;return m;}
  function box(w,h,d,x,y,z,material,parent=root){const m=mesh(new THREE.BoxGeometry(w,h,d),material,parent);m.position.set(x,y,z);return m;}
  function canvasTexture(draw,w=512,h=768){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
+ const backWallZ=-6,existingSideEndZ=9.7;
+ const shellDepth=HOUSE_SHELL_FRONT_Z-backWallZ;
+ const shellCenterZ=(HOUSE_SHELL_FRONT_Z+backWallZ)/2;
+ const returnDepth=HOUSE_SHELL_FRONT_Z-existingSideEndZ;
+ const returnCenterZ=(HOUSE_SHELL_FRONT_Z+existingSideEndZ)/2;
  // The dining-room doorway opens directly into this room, so the camera never fades between spaces.
  box(15.4,8.8,.3,15.3,3.9,-6,blue);box(.3,8.8,15.8,23.1,3.9,1.8,blue);
  // The reference describes a room. Only its central painting is mapped onto the wall;
@@ -83,13 +88,16 @@ export function buildLibrary(scene){
   leaf.rotation.z=(i%4-1.5)*.35;
  }
  const studioLight=new THREE.PointLight('#ffcc91',7,12,2);studioLight.position.set(20.5,5.6,3.25);root.add(studioLight);
- box(15.2,.25,30,15.3,8.45,9,dark);
+ box(15.2,.25,shellDepth,15.3,8.45,shellCenterZ,dark);
  // Complete the shared outer shell behind the camera path. This joins the
  // living/dining return wall while leaving the east-west archways unobstructed.
  box(15.2,8.8,.3,15.3,3.9,HOUSE_SHELL_FRONT_Z,blue);
+ // The east return completes the four-wall Workshop/Library volume.
+ box(.3,8.8,returnDepth,23.1,3.9,returnCenterZ,blue);
+ box(.1,.12,returnDepth,23.1,.12,returnCenterZ,edge);
  for(const x of [8.5,22.1])box(.25,8.3,.42,x,3.7,HOUSE_SHELL_FRONT_Z-.26,edge);
  for(const y of [.05,.35,.72])box(15.0,.08,.16,15.3,y,HOUSE_SHELL_FRONT_Z-.26,edge);
- for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,30,x,8.26,9,wood);
+ for(const x of [9.5,12.5,15.5,18.5,21.5])box(.1,.12,shellDepth,x,8.26,shellCenterZ,wood);
  for(const y of [-.12,.26,7.95])box(15.2,.12,.35,15.3,y,-5.77,edge);
  const rugMap=canvasTexture((c,w,h)=>{c.fillStyle='#1e4a6c';c.fillRect(0,0,w,h);for(let i=0;i<6;i++){c.strokeStyle=['#d9a35f','#e5c38c','#8f512f'][i%3];c.lineWidth=12-i;c.strokeRect(25+i*16,25+i*16,w-50-i*32,h-50-i*32);}for(let x=70;x<w-70;x+=40)for(let y=70;y<h-70;y+=40){c.fillStyle=(x+y)%3?'#ba6748':'#d5aa78';c.beginPath();c.ellipse(x,y,5,9,0,0,Math.PI*2);c.fill();}},768,512);
  const rug=mesh(new THREE.PlaneGeometry(11.8,7.5),new THREE.MeshStandardMaterial({map:rugMap,roughness:1}));rug.rotation.x=-Math.PI/2;rug.position.set(15.2,-.465,1.4);rug.castShadow=false;

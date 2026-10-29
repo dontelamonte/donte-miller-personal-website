@@ -1,5 +1,7 @@
 export const HOUSE_SCROLL_DISTANCE=3400;
-export const HOUSE_SHELL_FRONT_Z=24;
+// The front wall sits beyond every supported camera position, but close enough
+// that reverse travel still reads as an interior rather than an empty stage.
+export const HOUSE_SHELL_FRONT_Z=22;
 export const TABLE_CAMERA={position:[-1.3,7.8,6],target:[-1.3,0,0],fov:46};
 const stops=[
  {at:0,position:[-15,3.1,7.0],target:[-15,3.15,-5.6]},

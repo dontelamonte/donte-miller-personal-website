@@ -18,6 +18,11 @@ export function buildHouse(scene,{portrait, rugMap}) {
  function ring(w,h,border,m){const s=new THREE.Shape();s.moveTo(-w/2,-h/2);s.lineTo(w/2,-h/2);s.lineTo(w/2,h/2);s.lineTo(-w/2,h/2);s.closePath();const hole=new THREE.Path();hole.moveTo(-w/2+border,-h/2+border);hole.lineTo(-w/2+border,h/2-border);hole.lineTo(w/2-border,h/2-border);hole.lineTo(w/2-border,-h/2+border);hole.closePath();s.holes.push(hole);return mesh(new THREE.ExtrudeGeometry(s,{depth:.09,bevelEnabled:true,bevelSize:.025,bevelThickness:.025,bevelSegments:2,steps:1}),m);}
  function register(o,id){o.traverse(n=>{if(n.isMesh){n.userData.livingId=id;pickables.push(n);}});}
  function wallFrame(w,h,x,y,z){for(const [inset,mat] of [[0,wood],[.13,gold],[.24,dark],[.31,paleGold]]){const o=ring(w-inset,h-inset,.07,mat);o.position.set(x,y,z+inset*.18);} }
+ const backWallZ=-6,existingSideEndZ=9.8;
+ const shellDepth=HOUSE_SHELL_FRONT_Z-backWallZ;
+ const shellCenterZ=(HOUSE_SHELL_FRONT_Z+backWallZ)/2;
+ const returnDepth=HOUSE_SHELL_FRONT_Z-existingSideEndZ;
+ const returnCenterZ=(HOUSE_SHELL_FRONT_Z+existingSideEndZ)/2;
  // Living room: an open front, red portrait wall and blue woodwork.
  box(15.5,9,.32,-15.25,4,-6,red);
  box(.28,9,16,-23.1,4,1.8,navy);
@@ -26,13 +31,13 @@ export function buildHouse(scene,{portrait, rugMap}) {
  for(const x of [-22.65,-7.85]){box(.32,8.3,.5,x,3.9,-5.72,navy);box(.06,8.3,.54,x+.21,3.9,-5.7,gold);}
  for(const x of [-22.2,-8.3]){const f=ring(1.05,6.8,.075,gold);f.position.set(x,4.3,-5.75);}
  // Coffered ceiling ends at the dividing wall, clear of the overhead table.
- box(15.5,.22,30,-15.25,8.6,9,wood);
- for(let x=-22.7;x<=-7.7;x+=2.5)box(.12,.17,30,x,8.4,9,dark);
+ box(15.5,.22,shellDepth,-15.25,8.6,shellCenterZ,wood);
+ for(let x=-22.7;x<=-7.7;x+=2.5)box(.12,.17,shellDepth,x,8.4,shellCenterZ,dark);
  for(let z=-5.9;z<=HOUSE_SHELL_FRONT_Z-.9;z+=2.5)box(15.4,.17,.12,-15.25,8.4,z,dark);
  // The dining room bridges both neighboring ceilings so reverse camera views
  // stay inside one connected house shell instead of revealing the open scene.
- box(15.1,.22,30,0,8.46,9,wood);
- for(let x=-7.3;x<=7.3;x+=2.5)box(.12,.17,30,x,8.27,9,dark);
+ box(15.1,.22,shellDepth,0,8.46,shellCenterZ,wood);
+ for(let x=-7.3;x<=7.3;x+=2.5)box(.12,.17,shellDepth,x,8.27,shellCenterZ,dark);
  for(let z=-5.9;z<=HOUSE_SHELL_FRONT_Z-.9;z+=2.5)box(15.0,.17,.12,0,8.27,z,dark);
  const rug=mesh(new THREE.PlaneGeometry(12.8,8.2),new THREE.MeshStandardMaterial({map:rugMap,roughness:1}));rug.rotation.x=-Math.PI/2;rug.position.set(-15,-.46,.6);rug.castShadow=false;
  // Portrait uses only the painting area from the user's supplied reference.
@@ -68,6 +73,13 @@ export function buildHouse(scene,{portrait, rugMap}) {
  // the interior route still crosses the side archways at x=-7.5 and x=7.6.
  box(15.5,9,.3,-15.25,4,HOUSE_SHELL_FRONT_Z,red);
  box(15.1,8.8,.3,0,3.9,HOUSE_SHELL_FRONT_Z,cream);
+ // Join the side walls to the front wall. These returns remain behind the
+ // navigation portals and prevent reverse/direct travel from exposing voids.
+ box(.28,9,returnDepth,-23.1,4,returnCenterZ,navy);
+ box(.35,8.8,returnDepth,-7.5,3.9,returnCenterZ,cream);
+ box(.3,8.8,returnDepth,7.6,3.9,returnCenterZ,cream);
+ for(const x of [-23.1,-7.5])box(.1,.12,returnDepth,x,.12,returnCenterZ,x===-23.1?gold:wood);
+ box(.1,.12,returnDepth,7.6,.12,returnCenterZ,wood);
  for(const x of [-22.65,-7.85])box(.3,8.3,.42,x,3.9,HOUSE_SHELL_FRONT_Z-.26,navy);
  for(const y of [.1,.45,.8])box(15.4,.09,.16,-15.25,y,HOUSE_SHELL_FRONT_Z-.26,y===.45?gold:navy);
  for(const y of [.05,.35,.72])box(15.0,.08,.16,0,y,HOUSE_SHELL_FRONT_Z-.26,wood);

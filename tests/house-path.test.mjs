@@ -14,6 +14,14 @@ test('opening camera fits the focused phone view or both desktop plaque columns'
 test('narrow-screen Home framing remains inside the connected house shell',()=>{
  for(const aspect of [.4,.5,.65,.85,.93])assert.ok(cameraAt(0,aspect).position[2]<HOUSE_SHELL_FRONT_Z-.4,`camera escaped the front wall at aspect ${aspect}`);
 });
+test('the full Home to Table camera rail stays inside the four-wall shell',()=>{
+ for(const aspect of [.4,.5,.65,.85,1,16/9,2])for(let p=0;p<=1;p+=.001){
+  const [x,y,z]=cameraAt(p,aspect).position;
+  assert.ok(x>-23.1&&x<7.6,`camera escaped a side wall at ${p} / ${aspect}`);
+  assert.ok(y>-.5&&y<8.6,`camera escaped floor or ceiling at ${p} / ${aspect}`);
+  assert.ok(z>-6&&z<HOUSE_SHELL_FRONT_Z-.35,`camera escaped a front/back wall at ${p} / ${aspect}`);
+ }
+});
 test('all camera samples remain finite, keep a look direction and do not enter the couch',()=>{
  for(let p=0;p<=1;p+=.001){const {position,target,fov}=cameraAt(p,.6);assert.ok([...position,...target,fov].every(Number.isFinite));assert.ok(Math.hypot(...position.map((x,i)=>x-target[i]))>1);if(position[0]< -8)assert.ok(position[2]>1.5);}
 });
