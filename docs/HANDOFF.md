@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Readability Phase 4 is live** (October 29, 2026, `main` merge `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb`): readable panels and readers.
+
 **Readability release is live** (October 29, 2026, `main` merge `c7a581c7f279ec54978a16da4e5690f2f31e9d75`): lighter blue text style and phone plaque buttons, on top of version 31. See the Change log.
 
 **Version 31 (environment first pass) is live** at https://www.dontelamonte.com (Vercel), released October 29, 2026 from `main` merge commit `324827a2139be399d69d5287ab7398c83cfdaad9`; cache identifier `environment-31`. See the Change log.
@@ -226,7 +228,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–3 are live; Phase 4 is on branch `readability-phase-4` awaiting Donte's review and approval to merge; then a real-device check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–4 are live; remaining is Phase 5 (scroll through every reader end to end, then a real iPhone and Android check). (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -243,6 +245,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Readability Phase 4 is live** at Donte's explicit request ("Release it"). Merged `readability-phase-4` into `main` as `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. Verified live on `https://www.dontelamonte.com` at 390×844: page loads `text-styles.css?v=readability-15` containing the Phase 4 rules. In the report, section labels are 11 px, body text 15 px, page footer 11 px and reading-header tabs 13 px, with no header overflow. In the Village Micro Fund panel, the lead is 22 px, body 15 px, footer 11 px and fits. No console errors. Not re-checked live: other readers, desktop, the full scroll-through, real devices. Rollback: revert `7a10bb2` on `main` and push, or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **Readability Phase 4** on branch `readability-phase-4` (`ef6ad009ade51e7dd65cedfcf8937a560970b599`, Vercel preview `success`; not merged, not live). `dist/text-styles.css` (cache `readability-15`):
   - Labels raised from 6–10 px to at least 11 px: reader, course and sketchpad toolbars; mastheads; folios; page footers; section eyebrows; panel headers and footers.
   - 13 px: notes, hints and links, including the sketchpad continuation hint that had a forced 11 px.
