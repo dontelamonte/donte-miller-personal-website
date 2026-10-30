@@ -22,8 +22,25 @@ export function blendViewDirections(start,end,amount,turn='shortest'){
 
 // Gaze is independent of path slope: lift from a reader, face the passage,
 // then turn once toward the destination. Same-room travel only blends endpoints.
-export function navigationDirection(start,end,from,to,t){
+export function navigationDirection(start,end,from,to,t,motion){
  const ease=x=>{x=clamp01(x);return x*x*x*(x*(x*6-15)+10);};
+ // Re-selecting the current room only settles the view; it never glances toward a doorway.
+ if(from===to)return blendViewDirections(start,end,ease(t));
+ // Table and Library: look where the walk is heading, using the flight's own path when it is supplied.
+ if(motion&&from==='table'&&to==='library'){
+  // Face the passage once, then turn left to the shelves as the camera crosses the Workshop end.
+  if(t>.48)return blendViewDirections([1,0,0],end,ease((t-.48)/.52));
+  return blendViewDirections(start,[1,0,0],ease(t/.32));
+ }
+ if(motion&&from==='library'&&to==='table'){
+  // Turn toward the arch while the walk starts, follow the curve through it, then settle on the table.
+  // Keep the arch in view while walking to it, then follow the path once through.
+  const follow=normalize([Math.min(motion.ahead[0],0),0,Math.min(motion.ahead[2],0)]);
+  const toArch=[7.6-motion.position[0],0,3.3-motion.position[2]],archDistance=Math.hypot(toArch[0],toArch[2]);
+  const ahead=motion.position[0]>7.6?blendViewDirections(follow,toArch,clamp01((archDistance-1)/3)):follow;
+  if(t>.62)return blendViewDirections(ahead,end,ease((t-.62)/.38));
+  return blendViewDirections(start,ahead,ease(t/.3));
+ }
  // Turn right once toward the desk, then hold that heading for the approach.
  if(from==='table'&&to==='workshop')
   return blendViewDirections(start,end,ease(t/.38));
@@ -54,6 +71,13 @@ export function navigationViews(from,to,aspect){
  const route=[views[a]];
  if(a==='living')route.push(passage(-10.1),passage(-5.2));
  if(order[a]<2&&order[b]>=2)route.push(passage(5.2),passage(9.8));
+ if(a==='table'&&b==='library'){
+  const lib=views.library.position;
+  // Into the Library: the scroll tour's own curve past the Workshop end, so the turn to the shelves has room.
+  if(!reverse)return [...route,libraryCameraAt(WORKSHOP_STOP,aspect),libraryCameraAt(.85,aspect),views.library];
+  // Out of the Library: one gentle left curve that lines up with the arch before reaching it.
+  return [views.library,{position:[13.5,3.35,3.3+.6*(lib[2]-3.3)],target:[7.6,3.35,3.3],fov:46,room:'library'},...route.slice().reverse()];
+ }
  route.push(views[b]);
  return reverse?route.reverse():route;
 }

@@ -3,13 +3,13 @@ import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
 import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=about-wall-1';
-import {buildHouse} from './house-scene.js?v=about-wall-4';
+import {buildHouse} from './house-scene.js?v=plaque-logos-1';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=about-wall-2';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=smooth-flights-1';
 import {buildLibrary} from './library-scene.js?v=about-wall-1';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
@@ -33,7 +33,7 @@ const roomGesture=new RoomGestureGate();
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 const modelFlow=new ScrollFlow({settleTime:0});
-let renderer, scene, camera, photo, portraitImage, aboutWallImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
+let renderer, scene, camera, photo, portraitImage, aboutWallImage, plaqueLogos, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
 const pickables = [];
@@ -255,6 +255,11 @@ function applyRoute(){
 window.addEventListener('hashchange',applyRoute);
 // Centre and half-width of the table a phone camera keeps in view around the row of objects.
 const TABLE_PHONE_CENTER=-.13,TABLE_PHONE_HALF_WIDTH=2.75;
+// The settled Table pose for this screen; scroll travel and room tabs both end exactly here.
+function tablePose(aspect){
+ const mobile=aspect<.9,dist=Math.hypot(TABLE_CAMERA.position[1],TABLE_CAMERA.position[2]),fit=mobile?Math.min(1,TABLE_PHONE_HALF_WIDTH/(Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)/dist):1,x=mobile?TABLE_PHONE_CENTER:-1.3;
+ return {position:[x,TABLE_CAMERA.position[1]*fit,TABLE_CAMERA.position[2]*fit],target:[x,0,0],fov:tableFov(aspect),room:'table'};
+}
 // Tall phones widen the lens at the table (the ceiling stops the camera backing up further).
 function tableFov(aspect){
  if(aspect>=.9)return TABLE_CAMERA.fov;
@@ -273,7 +278,7 @@ function travelCamera(){
   const gaze=from.lerp(to,k).normalize();target.copy(camera.position).addScaledVector(gaze,8);
  }
  if(inLibrary&&state.libraryProgress<.22){const fade=1-(state.libraryProgress/.22)**2*(3-2*state.libraryProgress/.22);camera.position.y-=.8*state.progress*fade;camera.position.z-=1.5*state.progress*fade;}
- if(!inLibrary&&state.houseProgress>.999){const aspect=r.width/r.height,mobile=aspect<.9,dist=Math.hypot(TABLE_CAMERA.position[1],TABLE_CAMERA.position[2]),fit=mobile?Math.min(1,TABLE_PHONE_HALF_WIDTH/(Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)/dist):1;camera.fov=tableFov(aspect);camera.position.set(mobile?TABLE_PHONE_CENTER:-1.3,TABLE_CAMERA.position[1]*fit-.8*state.progress,TABLE_CAMERA.position[2]*fit-1.5*state.progress);target.set(mobile?TABLE_PHONE_CENTER:-1.3,0,0);}
+ if(!inLibrary&&state.houseProgress>.999){const pose=tablePose(r.width/r.height);camera.fov=pose.fov;camera.position.set(pose.position[0],pose.position[1]-.8*state.progress,pose.position[2]-1.5*state.progress);target.set(...pose.target);}
  camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!state.journeyNavigation&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))&&!location.hash.startsWith('#course-')&&!location.hash.startsWith('#model-')){if(state.libraryProgress>.999&&state.libraryTarget===1){routeTo('library',true);document.title='Donte Miller — The Library';}else if(Math.abs(state.libraryProgress-WORKSHOP_STOP)<.004&&state.libraryTarget===WORKSHOP_STOP){routeTo('workshop',true);document.title='Donte Miller — The Workshop';}else if(state.houseProgress>.999&&state.houseTarget===1&&state.libraryProgress<.001&&state.libraryTarget===0){routeTo('table',true);document.title='Donte Miller — The Dining Table';}else if(state.houseProgress<.001&&state.houseTarget===0){routeTo('living',true);document.title='Donte Miller — Make yourself at home.';}}
 }
 function updateWorkshopUI(){
@@ -338,11 +343,11 @@ function navigateRoom(id,{historyChange=true,aboutEnd=false}={}){
  if(historyChange)routeTo(id);
  document.title={living:'Donte Miller — Make yourself at home.',table:'Donte Miller — The Dining Table',workshop:'Donte Miller — The Workshop',library:'Donte Miller — The Library'}[id];
  state.journeyNavigation=true;state.journeyVelocity=state.libraryVelocity=0;state.autoCooldown=Infinity;
- if(state.reduce||startPosition.distanceTo(new THREE.Vector3(...navigationViews(id,id,viewport().width/viewport().height)[0].position))<.03){settleNavigation(id);if(aboutEnd)showAboutEnd();return;}
  const aspect=viewport().width/viewport().height,views=navigationViews(from,id,aspect);
+ if(id==='table'&&!aboutEnd)views[views.length-1]=tablePose(aspect);
+ if(state.reduce||startPosition.distanceTo(new THREE.Vector3(...views.at(-1).position))<.03&&startTarget.clone().sub(startPosition).normalize().distanceTo(new THREE.Vector3(...views.at(-1).target).sub(new THREE.Vector3(...views.at(-1).position)).normalize())<.01){settleNavigation(id);if(aboutEnd)showAboutEnd();return;}
  // Scrolling back from the table walks through the arch to the About wall instead of the Home view.
  if(aboutEnd)views[views.length-1]=aboutWallView(aspect);
- if(id==='table'&&!aboutEnd)views[views.length-1]={...views.at(-1),fov:tableFov(aspect)};
  const distances=views.map(v=>startPosition.distanceTo(new THREE.Vector3(...v.position)));
  let nearest=distances.indexOf(Math.min(...distances));
  const points=[startPosition,...views.slice(nearest+1).map(v=>new THREE.Vector3(...v.position))];
@@ -358,7 +363,8 @@ function navigateRoom(id,{historyChange=true,aboutEnd=false}={}){
  document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo===id)));
  navigationTween=gsap.to(flight,{t:1,duration,ease:'power1.inOut',onUpdate:()=>{
   const p=path.getPointAt(flight.t);
-  const gaze=new THREE.Vector3(...navigationDirection(startDirection.toArray(),endDirection.toArray(),from,id,flight.t));
+  const motion={position:p.toArray(),final:finalPosition.toArray(),ahead:(a=>path.getPointAt(a+.25).sub(path.getPointAt(a)).toArray())(Math.min(.75,flight.t))};
+  const gaze=new THREE.Vector3(...navigationDirection(startDirection.toArray(),endDirection.toArray(),from,id,flight.t,motion));
   target.copy(p).addScaledVector(gaze,8);
   camera.position.copy(p);camera.fov=THREE.MathUtils.lerp(startFov,finalView.fov,flight.t);
   const r=viewport();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();look();
@@ -511,7 +517,7 @@ function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('
  makeChair(-4.8,0,Math.PI/2);makeChair(4.8,0,-Math.PI/2);for(const x of [-1.5,1.5])makeChair(x,3.4,0);for(const x of [-1.5,1.5])makeChair(x,-3.4,Math.PI);
  makeBook('press',-1.75,.05,-.13);makeBook('report',0,-.03,.07);makeBook('opportunities',1.72,.13,-.08);layoutTable();
  const sceneAspect=viewport().width/viewport().height;
- house=buildHouse(scene,{portrait:portraitImage,aboutWall:aboutWallImage,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
+ house=buildHouse(scene,{portrait:portraitImage,aboutWall:aboutWallImage,plaqueLogos,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
  travelCamera();
  function pick(e){updatePointer(e);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(state.libraryProgress>.94?library.pickables:Math.abs(state.libraryProgress-WORKSHOP_STOP)<.035?library.modelPickables:state.houseProgress<.25?house.pickables:state.houseProgress>.94?pickables:[],false)[0]?.object;}
  renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||hit?.userData.courseId||hit?.userData.modelId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));library.books.forEach((b,key)=>gsap.to(b.group.position,{z:b.home.position.z+(key===id ? .12 : 0),duration:.25,onUpdate:invalidateShadows}));library.modelPads.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));});
@@ -544,6 +550,9 @@ async function start(){
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(viewport().width,viewport().height);renderer.shadowMap.enabled=true;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;$('scene').append(renderer.domElement);
   const loadImage=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});
   [photo,portraitImage,aboutWallImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg'),loadImage('/assets/about-wall.webp')]);
+  // Gold logo silhouettes for the living-room plaques; a missing logo falls back to the plaque's lettering.
+  const plaqueIds=['forbes','georgia','atlanta','morehouse','village','echoing'];
+  plaqueLogos=Object.fromEntries(await Promise.all(plaqueIds.map(id=>loadImage(`/assets/plaques/${id}.png`).then(img=>[id,img],()=>[id,null]))));
   const direct=location.hash.slice(1);
   state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'||direct==='workshop'||direct==='library'||direct.startsWith('course-')||direct.startsWith('model-')?1:0;
   state.libraryProgress=state.libraryTarget=direct==='workshop'||direct.startsWith('model-')?WORKSHOP_STOP:direct==='library'||direct.startsWith('course-')?1:0;
