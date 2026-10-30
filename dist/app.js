@@ -106,7 +106,7 @@ function openBook(id,{historyChange=true}={}){
 }
 function closeBook(next=null,{historyChange=true,fromStart=false,restartNext=false,roomAfter=null}={}){
  if(state.mode!=='reading')return;
- const previous=state.active,token=++state.token;savedReader.set(previous,scroller.scrollTop);if(next&&restartNext)savedReader.delete(next);setMode('closing');
+ const previous=state.active,token=++state.token;const atEnd=scroller.scrollTop>=scroller.scrollHeight-scroller.clientHeight-40;if(atEnd)savedReader.delete(previous);else savedReader.set(previous,scroller.scrollTop);if(next&&restartNext)savedReader.delete(next);setMode('closing');
  const b=books.get(previous);
  const finish=()=>{if(token!==state.token)return;shell.hidden=true;paper.innerHTML='';state.active=null;setMode('exploring');if(historyChange&&!next)routeTo(null);invalidate();if(next){openBook(next,{historyChange});}else{state.scrollAmount=0;state.scrollTarget=fromStart?previous:previous==='opportunities'?'library':BOOKS[BOOKS.indexOf(previous)+1];state.autoCooldown=performance.now()+900;updateTableHint();document.title='Donte Miller — The Dining Table';announce(fromStart?'Returned to the dining table. Scroll down to reopen this publication.':previous==='opportunities'?'Returned to the table. Scroll once to visit the workshop.':'Returned to the dining table. Keep scrolling to open the next object.');const restore=lastFocus?.isConnected&&lastFocus.matches('button,a')?lastFocus:document.querySelector(`[data-open="${previous}"]`);restore?.focus({preventScroll:true});if(roomAfter)goRoom(roomAfter,{historyChange:false});}};
  if(!b||!camera||state.reduce){gsap.to(shell,{autoAlpha:0,duration:duration(.2),onComplete:finish});return;}
@@ -276,7 +276,7 @@ function updateHouseUI(room){
  updateWorkshopUI();
  $('table-view').style.opacity=String(Math.max(0,1-state.libraryProgress*5));
  $('house-room-label').textContent=room==='living'?'01 / THE LIVING ROOM':room==='library'?'04 / THE LIBRARY':room==='workshop'?'03 / THE WORKSHOP':'02 / THE DINING ROOM';
- $('house-scroll-hint').textContent=state.homeReturning?'Returning Home ←':room==='library'?`Keep scrolling to open ${curriculumById[state.courseScrollTarget].title} ↓`:room==='workshop'?(state.modelSequenceComplete?'Scroll once to visit the library ↓':`Keep scrolling to open ${modelById[state.modelScrollTarget].title} ↓`):state.libraryProgress>0?'Toward the workshop →':p<.001&&state.aboutOffset<ABOUT_DISTANCE?'Scroll to read my story ↓':p<.16?'Scroll once to join me at the table ↓':p<.5?'Through the archway →':p<.8?'A seat at the table. Keep scrolling ↓':'A few things to share. Keep scrolling ↓';
+ $('house-scroll-hint').textContent=state.homeReturning?'Returning Home ←':room==='library'?`Scroll down to open ${curriculumById[state.courseScrollTarget].title}`:room==='workshop'?(state.modelSequenceComplete?'Scroll down to visit the library':`Scroll down to open ${modelById[state.modelScrollTarget].title}`):state.libraryProgress>0?'Toward the workshop →':p<.001&&state.aboutOffset<ABOUT_DISTANCE?'Scroll down to read my story':p<.16?'Scroll down to join me at the table':p<.5?'Through the archway →':p<.8?'A seat at the table. Scroll down to keep going':'A few things to share. Scroll down to keep going';
  $('journey-progress').style.width=`${100*(state.aboutOffset+p*3400+state.libraryProgress*LIBRARY_SCROLL_DISTANCE+state.workshopOffset)/(ABOUT_DISTANCE+3400+LIBRARY_SCROLL_DISTANCE+WORKSHOP_STORY_DISTANCE)}%`;
  document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo==='living'?room==='living':b.dataset.roomGo==='workshop'?room==='workshop':b.dataset.roomGo==='library'?room==='library':room==='table'||room==='dining')));
  hotspots.forEach(b=>b.disabled=state.mode!=='exploring'||room!=='table');
@@ -367,7 +367,7 @@ function goLibrary({historyChange=true}={}){
 function goWorkshop({historyChange=true}={}){
  navigateRoom('workshop',{historyChange});
 }
-function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad',library:'the workshop'};$('table-scroll-hint').textContent=`Keep scrolling to ${state.scrollTarget==='library'?'visit':'open'} ${names[state.scrollTarget]}.`;}
+function updateTableHint(){const names={press:'the press magazine',report:'the ten-year report',opportunities:'the opportunities notepad',library:'the workshop'};$('table-scroll-hint').textContent=`Scroll down to ${state.scrollTarget==='library'?'visit':'open'} ${names[state.scrollTarget]}.`;}
 function advanceTable(delta){
  const now=performance.now();
  if(!roomGesture.accept(delta,now,state.journeyNavigation||now<state.autoCooldown,sceneTouch!==null))return;
