@@ -10,7 +10,7 @@ import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
 import {navigationViews,navigationDirection} from './navigation-route.js?v=home-fit-1';
-import {buildLibrary} from './library-scene.js?v=endao-screen-1';
+import {buildLibrary} from './library-scene.js?v=endao-screen-2';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
 

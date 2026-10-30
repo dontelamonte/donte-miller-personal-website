@@ -246,8 +246,7 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 .model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-pad{transform:none;border-bottom:0}
 .model-shell:is([data-kind=whiteboard],[data-kind=screen]) #model-content{background:none;padding:0 0 46px}
 .model-shell[data-kind=whiteboard] .model-pad{width:min(760px,100%);max-height:none;background:#fbfbf8;border:10px solid #c4c8cb;border-radius:6px;box-shadow:inset 0 0 0 2px #e9ecee,0 3px 0 #8e9397,0 24px 70px #061624ab}
-/* 20% larger than the first release (1040px). */
-.model-shell[data-kind=screen] .model-pad{width:min(1248px,100%);max-height:none;background:#f3f1ec;border:16px solid #1d232b;border-bottom-width:24px;border-radius:12px;box-shadow:0 0 0 2px #39424d,0 24px 70px #061624c0}
+.model-shell[data-kind=screen] .model-pad{width:min(1040px,100%);max-height:none;background:#f3f1ec;border:16px solid #1d232b;border-bottom-width:24px;border-radius:12px;box-shadow:0 0 0 2px #39424d,0 24px 70px #061624c0}
 .model-media{margin:0}
 .model-media img{display:block;width:100%;height:auto}
 .model-media-actions{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;padding:26px 34px 0}
