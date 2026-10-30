@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Smoother room flights and logo plaques are ready for review** (October 30, 2026, branch `smooth-flights` at `cf7c17b5992ba54a7b1c7ee15849bf4f7def12d8`, pushed; Vercel preview; not merged, not live; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
+**Smoother room flights and logo plaques are live** (October 30, 2026, `main` merge `7b4d4b4fc331afef47fbf33a0a66e8282c596bac`; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
 
 **Full-screen room on phones is live** (October 29, 2026, `main` merge `c9c41f3e7e76ac532f76f870cedcb67b9a324993`; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
 
@@ -240,7 +240,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `smooth-flights` and approves release before it is merged to `main`.
+Updated October 30, 2026: smoother flights and logo plaques are live; Donte checks them on a real phone, including whether any arrival still zooms in. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 29, 2026: the full-screen phone room is live; Donte checks it on their phone. The notepad page redesign stays paused on branch `notepad-page` until Donte gives design input.
 
@@ -261,6 +261,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Smoother room flights and logo plaques are live** at Donte's explicit request ("Release it"). Merged `smooth-flights` into `main` as `7b4d4b4fc331afef47fbf33a0a66e8282c596bac` and pushed. Before push: `npm run check` passed, `npm test` 51/51, `git diff --check` clean. Vercel commit status `success`; the live page (checked via donte.villagemicrofund.com, which serves the same deployment) loads `app.js?v=plaque-logos-44`, and `/assets/plaques/village.png` returns 200. Live browser check at the pane's desktop size: Home shows all six logo plaques in the new order; Home → Table arrives on the normal view; re-clicking Table does not move; no console errors. Not checked live: phone size, real devices, reduced motion. Rollback: revert `7b4d4b4` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Logo plaques; About turn speed reverted** on branch `smooth-flights`. Cache `app.js?v=plaque-logos-44`, `house-scene.js?v=plaque-logos-1`.
   - Donte: "You slowed down the transition way too much. Undo the speed changes." The in-app browser pane had been left at quarter-speed animation (`gsap.globalTimeline.timeScale(.25)`) from QA, so every flight Donte watched there ran at a quarter of its speed; the pane was reset. The only code speed change, the gentler About → Table turn window, was reverted to the original 32% (`dist/navigation-route.js`) and its test removed.
   - Donte reported the camera zooming in too far on arrival. Not reproduced at normal speed with real frames (pane drawing loop patched for QA): arrivals at the Table, Library and Workshop land on their settled views. The QA pane pauses the page's drawing loop, so stale mid-flight frames look like a zoom; most likely the same cause. Still to confirm on a real device.
