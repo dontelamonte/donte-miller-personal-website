@@ -424,7 +424,7 @@ The small delivery team needs creative development/animation, 3D modeling/textur
 
 ## 17. Content still needed before production completion
 
-The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination, opportunity descriptions, course covers/spines, course descriptions and chapter outlines, Donte's image for the About wall (§19.1), Donte's page-design images for the redesigned readers (§19.3), complete written first chapters, remaining paid lessons, and the associated resource files.
+The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination, opportunity descriptions, course covers/spines, course descriptions and chapter outlines, Donte's About wall image (§19.1, received October 29; a higher-resolution version would help), Donte's page-design images for the redesigned readers (§19.3), complete written first chapters, remaining paid lessons, and the associated resource files.
 
 Before checkout goes live, define individual prices, access duration, refund/access policy, support route, and payment-provider/account setup. These decisions do not block the camera prototype or the core magazine-to-report interaction.
 
@@ -434,7 +434,7 @@ Implement a simple oval table with a magazine and report, one reusable opening b
 
 ## 19. Planned additions — October 29, 2026
 
-Requested by Donte. **Decisions, October 29:** the About image hangs as a framed piece (§19.1); phones get closer table framing, option A (§19.2); the pages are redesigned true to the object, direction 1 (§19.3). Each item goes on its own branch with a Vercel preview, and is merged only with Donte's approval.
+Requested by Donte. **Decisions, October 29:** the whole About wall is styled after Donte's image, with the story text on the right (§19.1; this replaces an earlier "framed piece" choice); phones get closer table framing, option A (§19.2); the pages are redesigned true to the object, direction 1 (§19.3). Each item goes on its own branch with a Vercel preview, and is merged only with Donte's approval.
 
 ### 19.1 About scene on the living-room wall
 
@@ -444,8 +444,8 @@ Requested by Donte. **Decisions, October 29:** the About image hangs as a framed
 
 1. **Home (Shot A).** Couch, portrait and plaques, as now.
 2. **Turn left.** The first scroll turns the camera left, toward the blank wall to the left of the couch. The archway is to the right, so this turn goes the opposite way. The turn is a timed camera move like room travel, not scrubbed by scroll distance.
-3. **The About wall.** The camera settles facing the wall, which shows Donte's supplied image (see Assets). The wall is visible on its own for a moment before any text appears.
-4. **About text.** The story appears only after the camera settles, fading and rising in gently rather than popping in. It is one paragraph at a time, at a readable size (16 px or more on phones), on the light glass style from the readability work. On phones the text sits in the lower part of the screen so the wall image stays visible above it. Scrolling moves through the paragraphs; the existing paragraph pacing (`ABOUT_CHAPTER_DISTANCE`) can be reused.
+3. **The About wall.** The camera settles facing the wall, which is styled after Donte's image (`reference-images/about-wall.webp`; see Wall design). The wall is visible on its own for a moment before any text appears.
+4. **About text on the right.** The story appears only after the camera settles, fading and rising in gently rather than popping in. It scrolls up the right side of the wall, beside the shelves, so the artwork stays in view. It shows one paragraph at a time, at a readable size (16 px or more on phones), on the light glass style from the readability work. On phones, the shelves fill the upper part of the screen and the text sits in the lower part. Scrolling moves through the paragraphs; the existing paragraph pacing (`ABOUT_CHAPTER_DISTANCE`) can be reused.
 5. **Turn back and walk.** Scrolling past the last paragraph hides the text, turns the camera back to the right, then walks straight to the table. This replaces the current curve (shots B–D) with a direct line through the arch to the table pose.
 6. **Reverse.** Scrolling up from the table walks back and turns to the About wall at the last paragraph. Scrolling up from the first paragraph turns back to Home. The Home tab always returns to Shot A, and the Table tab still flies straight to the table.
 
@@ -456,7 +456,19 @@ Requested by Donte. **Decisions, October 29:** the About image hangs as a framed
 - Keep the portrait's jump-into-story behavior, but point it at the new About wall.
 - Reduced motion: skip the turns and cross-fade between views instead.
 
-**Assets.** Donte will supply the image for the wall. Store it in `reference-images/` and record it in `reference-manifest.csv`, then build a web-sized texture (WebP/AVIF, at most about 2048 px). **Decided:** a framed piece hung on the wall. Its frame should match the portrait and plaques. Size it so frame and image fill most of the view on phones and desktop.
+**Wall design (decided October 29).** The whole wall left of the couch takes on the look of Donte's image (`reference-images/about-wall.webp`, 1024×1024).
+- **The wall:** deep blue with thin copper-orange vertical trim lines and a copper skirting line.
+- **The shelving scene** sits on the left-to-middle of the wall. It is a pair of carved wooden étagères joined by a top shelf. On the shelves and around them are blue-and-white plates and vases, trailing plants, small framed paintings, books, a large fiddle-leaf fig on the left, a blue-and-white planter of orange flowers in the centre, and a small rug in front.
+- **The right side** stays open blue wall for the story text.
+
+**Recommended build:**
+1. **Paint the wall to match.** The wall in the 3D room gets the image's blue, the trim lines and the skirting.
+2. **Place the shelving scene as a painted panel.** The image itself goes on the wall, cut out from its background so its blue blends into the painted wall and its floor lines up with the room's floor. This keeps the painterly look exactly.
+3. **Optional depth pass later.** A few real 3D pieces in front of the panel, such as the fig, the flower planter and the rug, so the scene has depth as the camera turns. Fully modelling the shelves is not needed for the first version.
+
+**Assets.**
+- The source image is stored in `reference-images/about-wall.webp` and recorded in `reference-manifest.csv`.
+- Build a web-sized texture from it (WebP/AVIF, at most about 2048 px). At 1024 px the source may look soft at full phone width, so a higher-resolution version from Donte would help if one exists.
 
 **Acceptance.**
 - Text never appears while the camera is moving.

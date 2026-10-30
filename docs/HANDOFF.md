@@ -232,7 +232,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (waiting on Donte's wall image), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (image received and design decided, ready to build), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -249,6 +249,12 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **About wall image received.** Saved as `reference-images/about-wall.webp` (1024×1024, 210,672 bytes) and recorded in `reference-manifest.csv`. It shows a deep-blue wall with copper trim and a pair of wooden étagères with plants, plates and paintings.
+  - Donte's decisions:
+    - The whole wall is styled after the image, with the shelving scene on the left-to-middle of the wall. This replaces the earlier "framed piece" choice.
+    - The story text scrolls up the right side, beside the shelves.
+  - `build-plan.md` §19.1 updated. Recommended build: paint the wall to match, and place the shelving scene as a cut-out painted panel. An optional later pass adds a few 3D pieces in front of it for depth.
+  - No site changes. A higher-resolution source image would help on phones.
 - October 29, 2026 (Claude Code session): **Bigger table objects on phones are live** at Donte's explicit request ("Release it").
   - Merged `table-phone-zoom` into `main` as `0c111380db4d0e62fc8d697df2b8fc10d66a0915` and pushed.
   - Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
