@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Table phone zoom preview** (October 29, 2026, branch `table-phone-zoom`, `84104b0cb06ba00c8a5efa2a539461d77d4c03c9`; not merged, not live): bigger magazine, report and notepad on phones (build-plan §19.2 A). Awaiting Donte's review.
+**Table phone zoom preview** (October 29, 2026, branch `table-phone-zoom`, latest `edfacfaeb99a1e9cd0b45befa44a8b041f8a4d00`; not merged, not live): bigger magazine, report and notepad on phones, kept in one level row (build-plan §19.2 A). Awaiting Donte's review.
 
 **Mobile polish is live** (October 29, 2026, `main` merge `e29817f6db76ad6cb235751c6e31f4215423b04e`; cache `environment-32` / `readability-18`): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass.
 
@@ -249,6 +249,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Table phone layout revised.** Donte did not like the staggered layout and asked for the report to be level with the other books. On `table-phone-zoom` (`edfacfaeb99a1e9cd0b45befa44a8b041f8a4d00`, pushed; not merged, not live; cache `environment-34`).
+  - Phones now keep a level row with narrower gaps: press x −1.62, report 0, notepad 1.5 (desktop −1.75 / 0 / 1.72). The pen is still hidden on phones.
+  - The camera centres on the row (`TABLE_PHONE_CENTER` −0.13) with a half-width of 2.75; 2.45 put the outer books against the screen edges.
+  - At 375×812, the objects are about 25–35% of the screen width (the magazine looks largest because it is nearest). On the live site they are about 22%.
+  - Verified locally: 375×812 and 360×740 fit with margins; the report opens and returns to its place in the row.
+  - Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
+  - Not verified: real devices.
 - October 29, 2026 (Claude Code session):
   - **Decisions from Donte**, recorded in `build-plan.md` §19: the About image is a framed piece; phones get option A; pages follow direction 1 ("true to the object").
   - **§19.2 A built** on branch `table-phone-zoom` (`84104b0cb06ba00c8a5efa2a539461d77d4c03c9`, pushed; not merged, not live; cache `environment-33`).
