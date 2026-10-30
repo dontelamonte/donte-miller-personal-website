@@ -53,9 +53,7 @@ export function navigationDirection(start,end,from,to,t,motion){
  const doorway=order[to]>order[from]?[1,0,0]:[-1,0,0];
  // Leaving the living room turns right, past the sofa: from the About wall this is a half-turn,
  // and from Home it matches the shortest turn.
- // Leaving the About wall is a half-turn, so it gets a longer, gentler window than the quarter-turn from Home.
- const s=normalize(start),turnAngle=Math.acos(Math.max(-1,Math.min(1,s[0]*doorway[0]))),window=from==='living'?.32+.18*clamp01((turnAngle-Math.PI/2)/(Math.PI/2)):.32;
- if(t<window)return blendViewDirections(start,doorway,ease(t/window),from==='workshop'&&to==='living'?'left':from==='living'?'right':'shortest');
+ if(t<.32)return blendViewDirections(start,doorway,ease(t/.32),from==='workshop'&&to==='living'?'left':from==='living'?'right':'shortest');
  if(t>.62)return blendViewDirections(doorway,end,ease((t-.62)/.38));
  return doorway;
 }

@@ -74,13 +74,6 @@ test('re-selecting the current room settles without a doorway glance',()=>{
  const start=[0,-.79,-.61],end=[0,-.79,-.62];
  for(let n=0;n<=20;n++){const d=navigationDirection(start,end,'table','table',n/20);assert.ok(d[1]<-.7,'never looks up')}
 });
-test('leaving the About wall turns more gently than leaving the Home view',()=>{
- const yawStep=start=>{const a=navigationDirection(start,[0,0,-1],'living','table',.1),b=navigationDirection(start,[0,0,-1],'living','table',.12);return Math.abs(Math.atan2(Math.sin(Math.atan2(b[0],b[2])-Math.atan2(a[0],a[2])),Math.cos(Math.atan2(b[0],b[2])-Math.atan2(a[0],a[2]))))/(Math.PI);};
- const fromWall=navigationDirection([-1,0,0],[0,0,-1],'living','table',.4);
- assert.ok(fromWall[0]<.99,'still turning at 40% of the flight');
- assert.ok(Math.abs(navigationDirection([0,0,-1],[0,0,-1],'living','table',.4)[0]-1)<1e-9,'Home view reaches the passage heading by 32%');
- assert.ok(yawStep([-1,0,0])<yawStep([0,0,-1])*2);
-});
 test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
  for(const from of rooms)for(const to of rooms)if(from!==to){
   const views=navigationViews(from,to,16/9),first=views[0],last=views.at(-1);
