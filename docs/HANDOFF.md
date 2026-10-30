@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Larger EnDAO screen is ready for review** (October 30, 2026, branch `endao-screen` at `61783447780e6db0bc340472b03196c3d3b1efb6`, pushed; Vercel preview; not merged, not live; cache `app.js?v=endao-screen-49`): the EnDAO screen view is 20% wider and the two deck slides join without the stripe between them.
+**Larger desk computer is ready for review** (October 30, 2026, branch `endao-screen` at `07713fa68f6af40be84318f433ace67d4afe42e0`, pushed; Vercel preview; not merged, not live; cache `app.js?v=endao-screen-50`): the computer on the Workshop desk is 20% larger, and the two EnDAO deck slides join without the stripe between them.
 
 **Workshop whiteboard and computer are live** (October 30, 2026, `main` merge `ed3c9e3bf351fcba35d83ce47fe6e42c991c3a81`; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
 
@@ -277,6 +277,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Correction: the desk computer, not the screen view.** Donte meant the 3D computer on the Workshop desk. `dist/library-scene.js`: bezel .82 × 1.35 → .984 × 1.62 and screen 1.18 × .68 → 1.416 × .816 (20%), with the bottom edge kept at the same height above the stand; the EnDAO zoom camera steps back (x 20.86 → 20.63) to frame it. `dist/style.css`: the screen view is back to 1040 px. The joined slides and the scene-aspect guard stay. Cache `app.js?v=endao-screen-50`, `style.css?v=endao-screen-27`, `library-scene.js?v=endao-screen-2`. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean; browser QA at 1280×800 (larger monitor in the Workshop view; zoom fills the frame; screen view 1040 px). Commit `07713fa68f6af40be84318f433ace67d4afe42e0` on `endao-screen`, pushed; not merged, not live. Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Larger EnDAO screen, slides joined** (Donte: make the computer screen 20% larger and remove the border between the two slides). Read as the screen view that opens for EnDAO. Cache `app.js?v=endao-screen-49`, `style.css?v=endao-screen-26`, `library-scene.js?v=endao-screen-1`.
   - `dist/assets/workshop/endao-deck-1.webp`: re-cut from the full-resolution render and cropped to 1600×878, dropping slide 1's 21-px bottom colour stripe; slide 2 starts directly below on the same background (referenced as `?v=2`). The desk monitor's texture crop is adjusted for the new shape.
   - `dist/style.css`: screen reader width 1040 → 1248 px (20%); phones already use the full width.
