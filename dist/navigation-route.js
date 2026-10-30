@@ -15,6 +15,7 @@ export function blendViewDirections(start,end,amount,turn='shortest'){
  const pitchA=Math.asin(Math.max(-1,Math.min(1,a[1]))),pitchB=Math.asin(Math.max(-1,Math.min(1,b[1])));
  let delta=wrapAngle(yawB-yawA);
  if(turn==='left'&&delta<0)delta+=2*Math.PI;
+ if(turn==='right'&&delta>0)delta-=2*Math.PI;
  const yaw=yawA+delta*t,pitch=pitchA+(pitchB-pitchA)*t,level=Math.cos(pitch);
  return [Math.sin(yaw)*level,Math.sin(pitch),Math.cos(yaw)*level];
 }
@@ -33,7 +34,9 @@ export function navigationDirection(start,end,from,to,t){
  if([from,to].every(room=>room==='workshop'||room==='library'))
   return blendViewDirections(start,end,ease(t));
  const doorway=order[to]>order[from]?[1,0,0]:[-1,0,0];
- if(t<.32)return blendViewDirections(start,doorway,ease(t/.32),from==='workshop'&&to==='living'?'left':'shortest');
+ // Leaving the living room turns right, past the sofa: from the About wall this is a half-turn,
+ // and from Home it matches the shortest turn.
+ if(t<.32)return blendViewDirections(start,doorway,ease(t/.32),from==='workshop'&&to==='living'?'left':from==='living'?'right':'shortest');
  if(t>.62)return blendViewDirections(doorway,end,ease((t-.62)/.38));
  return doorway;
 }

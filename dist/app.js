@@ -9,7 +9,7 @@ import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './abou
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=about-wall-1';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=about-wall-2';
 import {buildLibrary} from './library-scene.js?v=about-wall-1';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
