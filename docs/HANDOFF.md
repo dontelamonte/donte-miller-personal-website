@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Story return + 'Scroll down' preview** (October 29, 2026, branch `story-return`, `4e2d1888ea081f8fe86375ccdd54367605c60c2c`; not merged, not live). Notepad page redesign draft is paused on branch `notepad-page` (`dc005a9`) awaiting Donte's design input.
+**Story return and 'Scroll down' hints are live** (October 29, 2026, `main` merge `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b`; cache `story-return-41`). Notepad page redesign draft is paused on branch `notepad-page` (`dc005a9`) awaiting Donte's design input.
 
 **About wall is live** (October 29, 2026, `main` merge `a0c3d67fc9cd2fe2ac521230489a5ee6b1c39ed4`; cache `about-wall-39` / `readability-19`): the first scroll at Home turns left to a 3D shelving wall built from Donte's reference; the story scrolls on the right (below the shelves on phones); leaving turns right straight to the table (build-plan §19.1).
 
@@ -253,6 +253,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Story return and "Scroll down" hints are live** at Donte's explicit request ("Release it").
+  - Merged `story-return` into `main` as `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b` and pushed.
+  - Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
+  - Vercel commit status `success`. The live page loads `app.js?v=story-return-41`, and its HTML hints read "Scroll down".
+  - Verified live at 375×812: the table hint reads "Scroll down"; scrolling up from the Table lands on the About wall at "100% OF MY STORY", with the house hint "Scroll down". No console errors.
+  - Not re-checked live: desktop, reduced motion, real devices.
+  - Rollback: revert `6eb028c` on `main` and push, or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session):
   - **Donte tested the live site on their phone: it works** (About wall, table zoom and earlier releases). The physical-device check is done for Donte's phone; Android was not reported separately.
   - **Notepad redesign paused** at Donte's request, for more design input. The draft is committed on branch `notepad-page` (`dc005a9`, pushed; preview only). It has Caveat handwriting in blue ink, hand-drawn checkboxes, body text on the ruled lines, and a sticky note for the email. Known issue: the masthead label shows too small, because a more specific readability rule overrides it.
