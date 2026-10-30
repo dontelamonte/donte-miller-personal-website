@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Smoother room flights are ready for review** (October 30, 2026, branch `smooth-flights` at `53e6b4f05ee0c000ca64a35a57506fa469d7b54c`, pushed; Vercel preview; not merged, not live; cache `app.js?v=smooth-flights-43`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the About → Table turn is gentler.
+**Smoother room flights and logo plaques are ready for review** (October 30, 2026, branch `smooth-flights` at `cf7c17b5992ba54a7b1c7ee15849bf4f7def12d8`, pushed; Vercel preview; not merged, not live; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
 
 **Full-screen room on phones is live** (October 29, 2026, `main` merge `c9c41f3e7e76ac532f76f870cedcb67b9a324993`; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
 
@@ -261,6 +261,14 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Logo plaques; About turn speed reverted** on branch `smooth-flights`. Cache `app.js?v=plaque-logos-44`, `house-scene.js?v=plaque-logos-1`.
+  - Donte: "You slowed down the transition way too much. Undo the speed changes." The in-app browser pane had been left at quarter-speed animation (`gsap.globalTimeline.timeScale(.25)`) from QA, so every flight Donte watched there ran at a quarter of its speed; the pane was reset. The only code speed change, the gentler About → Table turn window, was reverted to the original 32% (`dist/navigation-route.js`) and its test removed.
+  - Donte reported the camera zooming in too far on arrival. Not reproduced at normal speed with real frames (pane drawing loop patched for QA): arrivals at the Table, Library and Workshop land on their settled views. The QA pane pauses the page's drawing loop, so stale mid-flight frames look like a zoom; most likely the same cause. Still to confirm on a real device.
+  - Plaques (Donte supplied six logos): `dist/assets/plaques/{forbes,georgia,atlanta,morehouse,village,echoing}.png` are gold (#e1c085, the plaque lettering color) silhouettes on transparency, made from the supplied images. `dist/house-scene.js` draws each logo, up to 500×300 within the 640×440 face, on the unchanged brown face and brass frame (falls back to the old lettering if a logo fails to load). The right column order is now Morehouse, Village, Echoing Green; the left stays Forbes, Georgia 500, Atlanta 500. `dist/app.js` loads the logos; `dist/index.html` reorders the phone buttons to match.
+  - Checks: `npm run check` passed; `npm test` 51/51; `git diff --check` clean. Browser QA at 1280×800 and 375×812: logos readable on all six plaques, hotspots follow the plaques, no console errors.
+  - Not verified: real phones, the Vercel preview URL, reduced motion.
+  - Git: branch `smooth-flights`, commit `cf7c17b5992ba54a7b1c7ee15849bf4f7def12d8`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews the preview and approves release.
 - October 30, 2026 (Claude Code session): **Smoother room flights** (Donte: Table ↔ Library flights are jerky on phone and desktop; re-clicking the Table tab looks up and back down; the About → Table turn is too rapid). Cache `app.js?v=smooth-flights-43`, `navigation-route.js?v=smooth-flights-1`.
   - `dist/navigation-route.js`: Table → Library now follows the scroll tour's own curve past the Workshop end (`libraryCameraAt(WORKSHOP_STOP)` and `.85`) and turns left to the shelves in one time-based sweep from 48% of the flight, removing the corner at x 9.8. Library → Table leaves on a monotonic left curve (new waypoint at x 13.5) and keeps the arch in view while walking to it, then follows the path; the old route faced the side wall early and then turned. Re-selecting the current room only blends the view (no doorway glance). Leaving the About wall gets a turn window of up to 50% instead of 32%.
   - `dist/app.js`: new `tablePose(aspect)`, used by both scroll travel and room tabs. Tab flights to the Table previously ended on the desktop pose and snapped to the phone pose, and re-clicking Table on a phone flew to that wrong pose. Flights now pass the camera position and a 0.25 look-ahead to the gaze; a same-room click with the camera already in place settles without moving.
