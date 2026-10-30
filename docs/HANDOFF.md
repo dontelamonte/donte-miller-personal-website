@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Smoother room flights are ready for review** (October 30, 2026, branch `smooth-flights` at `53e6b4f05ee0c000ca64a35a57506fa469d7b54c`, pushed; Vercel preview; not merged, not live; cache `app.js?v=smooth-flights-43`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the About → Table turn is gentler.
+
 **Full-screen room on phones is live** (October 29, 2026, `main` merge `c9c41f3e7e76ac532f76f870cedcb67b9a324993`; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
 
 **Story return and 'Scroll down' hints are live** (October 29, 2026, `main` merge `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b`; cache `story-return-41`). Notepad page redesign draft is paused on branch `notepad-page` (`dc005a9`) awaiting Donte's design input.
@@ -238,6 +240,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews branch `smooth-flights` and approves release before it is merged to `main`.
+
 Updated October 29, 2026: the full-screen phone room is live; Donte checks it on their phone. The notepad page redesign stays paused on branch `notepad-page` until Donte gives design input.
 
 Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (§19.1, live), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Donte confirmed the live site works on their phone (October 29); a separate Android check is still open.
@@ -257,6 +261,15 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Smoother room flights** (Donte: Table ↔ Library flights are jerky on phone and desktop; re-clicking the Table tab looks up and back down; the About → Table turn is too rapid). Cache `app.js?v=smooth-flights-43`, `navigation-route.js?v=smooth-flights-1`.
+  - `dist/navigation-route.js`: Table → Library now follows the scroll tour's own curve past the Workshop end (`libraryCameraAt(WORKSHOP_STOP)` and `.85`) and turns left to the shelves in one time-based sweep from 48% of the flight, removing the corner at x 9.8. Library → Table leaves on a monotonic left curve (new waypoint at x 13.5) and keeps the arch in view while walking to it, then follows the path; the old route faced the side wall early and then turned. Re-selecting the current room only blends the view (no doorway glance). Leaving the About wall gets a turn window of up to 50% instead of 32%.
+  - `dist/app.js`: new `tablePose(aspect)`, used by both scroll travel and room tabs. Tab flights to the Table previously ended on the desktop pose and snapped to the phone pose, and re-clicking Table on a phone flew to that wrong pose. Flights now pass the camera position and a 0.25 look-ahead to the gaze; a same-room click with the camera already in place settles without moving.
+  - `tests/navigation-route.test.mjs`: replaced the four-point Table ↔ Library test; added a monotonic left curve, no look-up on re-select, and a gentler About turn.
+  - Measured in a flight simulation (60 fps): About → Table peak turn 350 → 280°/s; Table → Library peak 157 → 152°/s (desktop) and 126 → 124°/s (phone); Library → Table peak 157 → 144°/s (desktop), 126 → 142°/s (phone; the turn now starts earlier and never faces the side wall).
+  - Checks: `npm run check` passed; `npm test` 52/52; `git diff --check` clean. Browser QA on the local server at 375×812 and 1280×800, with flights slowed to a quarter of their speed: Table → Library, Library → Table, Table → Table (no movement) and About → Table; no console errors.
+  - Not verified: real phones, reduced motion, Living ↔ Library flights (unchanged code path), the Vercel preview URL.
+  - Git: branch `smooth-flights`, commit `53e6b4f05ee0c000ca64a35a57506fa469d7b54c`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 29, 2026 (Claude Code session): **Full-screen room on phones is live** at Donte's explicit request ("Release it"). Merged `full-screen-room` into `main` as `c9c41f3e7e76ac532f76f870cedcb67b9a324993` and pushed. Before push: `npm run check` passed, `npm test` 50/50, `git diff --check` clean. Vercel commit status `success`; the live page loads `app.js?v=fullscreen-42`, `style.css?v=fullscreen-24`, `text-styles.css?v=readability-22`. Live browser check at 375×812: the scene spans the full screen (0–812 px) at Home; award buttons show names only; the Table shows all three objects; no console errors. Not checked live: desktop, reduced motion, real phones. Rollback: revert `c9c41f3` on `main` or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **Full-screen room on phones** (Donte: "the view of the room to run the entire length of the phone screen instead of cut off"; mid-turn: "remove the 'recognition' and 'education' labels"). Cache `app.js?v=fullscreen-42`, `style.css?v=fullscreen-24`, `text-styles.css?v=readability-21`.
   - `dist/style.css`: the ≤560 px rule that drew the scene in a band (`top:135px;bottom:230px`, Table `top:225px;bottom:85px`) with fade masks now sets `#scene{inset:0;mask-image:none}`.
