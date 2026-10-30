@@ -27,7 +27,6 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  const studioWood=environmentMaterial('#ac794b','wood');
  const deskBlue=environmentMaterial('#386884','painted-wood');
  const studioCream=environmentMaterial('#ead8b9');
- const screen=new THREE.MeshStandardMaterial({color:'#d7d0bb',roughness:.75,emissive:'#786e5c',emissiveIntensity:.14});
  const upholstery=environmentMaterial('#446d89','fabric');
  for(const z of [-.95,7.45])box(.11,8.2,1.4,22.87,3.55,z,studioCream);
  box(.12,.14,7.4,22.85,7.75,3.25,studioWood);box(.12,.14,7.4,22.85,.08,3.25,studioWood);
@@ -44,12 +43,32 @@ export function buildLibrary(scene,{aspect=16/9}={}){
   box(.95,1.58,1.58,21.95,.25,z,deskBlue);
   for(const y of [-.25,.23,.71]){box(.025,.39,1.42,21.46,y,z,deskBlue);box(.035,.035,.37,21.43,y,z,edge);}
  }
- box(.08,.82,1.35,22.08,2.08,3.25,dark);box(.012,.68,1.18,22.03,2.08,3.25,screen);
+ // The desk computer is the EnDAO model (build-plan §20.2): its screen shows the deck's first page,
+ // and selecting it zooms the camera into the monitor.
+ const assetMap=(src,set)=>{const t=new THREE.TextureLoader().load(src,()=>window.dispatchEvent(new Event('scene-asset-ready')));t.colorSpace=THREE.SRGBColorSpace;set?.(t);return t;};
+ const monitor=new THREE.Group();root.add(monitor);
+ box(.08,.82,1.35,22.08,2.08,3.25,dark,monitor);
+ const deckScreen=mesh(new THREE.PlaneGeometry(1.18,.68),new THREE.MeshBasicMaterial({map:assetMap('/assets/workshop/endao-deck-1.webp',t=>{t.repeat.set(.976,1);t.offset.set(.012,0);})}),monitor);
+ deckScreen.position.set(22.03,2.08,3.25);deckScreen.rotation.y=-Math.PI/2;deckScreen.castShadow=false;
+ monitor.traverse(o=>{if(o.isMesh){o.userData.modelId='endao';modelPickables.push(o);}});
+ modelPads.set('endao',{group:monitor,kind:'screen',home:{position:monitor.position.clone(),rotation:monitor.rotation.clone()},focus:{position:[20.86,2.08,3.25],target:[22.03,2.08,3.25]}});
+ // The Worker's Equity Fund is a freestanding whiteboard at the right end of the desk (build-plan §20.1).
+ const board=new THREE.Group();root.add(board);board.position.set(21.25,0,7.05);board.rotation.y=-Math.PI/2-.36;
+ const boardW=1.3,boardH=2.92,boardY=2.62,aluminium=new THREE.MeshStandardMaterial({color:'#c9ccce',roughness:.35,metalness:.6});
+ const face=mesh(new THREE.PlaneGeometry(boardW,boardH),new THREE.MeshBasicMaterial({map:assetMap('/assets/workshop/workers-equity-whiteboard.webp'),color:'#f2f2f2'}),board);face.position.set(0,boardY,.03);face.castShadow=false;
+ box(boardW+.12,boardH+.12,.05,0,boardY,0,studioCream,board);
+ for(const [w,h,x,y] of [[boardW+.14,.05,0,boardY+boardH/2+.04],[boardW+.14,.05,0,boardY-boardH/2-.04],[.05,boardH+.12,-boardW/2-.05,boardY],[.05,boardH+.12,boardW/2+.05,boardY]])box(w,h,.08,x,y,.02,aluminium,board);
+ box(boardW,.04,.16,0,boardY-boardH/2-.09,.09,aluminium,board);
+ for(const x of [-.56,.56]){box(.06,boardY-boardH/2+.62,.06,x,(boardY-boardH/2-.62)/2,-.02,aluminium,board);box(.07,.05,.7,x,-.56,-.02,aluminium,board);}
+ board.traverse(o=>{if(o.isMesh){o.userData.modelId='workers-equity';modelPickables.push(o);}});
+ {const n=new THREE.Vector3(0,0,1).applyAxisAngle(new THREE.Vector3(0,1,0),board.rotation.y),c=new THREE.Vector3(21.25,boardY,7.05);
+  modelPads.set('workers-equity',{group:board,kind:'whiteboard',home:{position:board.position.clone(),rotation:board.rotation.clone()},focus:{position:c.clone().addScaledVector(n,3.75).toArray(),target:c.toArray()}});}
  box(.08,.49,.08,22.15,1.55,3.25,edge);box(.44,.035,.46,22.15,1.44,3.25,dark);
  box(.36,.028,.92,21.96,1.43,3.25,studioCream);
- // Three independent sketchpads lie on the desk, rather than being printed into the wall image.
- const padNames=[['workers-equity','WORKER’S EQUITY','01 / OWNERSHIP'],['endao','EnDAO','02 / GOVERNANCE'],['time-bank','THE TIME BANK','03 / CONTRIBUTION']];
- for(const [i,[id,title,caption]] of padNames.entries()){
+ // The Time Bank sketchpad lies on the desk, rather than being printed into the wall image.
+ // The Time Bank keeps its sketchpad; the other two models are the whiteboard and the computer.
+ const padNames=[['time-bank','THE TIME BANK','03 / CONTRIBUTION',2]];
+ for(const [id,title,caption,i] of padNames){
   const group=new THREE.Group();root.add(group);group.position.set(21.52,1.49,1.58+i*1.66);group.rotation.y=Math.PI/2;
   box(1.43,.055,.92,0,0,0,studioCream,group);
   const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=['#b2704e','#416e72','#b28c57'][i];c.fillRect(0,0,w,h);c.strokeStyle='#f1d6a6';c.lineWidth=7;c.strokeRect(18,18,w-36,h-36);c.fillStyle='#fff0cf';c.font='bold 43px Georgia';c.fillText(title,36,185);c.font='22px Georgia';c.fillText(caption,36,245);for(let y=340;y<h-45;y+=43){c.fillStyle='#f6e2be77';c.fillRect(38,y,w-76,2);}},768,512);
