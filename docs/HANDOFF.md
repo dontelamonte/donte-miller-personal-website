@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Full-screen room on phones is ready for review** (October 29, 2026, branch `full-screen-room` at `7fb1778cfe198d44b173bfb4d73d744764d36611`, pushed; Vercel preview; not merged, not live; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
+**Full-screen room on phones is live** (October 29, 2026, `main` merge `c9c41f3e7e76ac532f76f870cedcb67b9a324993`; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
 
 **Story return and 'Scroll down' hints are live** (October 29, 2026, `main` merge `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b`; cache `story-return-41`). Notepad page redesign draft is paused on branch `notepad-page` (`dc005a9`) awaiting Donte's design input.
 
@@ -238,7 +238,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: Donte reviews branch `full-screen-room` (full-screen room on phones) and approves release before it is merged to `main`.
+Updated October 29, 2026: the full-screen phone room is live; Donte checks it on their phone. The notepad page redesign stays paused on branch `notepad-page` until Donte gives design input.
 
 Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (§19.1, live), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Donte confirmed the live site works on their phone (October 29); a separate Android check is still open.
 
@@ -257,6 +257,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Full-screen room on phones is live** at Donte's explicit request ("Release it"). Merged `full-screen-room` into `main` as `c9c41f3e7e76ac532f76f870cedcb67b9a324993` and pushed. Before push: `npm run check` passed, `npm test` 50/50, `git diff --check` clean. Vercel commit status `success`; the live page loads `app.js?v=fullscreen-42`, `style.css?v=fullscreen-24`, `text-styles.css?v=readability-22`. Live browser check at 375×812: the scene spans the full screen (0–812 px) at Home; award buttons show names only; the Table shows all three objects; no console errors. Not checked live: desktop, reduced motion, real phones. Rollback: revert `c9c41f3` on `main` or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **Full-screen room on phones** (Donte: "the view of the room to run the entire length of the phone screen instead of cut off"; mid-turn: "remove the 'recognition' and 'education' labels"). Cache `app.js?v=fullscreen-42`, `style.css?v=fullscreen-24`, `text-styles.css?v=readability-21`.
   - `dist/style.css`: the ≤560 px rule that drew the scene in a band (`top:135px;bottom:230px`, Table `top:225px;bottom:85px`) with fade masks now sets `#scene{inset:0;mask-image:none}`.
   - `dist/text-styles.css`: phones drop the cream header gradient (logo and tabs keep their glass); award buttons show the name and ↗ only (`content:"↗"` instead of `attr(data-kind) " ↗"`).
