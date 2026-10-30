@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Family portraits on the About wall are ready for review** (October 30, 2026, branch `family-paintings` at `d76f395a35682835ac7c1ceadca5253b41d55866`, pushed; Vercel preview; not merged, not live; cache `app.js?v=family-paintings-46`): the two centre paintings on the About wall now show Donte's supplied portraits.
+**Family portraits on the About wall are live** (October 30, 2026, `main` merge `e5468e0d7a10278a9365ef519d95aabf8e594e7f`; cache `app.js?v=family-paintings-47`): the two centre paintings show Donte's supplied portraits — Donte with the baby on top (portrait frame), the family painting below (landscape frame).
 
 **Phone Home fit and smoother Home arrival are live** (October 30, 2026, `main` merge `4a72e694049097908ca79ec97a5c591e293013cc`; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
 
@@ -244,7 +244,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `family-paintings` and approves release before it is merged to `main`.
+Updated October 30, 2026: the family portraits are live; Donte checks the About wall on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: phone Home fit, the slower About turn and the smoother Table → Home arrival are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
@@ -269,6 +269,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Family portraits swapped and live** at Donte's request ("switch the position of the two, and then push"). `dist/house-scene.js`: the top centre frame is now the portrait of Donte with the baby (435.7–587.3 × 187–405 on the wall grid, inset 10); the lower frame is the landscape family painting (380–642 × 462.7–665.3, inset 14). Cache `app.js?v=family-paintings-47`, `house-scene.js?v=family-paintings-2`. Branch commit `9c44ac20ee55e5d5f5be6f4c0e79631fdcf2c086`; merged into `main` as `e5468e0d7a10278a9365ef519d95aabf8e594e7f` and pushed. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Local QA at 1280×800 and 375×812 (on phones the portrait now shows above the story card; the family painting sits behind it). Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=family-paintings-47`, both images return 200, and the About wall shows both portraits at 1280×800 with no console errors. Not checked: real phones. Rollback: revert `e5468e0` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Family portraits on the About wall** (Donte supplied two paintings for the two largest About-wall frames; shapes could change). Cache `app.js?v=family-paintings-46`, `house-scene.js?v=family-paintings-1`.
   - `dist/assets/about-painting-family.webp` (1000×746) and `dist/assets/about-painting-father.webp` (598×900), resized from Donte's images.
   - `dist/house-scene.js`: `painting()` accepts an optional image. The top centre frame is now landscape (382–641 × 197–395 on the wall's pixel grid; was 425–598 × 187–405) with the family portrait, filling the gap between the shelf towers. The lower centre frame is now a narrower portrait (417–604 × 430–698; was 398–623) with Donte and the baby. Each frame matches its image's proportions; the reference crops remain as a fallback if an image fails to load. `dist/app.js` loads both.
