@@ -114,9 +114,9 @@ export function buildHouse(scene,{portrait,aboutWall,aboutPaintings,plaqueLogos,
    onWall(g,depthOut);g.position.y=Y((y0+y1)/2);g.position.z=Z((x0+x1)/2);g.rotation.z=0;if(lean)g.rotateX(-lean);return g;
   }
   // The two centre paintings are Donte's family portraits, framed to each image's own proportions
-  // (landscape on top, filling the gap between the towers; portrait below). Without them, the reference crops show.
-  if(aboutPaintings?.family)painting(382,197,641,395.3,.05,10,0,aboutPaintings.family);else painting(425,187,598,405);
-  if(aboutPaintings?.father)painting(416.8,430,604.2,698,.05,14,0,aboutPaintings.father);else painting(398,430,623,698,.05,14);
+  // (portrait on top; landscape below, filling the gap between the towers). Without them, the reference crops show.
+  if(aboutPaintings?.father)painting(435.7,187,587.3,405,.05,10,0,aboutPaintings.father);else painting(425,187,598,405);
+  if(aboutPaintings?.family)painting(380,462.7,642,665.3,.05,14,0,aboutPaintings.family);else painting(398,430,623,698,.05,14);
   painting(243,343,325,443,.14,7,.08);painting(248,490,318,585,.14,7,.08);painting(683,355,785,445,.16,8,.06);painting(700,620,765,720,.16,6,.08);
   // Blue-and-white plates on the top shelf and the right tower.
   function plate(cx,cy,r,depthOut=.12){const d=mesh(new THREE.CircleGeometry(r*k,32),new THREE.MeshBasicMaterial({map:crop(cx-r,cy-r,cx+r,cy+r),color:'#e8e8e8'}));onWall(d,depthOut);d.position.set(wallX+depthOut,Y(cy),Z(cx));d.rotateX(-.12);const rim=mesh(new THREE.TorusGeometry(r*k,.015,6,32),china);onWall(rim,depthOut);rim.position.set(wallX+depthOut,Y(cy),Z(cx));rim.rotateX(-.12);}
