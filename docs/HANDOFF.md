@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**About wall preview** (October 29, 2026, branch `about-wall`, latest `64727eb38546485127d1c60d3f09886329e0cef5`; not merged, not live): turn left from Home to a 3D shelving wall built from Donte's reference, with the story on the right (build-plan §19.1). Awaiting Donte's review.
+**About wall is live** (October 29, 2026, `main` merge `a0c3d67fc9cd2fe2ac521230489a5ee6b1c39ed4`; cache `about-wall-39` / `readability-19`): the first scroll at Home turns left to a 3D shelving wall built from Donte's reference; the story scrolls on the right (below the shelves on phones); leaving turns right straight to the table (build-plan §19.1).
 
 **Bigger table objects on phones are live** (October 29, 2026, `main` merge `0c111380db4d0e62fc8d697df2b8fc10d66a0915`; cache `environment-34`): a level row with narrower gaps and a closer camera on phones (build-plan §19.2 A).
 
@@ -234,7 +234,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (§19.1 built on branch `about-wall`; Donte to review, merge only on approval), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (§19.1, live), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -251,6 +251,14 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **About wall is live** at Donte's explicit request ("Release it").
+  - Merged `about-wall` into `main` as `a0c3d67fc9cd2fe2ac521230489a5ee6b1c39ed4` and pushed.
+  - Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
+  - Vercel commit status `success`. The live page loads `app.js?v=about-wall-39` and `text-styles.css?v=readability-19`, and `/assets/about-wall.webp` returns 200 (181,998 bytes).
+  - Verified live at 375×812: one scroll at Home turns to the wall, the 3D shelves are above the story, and the story starts at 0%. No console errors.
+  - An earlier live check jumped to the press magazine. The browser recorded a click from Donte in that page, and a clean re-run behaved correctly.
+  - Not re-checked live: desktop, the walk to the table, real devices, performance on low-end phones.
+  - Rollback: revert `a0c3d67` on `main` and push, or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **About wall: turn right on the way to the table** (Donte's request). On `about-wall` (`64727eb38546485127d1c60d3f09886329e0cef5`, pushed; not merged, not live).
   - `dist/navigation-route.js`: `blendViewDirections` gains a `'right'` turn option, and flights leaving the living room use it. From the About wall this makes a half-turn past the sofa instead of past the front wall. From Home it is the same as the shortest turn, so that view is unchanged.
   - Verified locally at 1280×800: early in the flight the sofa and portrait come into view, and it lands at the table.

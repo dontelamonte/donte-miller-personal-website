@@ -461,7 +461,7 @@ Requested by Donte. **Decisions, October 29:** the whole About wall is styled af
 - **The shelving scene** sits on the left-to-middle of the wall. It is a pair of carved wooden étagères joined by a top shelf. On the shelves and around them are blue-and-white plates and vases, trailing plants, small framed paintings, books, a large fiddle-leaf fig on the left, a blue-and-white planter of orange flowers in the centre, and a small rug in front.
 - **The right side** stays open blue wall for the story text.
 
-**Built October 29 (preview branch `about-wall`, not live):** the wall is painted to match, and Donte asked for the étagère, paintings and plants to be 3D objects rather than a flat panel, so they are built in 3D from the reference layout, with the paintings and plates using artwork cropped from the image. The walk to the table starts straight from the wall (no pause at Home). Scrolling up from the table still returns to Home rather than to the end of the story.
+**Built and released October 29 (live since `main` merge `a0c3d67`):** the wall is painted to match, and Donte asked for the étagère, paintings and plants to be 3D objects rather than a flat panel, so they are built in 3D from the reference layout, with the paintings and plates using artwork cropped from the image. The walk to the table starts straight from the wall (no pause at Home). Scrolling up from the table still returns to Home rather than to the end of the story.
 
 **Original recommendation (superseded):**
 1. **Paint the wall to match.** The wall in the 3D room gets the image's blue, the trim lines and the skirting.
