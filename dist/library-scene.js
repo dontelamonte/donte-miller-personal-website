@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.min.js';
 import {environmentMaterial,addTrailingVine} from './environment-materials.js';
 import {curricula} from './library-content.js';
-import {houseShellFrontZ} from './house-path.js?v=about-wall-1';
+import {houseShellFrontZ} from './house-path.js?v=home-fit-1';
 
 export function buildLibrary(scene,{aspect=16/9}={}){
  const root=new THREE.Group();root.name='The library';scene.add(root);

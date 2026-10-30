@@ -57,3 +57,10 @@ test('scroll follow-through converges without overshoot and reverses smoothly',(
  for(let i=0;i<240;i++){const n=followProgress(p,0,v,1/60);assert.ok(n.position<=p&&n.position>=0);p=n.position;v=n.velocity;}
  assert.equal(p,0);assert.equal(v,0);
 });
+
+test('phone Home view fits both plaque columns',()=>{
+ for(const aspect of [.45,.46,.56,.75]){
+  const v=cameraAt(0,aspect),distance=v.position[2]-(-5.62),halfWidth=Math.tan(23*Math.PI/180)*aspect*distance;
+  assert.ok(v.position[0]-halfWidth<=-20.05&&v.position[0]+halfWidth>=-9.95,`plaques cut off at aspect ${aspect}`);
+ }
+});

@@ -1,12 +1,14 @@
 export const HOUSE_SCROLL_DISTANCE=3400;
 // Maximum fallback used for the narrowest supported screens.
-export const HOUSE_SHELL_FRONT_Z=22;
+export const HOUSE_SHELL_FRONT_Z=28;
+// Phones frame both plaque columns at Home (outer plaque edges x -20.0 to -10.0) with a small margin.
+const HOME_PHONE_WIDTH=10.6;
 // Keep the wall just behind the farthest camera framing for the current screen.
 // Wide screens therefore get a compact room instead of a deep, unused stage,
 // while narrow screens retain the extra distance needed to frame the artwork.
 export function houseShellFrontZ(aspect=16/9){
  const safeAspect=Math.max(.4,aspect);
- const openingWidth=safeAspect<.85?8.5:13.6;
+ const openingWidth=safeAspect<.85?HOME_PHONE_WIDTH:13.6;
  const homeFit=Math.max(0,openingWidth/(2*Math.tan(46*Math.PI/360)*safeAspect)-12.6);
  const libraryDistance=7.7/(Math.tan(46*Math.PI/360)*Math.max(.45,safeAspect));
  const libraryFit=Math.min(7,Math.max(0,libraryDistance-13.6));
@@ -51,7 +53,7 @@ export function cameraAt(progress,aspect=1.7778){
  const p=clamp(progress);let i=0;while(i<stops.length-2&&p>stops[i+1].at)i++;
  const t=(p-stops[i].at)/(stops[i+1].at-stops[i].at);
  const position=curve(i,'position',t),target=curve(i,'target',t);
- const openingWidth=aspect<.85?8.5:13.6;
+ const openingWidth=aspect<.85?HOME_PHONE_WIDTH:13.6;
  const openingFit=Math.max(0,openingWidth/(2*Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)-12.6);
  position[2]+=openingFit*(1-smoother(clamp(p/.37)));
  if(p>.76&&aspect<.9){const blend=smoother((p-.76)/.24);position[0]+=1.3*blend;target[0]+=1.3*blend;}

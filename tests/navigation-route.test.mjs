@@ -13,7 +13,10 @@ test('every room tab has a connected travel route in either direction',()=>{
 test('Home to Library and back use one direct walking-height route through both doorways',()=>{
  const forward=navigationViews('living','library',16/9),back=navigationViews('library','living',16/9);
  assert.equal(forward.length,6);
- assert.deepEqual(back,forward.slice().reverse());
+ // The return adds one walk-in point in front of the sofa before stepping back to the Home view.
+ assert.equal(back.length,forward.length+1);
+ assert.deepEqual(back.slice(0,5),forward.slice(1).reverse());
+ assert.deepEqual(back.at(-1),forward[0]);
  assert.deepEqual(forward[1].position,[-10.1,3.3,3.3]);
  assert.deepEqual(forward[4].position,[9.8,3.3,3.3]);
  assert.ok(forward.every(v=>v.position[1]<6));
@@ -132,5 +135,21 @@ test('Workshop to Home departs left toward the west doorway at every viewport',(
   }
   assert.ok(total>Math.PI*.9&&total<Math.PI*1.1,'one left about-face toward Home');
   assert.deepEqual(navigationDirection(start,end,'workshop','living',.5),[-1,0,0]);
+ }
+});
+
+test('Table to Home turns right to the wall without a left jog first',()=>{
+ for(const aspect of [.45,1,16/9]){
+  const views=navigationViews('table','living',aspect),dir=v=>v.target.map((x,i)=>x-v.position[i]);
+  const path=new THREE.CatmullRomCurve3(views.map(v=>new THREE.Vector3(...v.position)),false,'centripetal'),length=path.getLength(),final=path.getPointAt(1).toArray();
+  let previous=null,turnedRight=false;
+  for(let i=0;i<=400;i++){
+   const t=i/400,p=path.getPointAt(t),a=Math.min(.75,t);
+   const d=navigationDirection(dir(views[0]),dir(views.at(-1)),'table','living',t,{position:p.toArray(),final,length,ahead:path.getPointAt(a+.25).sub(path.getPointAt(a)).toArray()});
+   const yaw=Math.atan2(d[0],d[2]);
+   if(previous!==null){const delta=Math.atan2(Math.sin(yaw-previous),Math.cos(yaw-previous));if(delta<-1e-6)turnedRight=true;if(turnedRight)assert.ok(delta<=1e-6,`turns back left at ${t} / ${aspect}`);}
+   previous=yaw;
+  }
+  assert.ok(Math.abs(path.getPointAt(.98).x-final[0])<.6,'arrives without overshooting past Home');
  }
 });
