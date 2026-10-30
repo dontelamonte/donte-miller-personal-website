@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Phone Home fit and smoother Home arrival are ready for review** (October 30, 2026, branch `home-fit` at `a7027e8f659d86a3b1cb8cac6a80ba75aa60b363`, pushed; Vercel preview; not merged, not live; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
+
 **Smoother room flights and logo plaques are live** (October 30, 2026, `main` merge `7b4d4b4fc331afef47fbf33a0a66e8282c596bac`; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
 
 **Full-screen room on phones is live** (October 29, 2026, `main` merge `c9c41f3e7e76ac532f76f870cedcb67b9a324993`; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
@@ -240,6 +242,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews branch `home-fit` and approves release before it is merged to `main`.
+
 Updated October 30, 2026: smoother flights and logo plaques are live; Donte checks them on a real phone, including whether any arrival still zooms in. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 29, 2026: the full-screen phone room is live; Donte checks it on their phone. The notepad page redesign stays paused on branch `notepad-page` until Donte gives design input.
@@ -261,6 +265,15 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Phone Home fit, About turn 10% slower, smoother Table → Home** (Donte: zoom out on the phone Home view to see all plaques; slow the About → Table turn by 10%; Table → Home jerks left before the right turn into Home). Cache `app.js?v=home-fit-45`; `house-path.js`, `house-scene.js`, `library-scene.js`, `navigation-route.js` at `?v=home-fit-1`.
+  - `dist/house-path.js`: phones (aspect < 0.85) frame a 10.6-unit opening at Home instead of 8.5, enough for both plaque columns (outer edges x -20.0 to -10.0) with a small margin; `HOUSE_SHELL_FRONT_Z` raised 22 → 28 so the camera stays inside the room on the narrowest phones. Desktop Home framing is unchanged.
+  - `dist/navigation-route.js`: leaving the About wall uses a 35.6% turn window (was 32%), about 10% slower. Routes into Home (from Table, Workshop, Library) now add a walk-in point in front of the sofa (-13.6, 3.2, 3.9) and go straight to the Home view; the old route crabbed sideways to the left while still facing the hallway (on phones 9.4 units of sideways travel), then turned. For Table/Library → Home the right turn to the plaque wall starts 1 unit before the arch and spreads over 80% of the remaining walk (`HOME_TURN_LEAD`, `HOME_TURN_SPAN`), continuing smoothly from the hallway turn. Simulation: sideways travel 9.4 → 5.0 units (phone) and 4.7 → 3.2 (desktop); peak turn 123 → 123°/s (phone) and 183 → 174°/s (desktop); no direction reversals after the right turn begins.
+  - `dist/app.js`: flights pass the path length to the gaze.
+  - Tests: updated the Home ↔ Library route test; added no-left-jog for Table → Home and phone Home fits both plaque columns.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA on the local server at 375×812 (Home shows all six plaques; Table → Home at half speed) and 1280×800 (Table → Home); no console errors. QA note: this pane pauses both the page's drawing loop and GSAP's ticker, so flights must be checked with both patched.
+  - Not verified: real phones, reduced motion, About → Table by eye (simulation and tests only), the Vercel preview URL.
+  - Git: branch `home-fit`, commit `a7027e8f659d86a3b1cb8cac6a80ba75aa60b363`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Smoother room flights and logo plaques are live** at Donte's explicit request ("Release it"). Merged `smooth-flights` into `main` as `7b4d4b4fc331afef47fbf33a0a66e8282c596bac` and pushed. Before push: `npm run check` passed, `npm test` 51/51, `git diff --check` clean. Vercel commit status `success`; the live page (checked via donte.villagemicrofund.com, which serves the same deployment) loads `app.js?v=plaque-logos-44`, and `/assets/plaques/village.png` returns 200. Live browser check at the pane's desktop size: Home shows all six logo plaques in the new order; Home → Table arrives on the normal view; re-clicking Table does not move; no console errors. Not checked live: phone size, real devices, reduced motion. Rollback: revert `7b4d4b4` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Logo plaques; About turn speed reverted** on branch `smooth-flights`. Cache `app.js?v=plaque-logos-44`, `house-scene.js?v=plaque-logos-1`.
   - Donte: "You slowed down the transition way too much. Undo the speed changes." The in-app browser pane had been left at quarter-speed animation (`gsap.globalTimeline.timeScale(.25)`) from QA, so every flight Donte watched there ran at a quarter of its speed; the pane was reset. The only code speed change, the gentler About → Table turn window, was reverted to the original 32% (`dist/navigation-route.js`) and its test removed.
