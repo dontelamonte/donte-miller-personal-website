@@ -48,7 +48,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  const assetMap=(src,set)=>{const t=new THREE.TextureLoader().load(src,()=>window.dispatchEvent(new Event('scene-asset-ready')));t.colorSpace=THREE.SRGBColorSpace;set?.(t);return t;};
  const monitor=new THREE.Group();root.add(monitor);
  box(.08,.82,1.35,22.08,2.08,3.25,dark,monitor);
- const deckScreen=mesh(new THREE.PlaneGeometry(1.18,.68),new THREE.MeshBasicMaterial({map:assetMap('/assets/workshop/endao-deck-1.webp',t=>{t.repeat.set(.976,1);t.offset.set(.012,0);})}),monitor);
+ const deckScreen=mesh(new THREE.PlaneGeometry(1.18,.68),new THREE.MeshBasicMaterial({map:assetMap('/assets/workshop/endao-deck-1.webp?v=2',t=>{t.repeat.set(.952,1);t.offset.set(.024,0);})}),monitor);
  deckScreen.position.set(22.03,2.08,3.25);deckScreen.rotation.y=-Math.PI/2;deckScreen.castShadow=false;
  monitor.traverse(o=>{if(o.isMesh){o.userData.modelId='endao';modelPickables.push(o);}});
  modelPads.set('endao',{group:monitor,kind:'screen',home:{position:monitor.position.clone(),rotation:monitor.rotation.clone()},focus:{position:[20.86,2.08,3.25],target:[22.03,2.08,3.25]}});
