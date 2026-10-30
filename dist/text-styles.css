@@ -166,3 +166,17 @@ html[data-text-style] body:not(.scene-reading) .site-header .wordmark span{color
 /* Between phone and desktop, shorter tab names keep the tab bar clear of the wordmark. */
 @media(min-width:561px) and (max-width:960px){html[data-text-style] .nav-article{display:none}}
 @media(max-width:560px){html[data-text-style] body:not(.scene-reading) .site-header .wordmark{padding:3px 13px 6px}}
+
+/* About wall (build-plan 19.1): the story scrolls up the open wall to the right of the shelves;
+   on phones and tablets it sits below them. Room buttons step aside while the wall is in view. */
+html[data-about-wall] #living-hotspots{opacity:0;pointer-events:none;visibility:hidden}
+#living-hotspots{transition:opacity .4s}
+html[data-text-style][data-about-wall] .about-story[data-stage="story"]{left:auto;right:max(24px,5vw);top:150px;bottom:110px;width:min(430px,36vw);max-width:none;height:auto;padding:20px 26px 34px}
+html[data-text-style][data-about-wall] .about-story[data-stage="story"] #about-story-text{font-size:20px;line-height:1.45}
+@media(max-width:900px){
+ html[data-text-style][data-about-wall] .about-story[data-stage="story"]{left:24px;right:24px;top:auto;bottom:100px;width:auto;height:min(40vh,340px)}
+}
+@media(max-width:560px){
+ html[data-text-style][data-about-wall] .about-story[data-stage="story"]{left:16px;right:16px;bottom:96px;height:min(38vh,320px);padding:14px 18px 30px}
+ html[data-text-style][data-about-wall] .about-story[data-stage="story"] #about-story-text{font-size:17px;line-height:1.4}
+}

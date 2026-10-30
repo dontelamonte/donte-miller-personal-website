@@ -1,9 +1,9 @@
 import * as THREE from './vendor/three.module.min.js';
 import {environmentMaterial} from './environment-materials.js';
-import {houseShellFrontZ} from './house-path.js?v=compact-shell-24';
+import {houseShellFrontZ,ABOUT_PANEL_LEFT_Z,ABOUT_PANEL_HEIGHT} from './house-path.js?v=about-wall-1';
 
 // Connected architecture and independent objects; the room is not a backdrop.
-export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
+export function buildHouse(scene,{portrait,aboutWall,rugMap,aspect=16/9}) {
  const root=new THREE.Group();root.name='Connected living, dining and library rooms';scene.add(root);
  const pickables=[],anchors=new Map();
  let seed=21;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
@@ -41,6 +41,26 @@ export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
  for(let z=-5.9;z<=frontWallZ-.9;z+=2.5)box(15.0,.17,.12,0,8.27,z,dark);
  const rug=mesh(new THREE.PlaneGeometry(12.8,8.2),new THREE.MeshStandardMaterial({map:rugMap,roughness:1}));rug.rotation.x=-Math.PI/2;rug.position.set(-15,-.46,.6);rug.castShadow=false;
  // Portrait uses only the painting area from the user's supplied reference.
+ // About wall (build-plan 19.1): the west wall is painted after Donte's reference; the shelving scene
+ // in front of it is built in 3D below, leaving open blue wall on the right for the story text.
+ if(aboutWall){
+  const z0=-5.55,z1=frontWallZ-.45,y0=-.5,y1=8.45,length=z1-z0,height=y1-y0;
+  const ppu=Math.min(4096/length,180),W=Math.round(length*ppu),H=Math.round(height*ppu);
+  const px=z=>(z1-z)*ppu,py=y=>(y1-y)*ppu;
+  const map=tex((c,w,h)=>{
+   c.fillStyle='#2f4559';c.fillRect(0,0,w,h);
+   for(let i=0;i<900;i++){const x=rand()*w,y=rand()*h;c.fillStyle=rand()<.5?'#3a52671a':'#22374a1a';c.fillRect(x,y,2+rand()*5,20+rand()*90);}
+   // Copper skirting and a moulding panel behind the story text, as in the reference.
+   c.fillStyle='#a8532c';c.fillRect(0,py(.05),w,.07*ppu);
+   c.fillStyle='#283c4f';c.fillRect(0,py(.05)+.07*ppu,w,h);
+   c.fillStyle='#a8532c';
+   for(const z of [1.5,-5.1])c.fillRect(px(z),py(7.95),.045*ppu,(7.95-.35)*ppu);
+   c.fillRect(px(1.5),py(7.95),6.6*ppu,.045*ppu);c.fillRect(px(1.5),py(.35),6.6*ppu,.045*ppu);
+  },W,H);
+  map.anisotropy=4;
+  const wall=mesh(new THREE.PlaneGeometry(length,height),new THREE.MeshBasicMaterial({map,color:'#ececec'}));
+  wall.rotation.y=Math.PI/2;wall.position.set(-22.94,(y0+y1)/2,(z0+z1)/2);wall.castShadow=false;
+ }
  const portraitMap=tex((c,w,h)=>c.drawImage(portrait,portrait.width*.321,portrait.height*.154,portrait.width*.357,portrait.height*.393,0,0,w,h),768,844);
  wallFrame(4.35,4.75,-15,4.65,-5.72);
  const art=mesh(new THREE.PlaneGeometry(3.98,4.38),new THREE.MeshBasicMaterial({map:portraitMap}));art.position.set(-15,4.65,-5.48);art.castShadow=false;register(art,'about');anchors.set('about',new THREE.Vector3(-15,2.2,-5.25));
@@ -62,6 +82,69 @@ export function buildHouse(scene,{portrait,rugMap,aspect=16/9}) {
  const china=new THREE.MeshStandardMaterial({map:chinaMap,roughness:.6});
  function lamp(x,z){box(1.45,.13,1.1,x,.72,z,wood);for(const a of [-.54,.54])for(const b of [-.38,.38])box(.07,1.18,.07,x+a,.1,z+b,wood);const points=[[.12,0],[.35,.12],[.36,.55],[.21,.9],[.14,1.02]].map(p=>new THREE.Vector2(...p));const vase=mesh(new THREE.LatheGeometry(points,24),china);vase.position.set(x,.8,z);const stem=mesh(new THREE.CylinderGeometry(.035,.035,.5,10),gold);stem.position.set(x,1.95,z);const shade=mesh(new THREE.LatheGeometry([[.58,-.32],[.55,-.19],[.46,.02],[.31,.19],[.12,.28],[.05,.3]].map(p=>new THREE.Vector2(...p)),24),new THREE.MeshStandardMaterial({color:'#f6dbad',roughness:1,side:THREE.DoubleSide,emissive:'#bd782b',emissiveIntensity:.25}));shade.position.set(x,2.35,z);for(let i=0;i<10;i++){const a=i*Math.PI/5;const curve=new THREE.CatmullRomCurve3([[.58,-.32],[.46,.02],[.12,.28]].map(([r,h])=>new THREE.Vector3(x+Math.cos(a)*r,2.35+h,z+Math.sin(a)*r)));mesh(new THREE.TubeGeometry(curve,8,.009,3,false),dark);}const rim=mesh(new THREE.TorusGeometry(.58,.022,6,28),dark);rim.rotation.x=Math.PI/2;rim.position.set(x,2.03,z);const light=new THREE.PointLight('#ffd19a',7,5,2);light.position.set(x,2.12,z);root.add(light);const jar=mesh(new THREE.LatheGeometry(points,20),china);jar.scale.set(.7,.7,.7);jar.position.set(x,-.45,z);}
  lamp(-19.9,-4.55);lamp(-10.1,-4.55);
+ // About wall shelving scene in 3D, laid out from Donte's reference image: px/py are pixels in the
+ // 1024×955 reference, mapped onto the wall (left edge ABOUT_PANEL_LEFT_Z, bottom at the floor).
+ if(aboutWall){
+  const wallX=-22.94,k=ABOUT_PANEL_HEIGHT/aboutWall.height,Z=px=>ABOUT_PANEL_LEFT_Z-px*k,Y=py=>-.5+(aboutWall.height-py)*k;
+  const shelfWood=environmentMaterial('#a4552f','wood'),darkWood=environmentMaterial('#7c3b22','wood');
+  const crop=(x0,y0,x1,y1)=>tex((c,w,h)=>c.drawImage(aboutWall,x0,y0,x1-x0,y1-y0,0,0,w,h),Math.round((x1-x0)*2),Math.round((y1-y0)*2));
+  const onWall=(o,depth)=>{o.rotation.y=Math.PI/2;o.position.x=wallX+depth;return o;};
+  // Étagère: two towers of turned posts and shelves on cabinets, joined by a top shelf and plinth.
+  const top=Y(150),cabinetTop=Y(822),floor=-.5,depth=.52;
+  function tower(left,right,shelves){
+   const z0=Z(left),z1=Z(right),w=z0-z1,zc=(z0+z1)/2;
+   box(depth,cabinetTop-floor-.28,w,wallX+depth/2,(cabinetTop+floor+.28)/2,zc,shelfWood);
+   box(.03,(cabinetTop-floor-.28)*.72,w*.78,wallX+depth+.01,(cabinetTop+floor+.28)/2,zc,darkWood);
+   for(const py of shelves)box(depth,.05,w,wallX+depth/2,Y(py),zc,shelfWood);
+   for(const z of [z0-.05,z1+.05])for(const x of [wallX+.06,wallX+depth-.05]){
+    const post=mesh(new THREE.CylinderGeometry(.04,.045,top-cabinetTop,10),shelfWood);post.position.set(x,(top+cabinetTop)/2,z);
+    for(const py of shelves){const knob=mesh(new THREE.SphereGeometry(.06,10,8),shelfWood);knob.position.set(x,Y(py)+.06,z);}
+   }
+  }
+  tower(210,362,[318,452,597,735]);tower(655,812,[312,455,597,735]);
+  box(depth+.08,.11,Z(205)-Z(822),wallX+(depth+.08)/2,top,(Z(205)+Z(822))/2,shelfWood);
+  box(depth+.12,.06,Z(198)-Z(830),wallX+(depth+.12)/2,top+.08,(Z(198)+Z(830))/2,darkWood);
+  box(depth+.1,.3,Z(205)-Z(815),wallX+(depth+.1)/2,floor+.15,(Z(205)+Z(815))/2,darkWood);
+  // Paintings: 3D frames around the artwork cropped from the reference.
+  function painting(x0,y0,x1,y1,depthOut=.05,inset=10,lean=0){
+   const w=(x1-x0)*k,h=(y1-y0)*k,g=new THREE.Group();root.add(g);
+   const art=mesh(new THREE.PlaneGeometry(w-2*inset*k,h-2*inset*k),new THREE.MeshBasicMaterial({map:crop(x0+inset,y0+inset,x1-inset,y1-inset),color:'#e6e6e6'}),g);art.position.z=.06;art.castShadow=false;
+   const f=ring(w,h,inset*k+.02,gold);g.add(f);f.position.set(0,0,0);
+   onWall(g,depthOut);g.position.y=Y((y0+y1)/2);g.position.z=Z((x0+x1)/2);g.rotation.z=0;if(lean)g.rotateX(-lean);return g;
+  }
+  painting(425,187,598,405);painting(398,430,623,698,.05,14);
+  painting(243,343,325,443,.14,7,.08);painting(248,490,318,585,.14,7,.08);painting(683,355,785,445,.16,8,.06);painting(700,620,765,720,.16,6,.08);
+  // Blue-and-white plates on the top shelf and the right tower.
+  function plate(cx,cy,r,depthOut=.12){const d=mesh(new THREE.CircleGeometry(r*k,32),new THREE.MeshBasicMaterial({map:crop(cx-r,cy-r,cx+r,cy+r),color:'#e8e8e8'}));onWall(d,depthOut);d.position.set(wallX+depthOut,Y(cy),Z(cx));d.rotateX(-.12);const rim=mesh(new THREE.TorusGeometry(r*k,.015,6,32),china);onWall(rim,depthOut);rim.position.set(wallX+depthOut,Y(cy),Z(cx));rim.rotateX(-.12);}
+  plate(415,110,34);plate(505,108,48);plate(606,113,33);plate(732,540,36,.2);plate(310,770,30,.2);
+  // Porcelain vases and the central planter with orange flowers.
+  function vase(px,py,h,r,x=.3){const pts=[[.55,0],[.9,.2],[1,.5],[.7,.85],[.45,1]].map(([a,b])=>new THREE.Vector2(a*r,b*h));const v=mesh(new THREE.LatheGeometry(pts,24),china);v.position.set(wallX+x,Y(py),Z(px));return v;}
+  vase(518,925,.75,.42,.6);vase(400,868,.5,.24,.32);vase(720,300,.42,.22,.27);vase(722,592,.3,.17,.27);vase(300,262,.38,.17,.27);vase(296,445,.18,.1,.27);vase(778,590,.3,.08,.27);
+  const books=[['#7c3b22','#c9a46a','#2f4c66','#e3cfad'],['#a4552f','#e3cfad','#5b3a26','#3c5a75']];
+  for(const [px,py,n,set] of [[410,930,4,0],[730,820,6,1],[732,708,2,0]])for(let i=0;i<n;i++)box(.42,.07,(px>600?.8:.75)-i*.02,wallX+.3,Y(py)+.035+i*.075,Z(px),environmentMaterial(books[set][i%4],'fabric'));
+  // Plants: one instanced set of leaves for the vines, shelf plants and the fiddle-leaf fig.
+  const leafShape=new THREE.Shape();leafShape.moveTo(0,0);leafShape.quadraticCurveTo(.55,.42,0,1);leafShape.quadraticCurveTo(-.55,.42,0,0);
+  const leafGeometry=new THREE.ShapeGeometry(leafShape,4),leaves=[],greens=['#3f6b3a','#56803f','#2f5532','#6f9a4c','#486f35'];
+  const addLeaf=(x,y,z,size,down=false)=>leaves.push({x,y,z,size,rx:(rand()-.5)*1.6,ry:rand()*Math.PI*2,rz:down?Math.PI+(rand()-.5)*1.4:(rand()-.5)*2.4,c:greens[Math.floor(rand()*greens.length)]});
+  const cluster=(px,py,n,spread,size,x=.3)=>{for(let i=0;i<n;i++)addLeaf(wallX+x+(rand()-.3)*.35,Y(py)+(rand()-.3)*spread,Z(px)+(rand()-.5)*spread*1.4,size*(.7+rand()*.5));};
+  const vine=(px,py,lengthPx,size,x=.45)=>{let z=Z(px),y=Y(py);const steps=Math.round(lengthPx/14);for(let i=0;i<steps;i++){z+=(rand()-.5)*.09;y-=14*k;addLeaf(wallX+x+(rand()-.5)*.15,y,z+(rand()-.5)*.12,size*(.75+rand()*.5),true);}};
+  cluster(300,190,110,.75,.22);cluster(220,250,90,.7,.21);cluster(380,170,40,.45,.18);cluster(720,170,90,.7,.21);cluster(770,260,60,.55,.2);cluster(660,175,30,.4,.18);
+  for(const [px,len] of [[140,320],[165,260],[195,290],[230,180],[270,150],[330,130],[380,100],[625,220],[650,170],[700,140],[760,200],[795,250],[825,190]])vine(px,165,len,.18);
+  cluster(270,680,55,.45,.19);cluster(320,700,40,.4,.17);cluster(730,680,50,.42,.18);cluster(255,812,24,.3,.15);cluster(745,262,30,.32,.16);cluster(300,250,25,.3,.16);
+  cluster(518,815,40,.45,.16,.55);
+  // Fiddle-leaf fig at the left in a terracotta pot.
+  const potPts=[[.3,0],[.36,.05],[.42,.55],[.46,.6],[.46,.66]].map(([a,b])=>new THREE.Vector2(a,b));const pot=mesh(new THREE.LatheGeometry(potPts,24),rust);pot.position.set(wallX+.75,-.5,Z(130));
+  const stem=mesh(new THREE.CylinderGeometry(.03,.04,3.3,8),darkWood);stem.position.set(wallX+.75,1.75,Z(130));
+  for(let i=0;i<70;i++){const t=i/70,a=rand()*Math.PI*2;addLeaf(wallX+.75+Math.cos(a)*.7*(1-t*.35),.7+t*3.4,Z(130)+Math.sin(a)*.8*(1-t*.3),.5+rand()*.22);}
+  const leafMesh=new THREE.InstancedMesh(leafGeometry,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.8,side:THREE.DoubleSide}),leaves.length);
+  const dummy=new THREE.Object3D(),colour=new THREE.Color();
+  leaves.forEach((l,i)=>{dummy.position.set(l.x,l.y,l.z);dummy.rotation.set(l.rx,l.ry,l.rz);dummy.scale.setScalar(l.size);dummy.updateMatrix();leafMesh.setMatrixAt(i,dummy.matrix);leafMesh.setColorAt(i,colour.set(l.c));});
+  leafMesh.castShadow=true;leafMesh.receiveShadow=true;root.add(leafMesh);
+  // Orange flowers above the central planter.
+  const flowers=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.045,0),new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.7}),220),oranges=['#e8552b','#f06a35','#d9481f','#f28a4a'];
+  for(let i=0;i<220;i++){const a=rand()*Math.PI,b=rand()*Math.PI*.5,r=.75+rand()*.25;dummy.position.set(wallX+.6+Math.cos(a)*Math.sin(b)*.42*r,Y(830)+Math.cos(b)*.62*r,Z(510)+Math.sin(a)*Math.sin(b)*-.95*r+(rand()-.5)*.25);dummy.rotation.set(0,0,0);dummy.scale.setScalar(.7+rand()*.7);dummy.updateMatrix();flowers.setMatrixAt(i,dummy.matrix);flowers.setColorAt(i,colour.set(oranges[i%4]));}
+  root.add(flowers);
+ }
  // The dividing wall has an actual opening: z=1.1..5.5, x=-7.5.
  box(.35,8.8,7.1,-7.5,3.9,-2.45,cream);box(.35,8.8,4.4,-7.5,3.9,7.7,cream);
  const opening=new THREE.Shape();opening.moveTo(1.1,5.0);opening.quadraticCurveTo(1.5,6.35,3.3,7.0);opening.quadraticCurveTo(5.1,6.35,5.5,5.0);opening.lineTo(5.5,8.3);opening.lineTo(1.1,8.3);opening.closePath();const archTop=mesh(new THREE.ExtrudeGeometry(opening,{depth:.35,bevelEnabled:false,steps:1,curveSegments:28}),cream);archTop.rotation.y=-Math.PI/2;archTop.position.x=-7.32;

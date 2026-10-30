@@ -12,6 +12,16 @@ export function houseShellFrontZ(aspect=16/9){
  const libraryFit=Math.min(7,Math.max(0,libraryDistance-13.6));
  return Math.min(HOUSE_SHELL_FRONT_Z,Math.max(10.5,8.8+homeFit+.9,8.8+libraryFit+.9));
 }
+// About wall (build-plan 19.1): the shelving scene's left edge on the west wall, and the camera
+// pose facing that wall. Phones stand further back so the shelves span the screen width, with the
+// story text below; wider screens frame the shelves on the left and open wall on the right.
+export const ABOUT_WALL_X=-23.1,ABOUT_PANEL_LEFT_Z=10,ABOUT_PANEL_HEIGHT=7.6;
+export function aboutWallView(aspect=16/9){
+ const t=Math.max(0,Math.min(1,(aspect-.6)/.7)),lerp=(a,b)=>a+(b-a)*t;
+ const desk=Math.max(7,Math.min(10,13.6/(2*Math.tan(23*Math.PI/180)*Math.max(aspect,.1))));
+ const d=lerp(10.5,desk),z=lerp(6.5,3.2),y=lerp(4,3.6),ty=lerp(3.9,3.6);
+ return {position:[ABOUT_WALL_X+d,y,z],target:[ABOUT_WALL_X,ty,z],fov:46};
+}
 export const TABLE_CAMERA={position:[-1.3,7.8,6],target:[-1.3,0,0],fov:46};
 const stops=[
  {at:0,position:[-15,3.1,7.0],target:[-15,3.15,-5.6]},
