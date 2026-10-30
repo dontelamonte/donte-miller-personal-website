@@ -93,15 +93,15 @@ html[data-text-style] #table-view .intro h1{color:var(--ts-fg)}
  html[data-text-style] #house-scroll-hint{font-size:13px}
  html[data-text-style] .table-footer .table-hint{display:inline-block;max-width:none;font-size:13px;padding:7px 14px}
 
- /* Recognition and education buttons as small versions of the wall plaques:
-    indigo field, brass inner frame, serif name, brass category label. */
- html[data-text-style] #credential-controls{gap:7px;bottom:92px}
+ /* Recognition and education buttons match the Library's book buttons:
+    navy field, cream name, small brass label underneath. */
+ html[data-text-style] #credential-controls{gap:5px;bottom:92px}
  html[data-text-style] #credential-controls:before{display:none}
- html[data-text-style] #living-hotspots #credential-controls .frame-control{min-height:60px;padding:9px 10px 10px;border:1px solid #b9884f;border-radius:5px;background:#1d3a4e;color:#fbf3e3;text-align:left;display:flex;flex-direction:column;justify-content:flex-start;gap:5px;box-shadow:inset 0 0 0 3px #1d3a4e,inset 0 0 0 4px #d7aa7259,0 4px 14px #1d2d3a24}
+ html[data-text-style] #living-hotspots #credential-controls .frame-control{min-height:49px;padding:6px 9px;border:1px solid #e8cca4b0;border-radius:0;background:#142f3ed9;color:#fff0d5;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:3px;box-shadow:0 8px 25px #0b1b2880}
  html[data-text-style] #living-hotspots #credential-controls .frame-control:hover,
- html[data-text-style] #living-hotspots #credential-controls .frame-control:focus-visible{background:#26495f;box-shadow:inset 0 0 0 3px #26495f,inset 0 0 0 4px #ecc48f99,0 4px 14px #1d2d3a24}
- html[data-text-style] #credential-controls .frame-control::before{content:attr(data-kind);font:600 11px/1 'DM Sans',sans-serif;letter-spacing:.5px;text-transform:uppercase;color:#ecc48f}
- html[data-text-style] #credential-controls .frame-control span{font:14px/1.2 'Libre Caslon Display',Georgia,serif;color:#fbf3e3;text-wrap:pretty}
+ html[data-text-style] #living-hotspots #credential-controls .frame-control:focus-visible{background:#284c60}
+ html[data-text-style] #credential-controls .frame-control span{font:13px/1.3 'DM Sans',sans-serif;color:#fff0d5;text-wrap:pretty}
+ html[data-text-style] #credential-controls .frame-control::before{content:attr(data-kind) " ↗";order:2;font:11px/1.2 'DM Sans',sans-serif;letter-spacing:.6px;color:#e8bf8d}
 }
 
 /* Phase 4: detail panels and readers. Labels at least 11px, notes and links 13px, reading copy 14-16px. */
@@ -137,3 +137,32 @@ html[data-text-style] .model-continuation p:last-child{font-size:13px!important}
  html[data-text-style] .living-panel-paper>footer span{display:none}
  html[data-text-style] .page-foot{justify-content:flex-end;white-space:nowrap}
 }
+
+/* Phone text boxes (readability-plan.md, options 1 and 2): headline-only room cards,
+   since the bottom hint already says what to do, and a slimmer Workshop card. */
+@media(max-width:560px){
+ html[data-text-style] #table-view .intro .intro-note,
+ html[data-text-style] .library-intro>p:last-child,
+ html[data-text-style] .about-story[data-stage="welcome"] #about-story-text{display:none}
+ html[data-text-style] #table-view .intro,
+ html[data-text-style] .library-intro,
+ html[data-text-style] .about-story[data-stage="welcome"]{padding:11px 16px 12px}
+ html[data-text-style] :is(#table-view .intro,.library-intro) .eyebrow{margin-bottom:6px}
+ html[data-text-style] #table-view .intro h1,
+ html[data-text-style] .library-intro h1{font-size:28px;margin:0}
+ html[data-text-style] .about-story[data-stage="welcome"] h1{margin:0}
+ html[data-text-style] .workshop-card{padding:12px 14px 13px}
+ html[data-text-style] .workshop-card .eyebrow{margin-bottom:6px}
+ html[data-text-style] .workshop-card h1{font-size:26px;margin:0}
+ html[data-text-style] .workshop-card>#workshop-description,
+ html[data-text-style] .workshop-card .workshop-continue{display:none}
+ html[data-text-style] .workshop-models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:10px 0 0}
+ html[data-text-style] .workshop-models button{font-size:12px;padding:7px 8px;text-align:left;min-height:44px}
+}
+
+/* Wordmark on the same glass as the tabs, so it reads in every room (the Table used dark ink with no backing). */
+html[data-text-style] body:not(.scene-reading) .site-header .wordmark{color:var(--ts-fg);background:var(--ts-bg);border:1px solid var(--ts-border);border-radius:999px;padding:3px 16px 6px;flex-shrink:0;box-shadow:var(--ts-shadow);-webkit-backdrop-filter:var(--ts-blur);backdrop-filter:var(--ts-blur);text-shadow:0 1px 8px #0b161f73}
+html[data-text-style] body:not(.scene-reading) .site-header .wordmark span{color:var(--ts-accent)}
+/* Between phone and desktop, shorter tab names keep the tab bar clear of the wordmark. */
+@media(min-width:561px) and (max-width:960px){html[data-text-style] .nav-article{display:none}}
+@media(max-width:560px){html[data-text-style] body:not(.scene-reading) .site-header .wordmark{padding:3px 13px 6px}}
