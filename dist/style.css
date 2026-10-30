@@ -119,8 +119,8 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 #house-scroll-hint{background:#f5ebdce0;color:#2d4140;text-shadow:none;padding:8px 12px}
 
 @media(max-width:560px){
- #scene{top:135px;bottom:230px;mask-image:linear-gradient(to bottom,transparent,#000 5%,#000 96%,transparent)}
- html[data-room=table] #scene{top:225px;bottom:85px;mask-image:linear-gradient(to bottom,transparent,#000 17%,#000 86%,transparent)}
+ /* Phones: the room fills the whole screen; text and controls float over it. */
+ #scene{inset:0;mask-image:none}
  .living-welcome{top:109px;bottom:auto;left:20px;color:#28414a;text-shadow:none}.living-welcome h1{font-size:27px}
  html:not([data-room=table]) .site-header{background:linear-gradient(#e5d7bf,#e5d7bfdd,transparent);color:#29404a;text-shadow:none}
  #credential-controls{position:absolute;left:20px;right:20px;bottom:89px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;pointer-events:none}
