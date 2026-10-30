@@ -434,7 +434,7 @@ Implement a simple oval table with a magazine and report, one reusable opening b
 
 ## 19. Planned additions — October 29, 2026
 
-Requested by Donte. Not started. Each item goes on its own branch with a Vercel preview, and is merged only with Donte's approval.
+Requested by Donte. **Decisions, October 29:** the About image hangs as a framed piece (§19.1); phones get closer table framing, option A (§19.2); the pages are redesigned true to the object, direction 1 (§19.3). Each item goes on its own branch with a Vercel preview, and is merged only with Donte's approval.
 
 ### 19.1 About scene on the living-room wall
 
@@ -456,7 +456,7 @@ Requested by Donte. Not started. Each item goes on its own branch with a Vercel 
 - Keep the portrait's jump-into-story behavior, but point it at the new About wall.
 - Reduced motion: skip the turns and cross-fade between views instead.
 
-**Assets.** Donte will supply the image for the wall. Store it in `reference-images/` and record it in `reference-manifest.csv`, then build a web-sized texture (WebP/AVIF, at most about 2048 px). Open question: should the image fill the whole wall like a mural, or hang as a framed piece?
+**Assets.** Donte will supply the image for the wall. Store it in `reference-images/` and record it in `reference-manifest.csv`, then build a web-sized texture (WebP/AVIF, at most about 2048 px). **Decided:** a framed piece hung on the wall. Its frame should match the portrait and plaques. Size it so frame and image fill most of the view on phones and desktop.
 
 **Acceptance.**
 - Text never appears while the camera is moving.
@@ -474,7 +474,9 @@ Requested by Donte. Not started. Each item goes on its own branch with a Vercel 
 - **B. One object at a time on phones.** The camera frames a single object large: press, then report, then notepad. Scrolling or swiping slides to the next object, and opening works as now. This makes the objects biggest, but adds a step.
 - **C. A after the object opens.** Keep the overview, but zoom in further on the selected object as it lifts, before the reader opens.
 
-**Recommendation:** build A, and review it on a phone. Add B only if the objects still feel small.
+**Decided:** A. Add B later only if the objects still feel small.
+
+**Built October 29 (preview branch `table-phone-zoom`, not live).** Moving the camera alone gained only about 10%, because the row already filled about 86% of a phone's width. So on portrait screens the objects are also rearranged: the report sits behind, and the press and notepad sit in front and closer together. The camera fits that arrangement, and the pen is hidden on phones. Each object is now about a third of the screen width, up from about a fifth. Desktop keeps the original row.
 
 **Acceptance.**
 - On a 390×844 screen, each object is at least about 30% of the screen width.
@@ -502,7 +504,7 @@ Donte will supply images to guide the design.
 3. **Image-led.** Donte's images fill the top of each page or sit behind it, with the text on paper cards over them. This is the most striking, but text contrast must be checked over each image.
 4. **Phone-first cards.** On phones, each page is a short series of full-screen cards, about one idea per screen, that the reader scrolls through. On desktop it is a normal long page. This is the easiest to read on a phone, but the content needs restructuring into cards.
 
-**Recommendation:** direction 1, built on Donte's images, with the type rules from `readability-plan.md`. Add direction 4 for phones if the long pages still feel heavy. Choose once the images arrive. Keep the opening and closing transitions (object → page → object) and the scroll-to-next behavior.
+**Decided:** direction 1 (true to the object), built on Donte's images, with the type rules from `readability-plan.md`. Direction 4 stays an option for phones if the long pages still feel heavy. Keep the opening and closing transitions (object → page → object) and the scroll-to-next behavior.
 
 **Assets.** Donte's page-design images: either mockups, textures or photos. Clarify which they are when they arrive. Store them in `reference-images/` and record them in `reference-manifest.csv`.
 

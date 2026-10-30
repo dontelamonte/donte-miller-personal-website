@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Table phone zoom preview** (October 29, 2026, branch `table-phone-zoom`, `84104b0cb06ba00c8a5efa2a539461d77d4c03c9`; not merged, not live): bigger magazine, report and notepad on phones (build-plan §19.2 A). Awaiting Donte's review.
+
 **Mobile polish is live** (October 29, 2026, `main` merge `e29817f6db76ad6cb235751c6e31f4215423b04e`; cache `environment-32` / `readability-18`): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass.
 
 **Readability Phase 4 is live** (October 29, 2026, `main` merge `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb`): readable panels and readers.
@@ -230,7 +232,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (waiting on Donte's wall image), bigger table objects on phones (§19.2 A can start now), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (waiting on Donte's wall image), bigger table objects on phones (§19.2 A built on branch `table-phone-zoom`; Donte to review, merge only on approval), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -247,6 +249,22 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session):
+  - **Decisions from Donte**, recorded in `build-plan.md` §19: the About image is a framed piece; phones get option A; pages follow direction 1 ("true to the object").
+  - **§19.2 A built** on branch `table-phone-zoom` (`84104b0cb06ba00c8a5efa2a539461d77d4c03c9`, pushed; not merged, not live; cache `environment-33`).
+  - Finding: the camera alone could only gain about 10%, because the row already filled about 86% of a phone's width.
+  - `dist/app.js` changes:
+    - New `TABLE_LAYOUT` and `layoutTable()`. On portrait screens (aspect under 0.9), the report sits behind (z −1) and the press and notepad in front (z 0.95, x ±1.2). Both the live position and the stored home position update, and the layout switches on resize.
+    - The pen is hidden on phones.
+    - The phone table camera moves closer along the same viewing angle, fitted to a half-width of 2.5 (`TABLE_PHONE_HALF_WIDTH`).
+  - Result: each object is about a third of a 390 px screen's width (was about a fifth), and the cover text is readable.
+  - Verified locally:
+    - 390×844 and 360×740: nothing cut off, labels and hint fit.
+    - The report and press magazine open into their readers and return to their new spots.
+    - 1280×800: the original row and pen.
+    - No console errors.
+  - Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
+  - Not verified: real devices, and rotating a phone mid-visit.
 - October 29, 2026 (Claude Code session): **Plan update, no site changes.** Added `build-plan.md` §19 at Donte's request, with a pointer in §15 and the new assets listed in §17.
   - §19.1: the About story moves to the blank wall left of the couch. The camera turns left, the wall shows Donte's image, and then the text fades in. Scrolling on turns back right and walks straight to the table.
   - §19.2: closer table framing on phones (options A, B and C; recommends A).
