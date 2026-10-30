@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Phone Home fit and smoother Home arrival are ready for review** (October 30, 2026, branch `home-fit` at `a7027e8f659d86a3b1cb8cac6a80ba75aa60b363`, pushed; Vercel preview; not merged, not live; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
+**Phone Home fit and smoother Home arrival are live** (October 30, 2026, `main` merge `4a72e694049097908ca79ec97a5c591e293013cc`; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
 
 **Smoother room flights and logo plaques are live** (October 30, 2026, `main` merge `7b4d4b4fc331afef47fbf33a0a66e8282c596bac`; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
 
@@ -242,7 +242,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `home-fit` and approves release before it is merged to `main`.
+Updated October 30, 2026: phone Home fit, the slower About turn and the smoother Table → Home arrival are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: smoother flights and logo plaques are live; Donte checks them on a real phone, including whether any arrival still zooms in. The notepad page redesign stays paused on branch `notepad-page`.
 
@@ -265,6 +265,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Phone Home fit, slower About turn and smoother Table → Home are live** at Donte's explicit request ("push it"). Merged `home-fit` into `main` as `4a72e694049097908ca79ec97a5c591e293013cc` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel commit status `success`; the live page (checked via donte.villagemicrofund.com, same deployment) loads `app.js?v=home-fit-45`. Live browser check at 375×812: Home shows all six plaques and the six buttons in the new order; no console errors. Not checked live: desktop, flights on the live site, real devices, reduced motion. Rollback: revert `4a72e69` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Phone Home fit, About turn 10% slower, smoother Table → Home** (Donte: zoom out on the phone Home view to see all plaques; slow the About → Table turn by 10%; Table → Home jerks left before the right turn into Home). Cache `app.js?v=home-fit-45`; `house-path.js`, `house-scene.js`, `library-scene.js`, `navigation-route.js` at `?v=home-fit-1`.
   - `dist/house-path.js`: phones (aspect < 0.85) frame a 10.6-unit opening at Home instead of 8.5, enough for both plaque columns (outer edges x -20.0 to -10.0) with a small margin; `HOUSE_SHELL_FRONT_Z` raised 22 → 28 so the camera stays inside the room on the narrowest phones. Desktop Home framing is unchanged.
   - `dist/navigation-route.js`: leaving the About wall uses a 35.6% turn window (was 32%), about 10% slower. Routes into Home (from Table, Workshop, Library) now add a walk-in point in front of the sofa (-13.6, 3.2, 3.9) and go straight to the Home view; the old route crabbed sideways to the left while still facing the hallway (on phones 9.4 units of sideways travel), then turned. For Table/Library → Home the right turn to the plaque wall starts 1 unit before the arch and spreads over 80% of the remaining walk (`HOME_TURN_LEAD`, `HOME_TURN_SPAN`), continuing smoothly from the hallway turn. Simulation: sideways travel 9.4 → 5.0 units (phone) and 4.7 → 3.2 (desktop); peak turn 123 → 123°/s (phone) and 183 → 174°/s (desktop); no direction reversals after the right turn begins.
