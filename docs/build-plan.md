@@ -476,7 +476,7 @@ Requested by Donte. **Decisions, October 29:** the About image hangs as a framed
 
 **Decided:** A. Add B later only if the objects still feel small.
 
-**Built October 29 (preview branch `table-phone-zoom`, not live).** Moving the camera alone gained only about 10%, because the row already filled about 86% of a phone's width. A staggered layout was tried first; Donte preferred a level row. So on portrait screens the row keeps narrower gaps, the camera fits it, and the pen is hidden. The objects grow from about 22% to about 25–35% of the screen width. Desktop keeps the original row.
+**Built and released October 29 (live since `main` merge `0c11138`).** Moving the camera alone gained only about 10%, because the row already filled about 86% of a phone's width. A staggered layout was tried first; Donte preferred a level row. So on portrait screens the row keeps narrower gaps, the camera fits it, and the pen is hidden. The objects grow from about 22% to about 25–35% of the screen width. Desktop keeps the original row.
 
 **Acceptance.**
 - On a 390×844 screen, each object is at least about 30% of the screen width.
