@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Larger desk computer is ready for review** (October 30, 2026, branch `endao-screen` at `07713fa68f6af40be84318f433ace67d4afe42e0`, pushed; Vercel preview; not merged, not live; cache `app.js?v=endao-screen-50`): the computer on the Workshop desk is 20% larger, and the two EnDAO deck slides join without the stripe between them.
+**Larger desk computer is live** (October 30, 2026, `main` merge `3e9021aff7139c2563010e963f3e378b798d96a3`; cache `app.js?v=endao-screen-51`): the computer on the Workshop desk is 50% larger than the original, and the two EnDAO deck slides join without the stripe between them.
 
 **Workshop whiteboard and computer are live** (October 30, 2026, `main` merge `ed3c9e3bf351fcba35d83ce47fe6e42c991c3a81`; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
 
@@ -248,7 +248,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `endao-screen` and approves release before it is merged to `main`.
+Updated October 30, 2026: the larger desk computer and joined EnDAO slides are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: the Workshop whiteboard and EnDAO computer are live (build-plan §20); Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
@@ -277,6 +277,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Desk computer 50% larger, released** at Donte's request ("Make the computer 50% bigger and then push it"). Read as 150% of the original monitor (up from the 120% preview). `dist/library-scene.js`: bezel 1.23 × 2.025, screen 1.77 × 1.02, bottom edge kept above the stand; EnDAO zoom camera at x 20.28 (clear of the chair back, which tops out near y 1.55). Cache `app.js?v=endao-screen-51`, `library-scene.js?v=endao-screen-3`. Merged `endao-screen` (larger computer, joined slides, scene-aspect guard) into `main` as `3e9021aff7139c2563010e963f3e378b798d96a3` and pushed. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean; local QA at 1280×800 and 375×812. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=endao-screen-51`, the re-cut slide returns 200, and the Workshop shows the larger computer with no console errors. Not checked: real devices. Rollback: revert `3e9021a` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Correction: the desk computer, not the screen view.** Donte meant the 3D computer on the Workshop desk. `dist/library-scene.js`: bezel .82 × 1.35 → .984 × 1.62 and screen 1.18 × .68 → 1.416 × .816 (20%), with the bottom edge kept at the same height above the stand; the EnDAO zoom camera steps back (x 20.86 → 20.63) to frame it. `dist/style.css`: the screen view is back to 1040 px. The joined slides and the scene-aspect guard stay. Cache `app.js?v=endao-screen-50`, `style.css?v=endao-screen-27`, `library-scene.js?v=endao-screen-2`. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean; browser QA at 1280×800 (larger monitor in the Workshop view; zoom fills the frame; screen view 1040 px). Commit `07713fa68f6af40be84318f433ace67d4afe42e0` on `endao-screen`, pushed; not merged, not live. Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Larger EnDAO screen, slides joined** (Donte: make the computer screen 20% larger and remove the border between the two slides). Read as the screen view that opens for EnDAO. Cache `app.js?v=endao-screen-49`, `style.css?v=endao-screen-26`, `library-scene.js?v=endao-screen-1`.
   - `dist/assets/workshop/endao-deck-1.webp`: re-cut from the full-resolution render and cropped to 1600×878, dropping slide 1's 21-px bottom colour stripe; slide 2 starts directly below on the same background (referenced as `?v=2`). The desk monitor's texture crop is adjusted for the new shape.
