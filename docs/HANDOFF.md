@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Mobile polish preview** (October 29, 2026, branch `mobile-polish`, latest `bb671febc665fc821858de1c757828d22fa91aba`; not merged, not live): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, and smaller phone text boxes (options 1 + 2). Awaiting Donte's review.
+**Mobile polish preview** (October 29, 2026, branch `mobile-polish`, latest `5a4e3fc32d22001ebd799237041b6506611344c2`; not merged, not live): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass. Awaiting Donte's review.
 
 **Readability Phase 4 is live** (October 29, 2026, `main` merge `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb`): readable panels and readers.
 
@@ -247,6 +247,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Wordmark readability** (Donte: the logo isn't clearly visible at the top of the Table). On `mobile-polish` (`5a4e3fc32d22001ebd799237041b6506611344c2`, pushed; not merged, not live). Cause: the Table was the only room where the wordmark used dark ink with no backing, over the dark wall; between about 561 and 960 px the tab bar also overlapped it. `dist/text-styles.css` (cache `readability-18`): the wordmark sits on the same light indigo glass as the tabs and Reduce motion, in cream with a brass dot, in every room. Reading views keep their plain wordmark (verified: no backing, rust dot). From 561 to 960 px the tabs drop "The" so they clear the wordmark. Checked at 693×750 (Table, no overlap), 390×844 (Table) and 1280×800 (Home). Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Not verified: real devices.
 - October 29, 2026 (Claude Code session): **Phone text boxes, options 1 + 2** at Donte's request ("Build 1 + 2"), on `mobile-polish` (`bb671febc665fc821858de1c757828d22fa91aba`, pushed; not merged, not live). `dist/text-styles.css` (cache `readability-17`), phones only (≤560 px):
   - Headline-only room cards: the sentence under the Home welcome, Table and Library headlines is hidden (the bottom hint already says what to do). Headlines are 28 px with tighter padding. The About story passage is unaffected (only the welcome stage is trimmed).
   - Slimmer Workshop card: the description and "Continue to the library" button are hidden; the three sketchpads sit in one row of 44 px buttons.
