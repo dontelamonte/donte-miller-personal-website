@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**About wall preview** (October 29, 2026, branch `about-wall`, `c875bd10a9bb2578193ff40c6f1f0b6d89e2c1ab`; not merged, not live): turn left from Home to a 3D shelving wall built from Donte's reference, with the story on the right (build-plan §19.1). Awaiting Donte's review.
+**About wall preview** (October 29, 2026, branch `about-wall`, latest `64727eb38546485127d1c60d3f09886329e0cef5`; not merged, not live): turn left from Home to a 3D shelving wall built from Donte's reference, with the story on the right (build-plan §19.1). Awaiting Donte's review.
 
 **Bigger table objects on phones are live** (October 29, 2026, `main` merge `0c111380db4d0e62fc8d697df2b8fc10d66a0915`; cache `environment-34`): a level row with narrower gaps and a closer camera on phones (build-plan §19.2 A).
 
@@ -251,6 +251,10 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **About wall: turn right on the way to the table** (Donte's request). On `about-wall` (`64727eb38546485127d1c60d3f09886329e0cef5`, pushed; not merged, not live).
+  - `dist/navigation-route.js`: `blendViewDirections` gains a `'right'` turn option, and flights leaving the living room use it. From the About wall this makes a half-turn past the sofa instead of past the front wall. From Home it is the same as the shortest turn, so that view is unchanged.
+  - Verified locally at 1280×800: early in the flight the sofa and portrait come into view, and it lands at the table.
+  - `npm test` 50/50; `git diff --check` clean.
 - October 29, 2026 (Claude Code session): **About wall scene built** (build-plan §19.1) on branch `about-wall` (`c875bd10a9bb2578193ff40c6f1f0b6d89e2c1ab`, pushed; not merged, not live).
   - **Decisions from Donte during the build:**
     - The étagère, the paintings and the plants are 3D objects, not a flat picture.
