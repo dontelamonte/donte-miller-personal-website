@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**About wall preview** (October 29, 2026, branch `about-wall`, `c875bd10a9bb2578193ff40c6f1f0b6d89e2c1ab`; not merged, not live): turn left from Home to a 3D shelving wall built from Donte's reference, with the story on the right (build-plan §19.1). Awaiting Donte's review.
+
 **Bigger table objects on phones are live** (October 29, 2026, `main` merge `0c111380db4d0e62fc8d697df2b8fc10d66a0915`; cache `environment-34`): a level row with narrower gaps and a closer camera on phones (build-plan §19.2 A).
 
 **Mobile polish is live** (October 29, 2026, `main` merge `e29817f6db76ad6cb235751c6e31f4215423b04e`; cache `environment-32` / `readability-18`): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass.
@@ -232,7 +234,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (image received and design decided, ready to build), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. New planned work is in `build-plan.md` §19: a new About scene on the living-room wall (§19.1 built on branch `about-wall`; Donte to review, merge only on approval), bigger table objects on phones (§19.2 A, live), and redesigned reader pages (waiting on Donte's page images and a direction choice). If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -249,6 +251,36 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **About wall scene built** (build-plan §19.1) on branch `about-wall` (`c875bd10a9bb2578193ff40c6f1f0b6d89e2c1ab`, pushed; not merged, not live).
+  - **Decisions from Donte during the build:**
+    - The étagère, the paintings and the plants are 3D objects, not a flat picture.
+    - There is no pause at Home between the About wall and the walk to the table.
+  - **`dist/house-path.js`:**
+    - New `ABOUT_WALL_X`, `ABOUT_PANEL_LEFT_Z` (10), `ABOUT_PANEL_HEIGHT` (7.6) and `aboutWallView(aspect)`.
+    - Phones: camera 10.5 from the wall, centred on the shelves. Desktop: up to 10 from the wall, shelves on the left, open wall on the right.
+  - **`dist/house-scene.js`:**
+    - The west wall is a painted canvas (blue `#2f4559`, brush texture, copper skirting and a moulding panel behind the text).
+    - In front of it, laid out from the reference's pixel positions:
+      - a two-tower étagère (cabinets, shelves, turned posts with knobs, a top shelf and cornice, a plinth);
+      - six framed paintings, with artwork cropped from the reference;
+      - five plates (cropped artwork) and seven porcelain vases;
+      - stacks of books;
+      - one instanced leaf mesh for the vines, shelf plants and fig (about 1,000 leaves);
+      - 220 instanced orange blossoms.
+  - **`dist/app.js`:**
+    - New `aboutTurn` state and `setAboutTurn` / `resetAboutTurn` / `turnToAboutWall`.
+    - The first scroll at Home turns to the wall (1.5 s, power2.inOut). The story fades in only once the turn is about 94% complete, and starts from its top (`ABOUT_STORY_START`).
+    - Scrolling past the end flies straight from the wall to the table. Scrolling up from the start turns back to Home.
+    - Tabs, resets and direct links clear the wall view. A direct `#about` link opens on the wall.
+    - The about wall image is loaded alongside the portrait.
+  - **`dist/text-styles.css`:** with `html[data-about-wall]`, the story box sits on the right on desktop (430 px, 20 px text). On tablets and phones it sits below the shelves (phones: 38vh, 17 px text). The room buttons hide while the wall is in view.
+  - **New asset:** `dist/assets/about-wall.webp` (the reference cropped above the floor, 182 KB).
+  - **Verified locally:**
+    - 1280×800: turn, text hidden during the turn then shown, story 0→100%, direct flight to the table (already moving through the arch at 0.9 s), Home view unchanged.
+    - 390×844: wall framing, scrolling up returns Home, the Table tab from the wall.
+  - **Checks:** `npm run check` passed; `npm test` 50/50; `git diff --check` clean.
+  - **Not verified:** real devices, performance on low-end phones (the extra meshes and leaves), tablet sizes, reduced-motion mode.
+  - **Not done:** scrolling up from the table returns to Home, not to the end of the story.
 - October 29, 2026 (Claude Code session): **About wall image received.** Saved as `reference-images/about-wall.webp` (1024×1024, 210,672 bytes) and recorded in `reference-manifest.csv`. It shows a deep-blue wall with copper trim and a pair of wooden étagères with plants, plates and paintings.
   - Donte's decisions:
     - The whole wall is styled after the image, with the shelving scene on the left-to-middle of the wall. This replaces the earlier "framed piece" choice.
