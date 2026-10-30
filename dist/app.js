@@ -2,15 +2,15 @@ import * as THREE from './vendor/three.module.min.js';
 import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
-import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=about-wall-1';
-import {buildHouse} from './house-scene.js?v=plaque-logos-1';
+import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=home-fit-1';
+import {buildHouse} from './house-scene.js?v=home-fit-1';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=smooth-flights-1';
-import {buildLibrary} from './library-scene.js?v=about-wall-1';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=home-fit-1';
+import {buildLibrary} from './library-scene.js?v=home-fit-1';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
 
@@ -363,7 +363,7 @@ function navigateRoom(id,{historyChange=true,aboutEnd=false}={}){
  document.querySelectorAll('[data-room-go]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.roomGo===id)));
  navigationTween=gsap.to(flight,{t:1,duration,ease:'power1.inOut',onUpdate:()=>{
   const p=path.getPointAt(flight.t);
-  const motion={position:p.toArray(),final:finalPosition.toArray(),ahead:(a=>path.getPointAt(a+.25).sub(path.getPointAt(a)).toArray())(Math.min(.75,flight.t))};
+  const motion={position:p.toArray(),final:finalPosition.toArray(),length:distance,ahead:(a=>path.getPointAt(a+.25).sub(path.getPointAt(a)).toArray())(Math.min(.75,flight.t))};
   const gaze=new THREE.Vector3(...navigationDirection(startDirection.toArray(),endDirection.toArray(),from,id,flight.t,motion));
   target.copy(p).addScaledVector(gaze,8);
   camera.position.copy(p);camera.fov=THREE.MathUtils.lerp(startFov,finalView.fov,flight.t);

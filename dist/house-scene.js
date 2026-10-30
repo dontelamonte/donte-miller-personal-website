@@ -1,6 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
 import {environmentMaterial} from './environment-materials.js';
-import {houseShellFrontZ,ABOUT_PANEL_LEFT_Z,ABOUT_PANEL_HEIGHT} from './house-path.js?v=about-wall-1';
+import {houseShellFrontZ,ABOUT_PANEL_LEFT_Z,ABOUT_PANEL_HEIGHT} from './house-path.js?v=home-fit-1';
 
 // Connected architecture and independent objects; the room is not a backdrop.
 export function buildHouse(scene,{portrait,aboutWall,plaqueLogos,rugMap,aspect=16/9}) {

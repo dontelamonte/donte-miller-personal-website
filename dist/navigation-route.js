@@ -1,7 +1,9 @@
-import {cameraAt} from './house-path.js?v=about-wall-1';
+import {cameraAt} from './house-path.js?v=home-fit-1';
 import {libraryCameraAt} from './library-path.js?v=left-return-28';
 import {WORKSHOP_STOP} from './workshop-route.js';
 
+// Into Home: the right turn to the wall starts 1 unit before the arch and spreads over 80% of the remaining walk.
+const HOME_TURN_LEAD=1,HOME_TURN_SPAN=.8;
 const clamp01=value=>Math.max(0,Math.min(1,value));
 const normalize=vector=>{const length=Math.hypot(...vector)||1;return vector.map(value=>value/length);};
 const wrapAngle=angle=>Math.atan2(Math.sin(angle),Math.cos(angle));
@@ -26,6 +28,13 @@ export function navigationDirection(start,end,from,to,t,motion){
  const ease=x=>{x=clamp01(x);return x*x*x*(x*(x*6-15)+10);};
  // Re-selecting the current room only settles the view; it never glances toward a doorway.
  if(from===to)return blendViewDirections(start,end,ease(t));
+ // Into Home: turn right to the plaque wall while walking in past the arch, then hold it while stepping back.
+ if(motion&&to==='living'&&from!=='workshop'){
+  const afterArch=Math.hypot(6,.6)+Math.hypot(motion.final[0]+13.6,motion.final[2]-3.9);
+  const walked=afterArch+HOME_TURN_LEAD-(1-t)*motion.length;
+  const hallway=t<.32?blendViewDirections(start,[-1,0,0],ease(t/.32)):[-1,0,0];
+  return walked>0?blendViewDirections(hallway,end,ease(walked/(HOME_TURN_SPAN*afterArch+HOME_TURN_LEAD))):hallway;
+ }
  // Table and Library: look where the walk is heading, using the flight's own path when it is supplied.
  if(motion&&from==='table'&&to==='library'){
   // Face the passage once, then turn left to the shelves as the camera crosses the Workshop end.
@@ -53,7 +62,9 @@ export function navigationDirection(start,end,from,to,t,motion){
  const doorway=order[to]>order[from]?[1,0,0]:[-1,0,0];
  // Leaving the living room turns right, past the sofa: from the About wall this is a half-turn,
  // and from Home it matches the shortest turn.
- if(t<.32)return blendViewDirections(start,doorway,ease(t/.32),from==='workshop'&&to==='living'?'left':from==='living'?'right':'shortest');
+ // Leaving the About wall is a half-turn; give it a slightly longer window (10% slower) than the quarter-turn from Home.
+ const s=normalize(start),window=from==='living'&&s[0]*doorway[0]<-.7?.356:.32;
+ if(t<window)return blendViewDirections(start,doorway,ease(t/window),from==='workshop'&&to==='living'?'left':from==='living'?'right':'shortest');
  if(t>.62)return blendViewDirections(doorway,end,ease((t-.62)/.38));
  return doorway;
 }
@@ -71,6 +82,13 @@ export function navigationViews(from,to,aspect){
  const route=[views[a]];
  if(a==='living')route.push(passage(-10.1),passage(-5.2));
  if(order[a]<2&&order[b]>=2)route.push(passage(5.2),passage(9.8));
+ if(a==='living'&&reverse){
+  // Into Home: through the arch, a short walk in front of the sofa while turning to the wall, then step straight back.
+  const home=views.living.position;
+  return [views[b],...(order[b]>=2?[passage(9.8),passage(5.2)]:[]),passage(-5.2),passage(-10.1),
+   {position:[-13.6,3.2,3.9],target:[-13.6,3.2,-6],fov:46,room:'living'},views.living]
+   .filter((v,i,all)=>i===0||Math.hypot(...v.position.map((x,j)=>x-all[i-1].position[j]))>.05);
+ }
  if(a==='table'&&b==='library'){
   const lib=views.library.position;
   // Into the Library: the scroll tour's own curve past the Workshop end, so the turn to the shelves has room.
