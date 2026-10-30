@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Full-screen room on phones is ready for review** (October 29, 2026, branch `full-screen-room` at `40f81606ba8fa65b1cca133173fe957ae64804a0`, pushed; Vercel preview; not merged, not live; cache `fullscreen-42` / `fullscreen-24` / `readability-21`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons drop their Recognition/Education labels.
+**Full-screen room on phones is ready for review** (October 29, 2026, branch `full-screen-room` at `7fb1778cfe198d44b173bfb4d73d744764d36611`, pushed; Vercel preview; not merged, not live; cache `fullscreen-42` / `fullscreen-24` / `readability-22`): the 3D room fills the whole phone screen, the Table widens its lens so all three objects fit, and the Home award buttons show only their names (no label, no arrow).
 
 **Story return and 'Scroll down' hints are live** (October 29, 2026, `main` merge `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b`; cache `story-return-41`). Notepad page redesign draft is paused on branch `notepad-page` (`dc005a9`) awaiting Donte's design input.
 
@@ -264,6 +264,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
   - Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Browser QA at 375×812 on the local server: Home, About wall, Table (direct link and via the Table tab), Workshop and Library all fill the screen; all three Table objects in view; no console errors.
   - Not verified: desktop (changes are phone-only by media query / aspect < 0.9, but not re-checked), reduced motion, real phones, the live preview URL.
   - Git: branch `full-screen-room`, commit `40f81606ba8fa65b1cca133173fe957ae64804a0`, pushed. Not merged; not deployed to production.
+  - Follow-up (Donte, mid-turn: "remove the arrows from the buttons at home on mobile"): the phone award buttons drop the ↗ too (`::before{content:none}`), cache `readability-22`. Checked at 375×812; check 50/50 tests, diff clean. Commit `7fb1778cfe198d44b173bfb4d73d744764d36611`, pushed to `full-screen-room`.
   - Next: Donte reviews and approves release.
 - October 29, 2026 (Claude Code session): **Story return and "Scroll down" hints are live** at Donte's explicit request ("Release it").
   - Merged `story-return` into `main` as `6eb028c776c7d48ca2c13fe7fb40c4223374bf1b` and pushed.
