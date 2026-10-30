@@ -53,13 +53,33 @@ test('all twelve tab routes clear doorways without intermediate presentation pos
   }
  }
 });
-test('Table to Library leaves directly without backing away or visiting the desk',()=>{
- const views=navigationViews('table','library',16/9);
- assert.equal(views.length,4);
- assert.ok(views[1].position[0]>views[0].position[0]);
- assert.ok(views[1].position[2]<views[0].position[2]);
- assert.ok(!views.some(v=>v.room==='workshop'));
- assert.deepEqual(navigationViews('library','table',16/9),views.slice().reverse());
+test('Table to Library follows the tour curve in, and the return curves left into the arch',()=>{
+ for(const aspect of [.45,1,16/9]){
+  const views=navigationViews('table','library',aspect);
+  assert.equal(views.length,6);
+  assert.ok(views[1].position[0]>views[0].position[0]);
+  assert.ok(views[1].position[2]<views[0].position[2]);
+  for(let i=2;i<views.length;i++)assert.ok(views[i].position[0]>=views[i-1].position[0],'keeps walking east into the Library');
+  const back=navigationViews('library','table',aspect);
+  assert.equal(back.length,5);
+  assert.deepEqual(back[0],views.at(-1));
+  assert.deepEqual(back.at(-1),views[0]);
+  // Heading turns left monotonically from the shelves toward the arch: no sideways jog.
+  const heading=(a,b)=>Math.atan2(b.position[0]-a.position[0],b.position[2]-a.position[2]);
+  const turns=[heading(back[0],back[1]),heading(back[1],back[2]),heading(back[2],back[3])].map(y=>y<0?y+2*Math.PI:y);
+  assert.ok(turns[0]<turns[1]&&turns[1]<=turns[2]+1e-9,`left curve ${turns}`);
+ }
+});
+test('re-selecting the current room settles without a doorway glance',()=>{
+ const start=[0,-.79,-.61],end=[0,-.79,-.62];
+ for(let n=0;n<=20;n++){const d=navigationDirection(start,end,'table','table',n/20);assert.ok(d[1]<-.7,'never looks up')}
+});
+test('leaving the About wall turns more gently than leaving the Home view',()=>{
+ const yawStep=start=>{const a=navigationDirection(start,[0,0,-1],'living','table',.1),b=navigationDirection(start,[0,0,-1],'living','table',.12);return Math.abs(Math.atan2(Math.sin(Math.atan2(b[0],b[2])-Math.atan2(a[0],a[2])),Math.cos(Math.atan2(b[0],b[2])-Math.atan2(a[0],a[2]))))/(Math.PI);};
+ const fromWall=navigationDirection([-1,0,0],[0,0,-1],'living','table',.4);
+ assert.ok(fromWall[0]<.99,'still turning at 40% of the flight');
+ assert.ok(Math.abs(navigationDirection([0,0,-1],[0,0,-1],'living','table',.4)[0]-1)<1e-9,'Home view reaches the passage heading by 32%');
+ assert.ok(yawStep([-1,0,0])<yawStep([0,0,-1])*2);
 });
 test('every tab flight has a level passage gaze and no pitch overshoot',()=>{
  for(const from of rooms)for(const to of rooms)if(from!==to){
