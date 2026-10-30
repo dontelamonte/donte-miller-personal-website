@@ -253,14 +253,14 @@ function applyRoute(){
  else if(['living','dining','table',''].includes(id))goRoom(id||'living',{historyChange:false});
 }
 window.addEventListener('hashchange',applyRoute);
-// Half the table width a phone camera keeps in view around the staggered objects.
-const TABLE_PHONE_HALF_WIDTH=2.5;
+// Centre and half-width of the table a phone camera keeps in view around the row of objects.
+const TABLE_PHONE_CENTER=-.13,TABLE_PHONE_HALF_WIDTH=2.75;
 function travelCamera(){
  if(!camera||!['exploring','loading'].includes(state.mode))return;
  const r=viewport(),inLibrary=state.libraryProgress>.0001||(state.houseProgress>.999&&state.libraryTarget>0),v=inLibrary?libraryCameraAt(state.libraryProgress,r.width/r.height):cameraAt(state.houseProgress,r.width/r.height);
  camera.position.set(...v.position);target.set(...v.target);camera.fov=v.fov;
  if(inLibrary&&state.libraryProgress<.22){const fade=1-(state.libraryProgress/.22)**2*(3-2*state.libraryProgress/.22);camera.position.y-=.8*state.progress*fade;camera.position.z-=1.5*state.progress*fade;}
- if(!inLibrary&&state.houseProgress>.999){const aspect=r.width/r.height,mobile=aspect<.9,fit=mobile?Math.min(1,TABLE_PHONE_HALF_WIDTH/(Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)/Math.hypot(TABLE_CAMERA.position[1],TABLE_CAMERA.position[2])):1;camera.position.set(mobile?0:-1.3,TABLE_CAMERA.position[1]*fit-.8*state.progress,TABLE_CAMERA.position[2]*fit-1.5*state.progress);target.set(mobile?0:-1.3,0,0);}
+ if(!inLibrary&&state.houseProgress>.999){const aspect=r.width/r.height,mobile=aspect<.9,fit=mobile?Math.min(1,TABLE_PHONE_HALF_WIDTH/(Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)/Math.hypot(TABLE_CAMERA.position[1],TABLE_CAMERA.position[2])):1;camera.position.set(mobile?TABLE_PHONE_CENTER:-1.3,TABLE_CAMERA.position[1]*fit-.8*state.progress,TABLE_CAMERA.position[2]*fit-1.5*state.progress);target.set(mobile?TABLE_PHONE_CENTER:-1.3,0,0);}
  camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!state.journeyNavigation&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))&&!location.hash.startsWith('#course-')&&!location.hash.startsWith('#model-')){if(state.libraryProgress>.999&&state.libraryTarget===1){routeTo('library',true);document.title='Donte Miller — The Library';}else if(Math.abs(state.libraryProgress-WORKSHOP_STOP)<.004&&state.libraryTarget===WORKSHOP_STOP){routeTo('workshop',true);document.title='Donte Miller — The Workshop';}else if(state.houseProgress>.999&&state.houseTarget===1&&state.libraryProgress<.001&&state.libraryTarget===0){routeTo('table',true);document.title='Donte Miller — The Dining Table';}else if(state.houseProgress<.001&&state.houseTarget===0){routeTo('living',true);document.title='Donte Miller — Make yourself at home.';}}
 }
 function updateWorkshopUI(){
@@ -448,10 +448,9 @@ function coverTexture(id){return texture((ctx,w,h)=>{ctx.fillStyle=id==='report'
 function innerTexture(id){return texture((ctx,w,h)=>{ctx.fillStyle='#f7f0df';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2e4536';ctx.font='17px Georgia';ctx.fillText('DONTE MILLER / THE DINING TABLE',50,65);ctx.fillRect(50,90,w-100,2);ctx.font='67px Georgia';const words=id==='press'?['The Village,','in the world.']:id==='report'?['Ten years.','One Village.']:['Let’s build','something.'];words.forEach((s,i)=>ctx.fillText(s,50,200+i*80));for(let y=450;y<h-100;y+=34){ctx.fillStyle='#53614c33';ctx.fillRect(50,y,w-100-(y%5)*25,2);}},768,1080);}
 function roundedShape(w,h,r){const s=new THREE.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return s;}
 function mesh(geometry,material,parent=scene){const m=new THREE.Mesh(geometry,material);parent.add(m);m.castShadow=true;m.receiveShadow=true;return m;}
-// Phones stagger the table objects (report behind, press and notepad in front and closer together)
-// so the camera can frame them larger, and leave out the pen, which would sit at the screen edge.
-// Wider screens keep the original row.
-const TABLE_LAYOUT={wide:{press:[-1.75,.05],report:[0,-.03],opportunities:[1.72,.13]},narrow:{press:[-1.2,.95],report:[0,-1],opportunities:[1.15,.95]}};
+// Phones keep the same row with narrower gaps so the camera can frame it larger,
+// and leave out the pen, which would sit at the screen edge. Wider screens keep the original spacing.
+const TABLE_LAYOUT={wide:{press:[-1.75,.05],report:[0,-.03],opportunities:[1.72,.13]},narrow:{press:[-1.62,.05],report:[0,-.03],opportunities:[1.5,.13]}};
 function layoutTable(){const r=viewport(),narrow=r.width/r.height<.9,layout=TABLE_LAYOUT[narrow?'narrow':'wide'];books.forEach((b,id)=>{const [x,z]=layout[id],dx=x-b.home.position.x,dz=z-b.home.position.z;if(!dx&&!dz)return;b.home.position.x=x;b.home.position.z=z;if(['exploring','loading'].includes(state.mode)){b.group.position.x+=dx;b.group.position.z+=dz;}const pen=b.group.userData.pen;if(pen){pen.position.x+=dx;pen.position.z+=dz;}});books.forEach(b=>{if(b.group.userData.pen)b.group.userData.pen.visible=!narrow;});}
 function makeBook(id,x,z,angle){const group=new THREE.Group();scene.add(group);const w=id==='opportunities'?1.18:1.36,h=id==='opportunities'?1.65:1.89;group.position.set(x,.86,z);group.rotation.set(-Math.PI/2,0,angle);const thickness=id==='report'?.11:.065;
  const paperMat=new THREE.MeshStandardMaterial({color:'#e6dac1',roughness:.95});const pageBlock=mesh(new THREE.BoxGeometry(w,h,thickness),paperMat,group);
