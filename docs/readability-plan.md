@@ -48,6 +48,17 @@ Soft gradients at the top (behind the tabs) and bottom (behind the footer and hi
 
 **Recommendation:** an A-style glass bar for the tabs everywhere, A-style placards for room text, B-style paper only where a light scene suits it better (the Table intro), and a C-style top scrim on phones only, so the tab bar blends into the scene.
 
+## Phone text boxes (proposed October 29)
+
+Donte reports that the text boxes take up too much of a phone screen. Measured at 390×844: the Workshop card covers 35%, the About story card 20%, the Table intro 19%, the Library intro 17%, the Library menu 17%, and the award grid 14%. Options, from lightest to biggest change:
+
+1. **Trim to a headline on phones.** Keep the eyebrow and headline; drop the sentence under it when the bottom hint already says what to do (Table and Library). Slightly smaller headlines (34 → 28 px) and tighter padding. Cuts these cards by about 40%.
+2. **Slim Workshop card.** On phones: hide the description, put the three sketchpad buttons in one row of compact chips, and drop "Continue to the library" (the bottom hint covers it). Brings the card from about 35% to about 15%.
+3. **Collapse after arrival.** Each room card shows in full when you arrive, then shrinks to a one-line chip (e.g. "The Library · Ideas to take with you") on the first scroll or tap elsewhere; tap the chip to expand it again.
+4. **Fold the award grid.** Replace the six award tiles with one "Recognition & education" button that opens the six as a sheet. The plaques on the wall stay tappable.
+
+Recommendation: 1 + 2 now (no new interactions), then 3 if the rooms still feel crowded.
+
 ## Type and contrast rules
 
 These apply whichever option is chosen:

@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Mobile polish preview** (October 29, 2026, branch `mobile-polish`, `4021412e362319b2c0ad67473780af3a41bc5a58`; not merged, not live): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top. Awaiting Donte's review; phone text-box size options are proposed in `readability-plan.md`.
+
 **Readability Phase 4 is live** (October 29, 2026, `main` merge `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb`): readable panels and readers.
 
 **Readability release is live** (October 29, 2026, `main` merge `c7a581c7f279ec54978a16da4e5690f2f31e9d75`): lighter blue text style and phone plaque buttons, on top of version 31. See the Change log.
@@ -228,7 +230,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) v31 is released; Donte to review it on their own devices. (2) Readability: Phases 1–4 are live; remaining is Phase 5 (scroll through every reader end to end, then a real iPhone and Android check). (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Donte reviews branch `mobile-polish` (Vercel preview) and picks which phone text-box options to build (see `readability-plan.md`, "Phone text boxes"); merge only on approval. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -245,6 +247,11 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Phase 5 phone scroll-through + mobile polish** (branch `mobile-polish`, `4021412e362319b2c0ad67473780af3a41bc5a58`, pushed; not merged, not live). Cache ids `environment-32`, `readability-16`.
+  - Scroll-through on the live site at 375×812, by scripted wheel scrolling, with an automatic check every few steps for text off the screen edge and text under 11 px. Readers: Press → Report → Opportunities → back to the Table. Courses: all six, each closes to the shelf with the right "next" book; Funds returns Home. Sketchpads: EnDAO → Time Bank → Workshop. No overflow, no text under 11 px, no console errors. Cooperatives, Finance and Funds are short "coming soon" books (expected). Not covered: the Worker's Equity sketchpad, desktop size, real devices.
+  - Donte's requests: (a) the phone award buttons (`dist/text-styles.css`) now match the Library book menu: a navy tile with a cream name and a small brass label (e.g. "Recognition ↗"). The arrow moved from the name into the label (`dist/index.html`). (b) Scroll hints no longer use down arrows and say "Scroll down …" (`dist/index.html`, `dist/app.js`). The reader footer now reads "SCROLL DOWN TO READ · UP AT TOP TO CLOSE" and fits on one line at 390 px. The "Download PDF ↓" link is unchanged. (c) A Table book closed at (or within 40 px of) its end now reopens at the top; a book closed partway still resumes where it was (`dist/app.js`, close handler). Verified locally: closed at 1310/1310 → reopened at 0; closed at 500 → reopened at 500.
+  - Proposed, not built: options to shrink phone text boxes (`readability-plan.md`). Measured share of a 390×844 screen: Workshop card 35%, About story card 20%, Table intro 19%, Library intro 17%, Library menu 17%, award grid 14%.
+  - Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Local browser QA at 390×844 (Home, Library, Workshop, the press magazine).
 - October 29, 2026 (Claude Code session): **Readability Phase 4 is live** at Donte's explicit request ("Release it"). Merged `readability-phase-4` into `main` as `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. Verified live on `https://www.dontelamonte.com` at 390×844: page loads `text-styles.css?v=readability-15` containing the Phase 4 rules. In the report, section labels are 11 px, body text 15 px, page footer 11 px and reading-header tabs 13 px, with no header overflow. In the Village Micro Fund panel, the lead is 22 px, body 15 px, footer 11 px and fits. No console errors. Not re-checked live: other readers, desktop, the full scroll-through, real devices. Rollback: revert `7a10bb2` on `main` and push, or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **Readability Phase 4** on branch `readability-phase-4` (`ef6ad009ade51e7dd65cedfcf8937a560970b599`, Vercel preview `success`; not merged, not live). `dist/text-styles.css` (cache `readability-15`):
   - Labels raised from 6–10 px to at least 11 px: reader, course and sketchpad toolbars; mastheads; folios; page footers; section eyebrows; panel headers and footers.
