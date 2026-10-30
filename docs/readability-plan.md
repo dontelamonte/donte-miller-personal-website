@@ -59,7 +59,7 @@ Donte reports that the text boxes take up too much of a phone screen. Measured a
 
 Recommendation: 1 + 2 now (no new interactions), then 3 if the rooms still feel crowded.
 
-**Built October 29:** options 1 and 2 on branch `mobile-polish` (preview, not live). Home welcome 11% → 5% of the screen, Table 19% → 11%, Workshop 35% → 15%, Library 17% → 9%.
+**Built and released October 29:** options 1 and 2 (live since `main` merge `e29817f`). Home welcome 11% → 5% of the screen, Table 19% → 11%, Workshop 35% → 15%, Library 17% → 9%.
 
 ## Type and contrast rules
 

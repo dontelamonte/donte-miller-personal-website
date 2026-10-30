@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Mobile polish preview** (October 29, 2026, branch `mobile-polish`, latest `5a4e3fc32d22001ebd799237041b6506611344c2`; not merged, not live): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass. Awaiting Donte's review.
+**Mobile polish is live** (October 29, 2026, `main` merge `e29817f6db76ad6cb235751c6e31f4215423b04e`; cache `environment-32` / `readability-18`): library-style award buttons, arrow-free "scroll down" hints, finished Table books reopen at the top, smaller phone text boxes (options 1 + 2), and the wordmark on glass.
 
 **Readability Phase 4 is live** (October 29, 2026, `main` merge `7a10bb20bf26d6fca3c15b177bec1b9a41969bfb`): readable panels and readers.
 
@@ -230,7 +230,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 29, 2026: (1) Donte reviews branch `mobile-polish` (Vercel preview); merge only on approval. If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
+Updated October 29, 2026: (1) Mobile polish is live; Donte reviews it on their phone. If rooms still feel crowded, consider option 3 (collapse after arrival) in `readability-plan.md`. (2) Phase 5 still open: desktop scroll-through, the Worker's Equity sketchpad, and a real iPhone and Android check. (3) Continue `environment-audit.md` production order step 2: living-room hero furniture. (4) Physical iOS/Android device pass (below) is still outstanding.
 
 Earlier milestone, still open: verify all twelve directed room-tab flights and the scroll-guided house tour on physical iOS and Android devices, paying particular attention to the new aspect-responsive walls after orientation changes. The three provisional curriculum samples still need Donte's final lessons and downloadable resources; obtain per-curriculum prices, access terms, and preferred payment provider before enabling purchase controls. Preserve the public Site identity and current room/scroll sequences.
 
@@ -247,6 +247,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 29, 2026 (Claude Code session): **Mobile polish is live** at Donte's explicit request ("Release it"). Merged `mobile-polish` into `main` as `e29817f6db76ad6cb235751c6e31f4215423b04e` and pushed. Before pushing: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Vercel commit status `success`. The live page loads `app.js?v=environment-32` and `text-styles.css?v=readability-18`. Verified live at 390×844: Table wordmark on glass (cream on indigo at 45%); Table intro note hidden, card 106 px tall; table hint reads "Scroll down to open the press magazine." with no arrow; award buttons navy with a "Recognition ↗" label; Home hint "Scroll down to read my story". No console errors. Not re-checked live: desktop, the book reset (verified locally), real devices. Rollback: revert `e29817f` on `main` and push, or promote the previous Vercel deployment.
 - October 29, 2026 (Claude Code session): **Wordmark readability** (Donte: the logo isn't clearly visible at the top of the Table). On `mobile-polish` (`5a4e3fc32d22001ebd799237041b6506611344c2`, pushed; not merged, not live). Cause: the Table was the only room where the wordmark used dark ink with no backing, over the dark wall; between about 561 and 960 px the tab bar also overlapped it. `dist/text-styles.css` (cache `readability-18`): the wordmark sits on the same light indigo glass as the tabs and Reduce motion, in cream with a brass dot, in every room. Reading views keep their plain wordmark (verified: no backing, rust dot). From 561 to 960 px the tabs drop "The" so they clear the wordmark. Checked at 693×750 (Table, no overlap), 390×844 (Table) and 1280×800 (Home). Checks: `npm run check` passed; `npm test` 50/50; `git diff --check` clean. Not verified: real devices.
 - October 29, 2026 (Claude Code session): **Phone text boxes, options 1 + 2** at Donte's request ("Build 1 + 2"), on `mobile-polish` (`bb671febc665fc821858de1c757828d22fa91aba`, pushed; not merged, not live). `dist/text-styles.css` (cache `readability-17`), phones only (≤560 px):
   - Headline-only room cards: the sentence under the Home welcome, Table and Library headlines is hidden (the bottom hint already says what to do). Headlines are 28 px with tighter padding. The About story passage is unaffected (only the welcome stage is trimmed).
