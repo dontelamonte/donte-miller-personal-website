@@ -363,6 +363,8 @@ Phase 3 is active. The connected shell and most Phase 4 interactions were built 
 
 Readability (added October 29, 2026): visitors struggle to read the room tabs and on-scene text, especially on phones. See [readability-plan.md](readability-plan.md) for the diagnosis, design options (indigo glass, paper placards, scrims), type and contrast rules, and phased implementation. Prioritised ahead of further furnishing passes.
 
+Planned additions (added October 29, 2026): a new About scene on the wall left of the couch, closer table framing on phones, and redesigned reader pages. See §19. They come after the readability work and before further furnishing passes.
+
 Room-boundary scrolling now starts a complete timed camera journey with one gesture on desktop or touch. About text and book content keep their own scrolling. This supersedes descriptions of distance-scrubbed room travel above; routes and room stops remain the same.
 
 
@@ -422,10 +424,97 @@ The small delivery team needs creative development/animation, 3D modeling/textur
 
 ## 17. Content still needed before production completion
 
-The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination, opportunity descriptions, course covers/spines, course descriptions and chapter outlines, complete written first chapters, remaining paid lessons, and the associated resource files.
+The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination, opportunity descriptions, course covers/spines, course descriptions and chapter outlines, Donte's image for the About wall (§19.1), Donte's page-design images for the redesigned readers (§19.3), complete written first chapters, remaining paid lessons, and the associated resource files.
 
 Before checkout goes live, define individual prices, access duration, refund/access policy, support route, and payment-provider/account setup. These decisions do not block the camera prototype or the core magazine-to-report interaction.
 
 ## 18. Immediate build brief
 
 Implement a simple oval table with a magazine and report, one reusable opening book rig, a persistent canvas, and real `/press` and `/work/ten-year-report` readers. Demonstrate selection, paper-to-HTML alignment, native reading, the intentional end-of-section continuation, return animation, next-object opening, and escape/return behavior on desktop and mobile. Use temporary geometry and supplied compositions. Once this passes review, expand the environment and remaining objects.
+
+## 19. Planned additions — October 29, 2026
+
+Requested by Donte. Not started. Each item goes on its own branch with a Vercel preview, and is merged only with Donte's approval.
+
+### 19.1 About scene on the living-room wall
+
+**Problem.** The About story appears suddenly as a text box over the couch view, and it is hard to read on phones.
+
+**New sequence** (replaces the current pop-up story; Shot A is unchanged):
+
+1. **Home (Shot A).** Couch, portrait and plaques, as now.
+2. **Turn left.** The first scroll turns the camera left, toward the blank wall to the left of the couch. The archway is to the right, so this turn goes the opposite way. The turn is a timed camera move like room travel, not scrubbed by scroll distance.
+3. **The About wall.** The camera settles facing the wall, which shows Donte's supplied image (see Assets). The wall is visible on its own for a moment before any text appears.
+4. **About text.** The story appears only after the camera settles, fading and rising in gently rather than popping in. It is one paragraph at a time, at a readable size (16 px or more on phones), on the light glass style from the readability work. On phones the text sits in the lower part of the screen so the wall image stays visible above it. Scrolling moves through the paragraphs; the existing paragraph pacing (`ABOUT_CHAPTER_DISTANCE`) can be reused.
+5. **Turn back and walk.** Scrolling past the last paragraph hides the text, turns the camera back to the right, then walks straight to the table. This replaces the current curve (shots B–D) with a direct line through the arch to the table pose.
+6. **Reverse.** Scrolling up from the table walks back and turns to the About wall at the last paragraph. Scrolling up from the first paragraph turns back to Home. The Home tab always returns to Shot A, and the Table tab still flies straight to the table.
+
+**Build notes.**
+- Add an About camera stop to `house-path.js`: the same camera position as Shot A, facing the left wall.
+- Fit the wall image to the camera framing on both portrait and landscape screens. Check that no ceiling, floor or wall edge shows.
+- Confirm that the wall surface left of the couch is in the room shell. If the shell's west wall is too far away or angled for a clean view, move or extend it.
+- Keep the portrait's jump-into-story behavior, but point it at the new About wall.
+- Reduced motion: skip the turns and cross-fade between views instead.
+
+**Assets.** Donte will supply the image for the wall. Store it in `reference-images/` and record it in `reference-manifest.csv`, then build a web-sized texture (WebP/AVIF, at most about 2048 px). Open question: should the image fill the whole wall like a mural, or hang as a framed piece?
+
+**Acceptance.**
+- Text never appears while the camera is moving.
+- Body text is at least 16 px on a 390 px phone.
+- The turn, return and walk run smoothly at 390×844, 663×701 and 1280×800.
+- Forward and reverse scrolling, the Home and Table tabs, and Back/Forward all land in the right place.
+- Checked on a real iPhone and Android phone.
+
+### 19.2 Bigger table objects on phones
+
+**Problem.** On phones, the magazine, report and notepad look too small. The table camera (`TABLE_CAMERA`: height 7.8, field of view 46°) fits all three objects into a narrow portrait screen.
+
+**Options.**
+- **A. Closer phone framing (recommended first step).** On portrait screens, lower the camera and narrow the framing so the three objects fill about 90% of the screen width, with the labels underneath. Landscape and desktop are unchanged.
+- **B. One object at a time on phones.** The camera frames a single object large: press, then report, then notepad. Scrolling or swiping slides to the next object, and opening works as now. This makes the objects biggest, but adds a step.
+- **C. A after the object opens.** Keep the overview, but zoom in further on the selected object as it lifts, before the reader opens.
+
+**Recommendation:** build A, and review it on a phone. Add B only if the objects still feel small.
+
+**Acceptance.**
+- On a 390×844 screen, each object is at least about 30% of the screen width.
+- Nothing is cut off at 360 px.
+- The labels and bottom hint still fit.
+- Opening and closing animations still line up with the readers.
+
+### 19.3 Redesigned reader pages
+
+**Scope.** The pages that open from objects:
+- Table: the Press magazine, the Ten-year report, and the Let's build notepad.
+- Workshop: three sketchpads.
+- Library: six course books.
+
+Donte will supply images to guide the design.
+
+**Directions to brainstorm.**
+1. **True to the object.** Each page looks like the object it came from:
+   - Press: a magazine spread with columns, full-width photos and pull quotes.
+   - Report: an annual report with large figures and simple charts.
+   - Notepad: lined paper with handwriting-style headings and pen marks.
+   - Sketchpads: graph paper with diagrams.
+   - Course books: a cloth-bound book with chapter plates.
+2. **One house style.** A shared editorial layout for every page: a cover image at the top, paper body text, and an accent color per room (rust for the Table, indigo for the Workshop, green for the Library). This is the most consistent and the easiest to maintain.
+3. **Image-led.** Donte's images fill the top of each page or sit behind it, with the text on paper cards over them. This is the most striking, but text contrast must be checked over each image.
+4. **Phone-first cards.** On phones, each page is a short series of full-screen cards, about one idea per screen, that the reader scrolls through. On desktop it is a normal long page. This is the easiest to read on a phone, but the content needs restructuring into cards.
+
+**Recommendation:** direction 1, built on Donte's images, with the type rules from `readability-plan.md`. Add direction 4 for phones if the long pages still feel heavy. Choose once the images arrive. Keep the opening and closing transitions (object → page → object) and the scroll-to-next behavior.
+
+**Assets.** Donte's page-design images: either mockups, textures or photos. Clarify which they are when they arrive. Store them in `reference-images/` and record them in `reference-manifest.csv`.
+
+**Acceptance.**
+- All 12 pages use the new design.
+- Reading text is at least 15–16 px on phones.
+- Contrast passes the worst-case check.
+- Page links, scroll-to-next and Back/Forward are unchanged.
+- No layout overflow at 360 px.
+
+### 19.4 Suggested order
+
+1. **§19.2 A:** quick, independent, and needs no new assets.
+2. **§19.1:** once the wall image arrives.
+3. **§19.3:** once the page images arrive and a direction is chosen.
