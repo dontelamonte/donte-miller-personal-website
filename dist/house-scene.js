@@ -3,7 +3,7 @@ import {environmentMaterial} from './environment-materials.js';
 import {houseShellFrontZ,ABOUT_PANEL_LEFT_Z,ABOUT_PANEL_HEIGHT} from './house-path.js?v=home-fit-1';
 
 // Connected architecture and independent objects; the room is not a backdrop.
-export function buildHouse(scene,{portrait,aboutWall,plaqueLogos,rugMap,aspect=16/9}) {
+export function buildHouse(scene,{portrait,aboutWall,aboutPaintings,plaqueLogos,rugMap,aspect=16/9}) {
  const root=new THREE.Group();root.name='Connected living, dining and library rooms';scene.add(root);
  const pickables=[],anchors=new Map();
  let seed=21;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
@@ -106,13 +106,17 @@ export function buildHouse(scene,{portrait,aboutWall,plaqueLogos,rugMap,aspect=1
   box(depth+.12,.06,Z(198)-Z(830),wallX+(depth+.12)/2,top+.08,(Z(198)+Z(830))/2,darkWood);
   box(depth+.1,.3,Z(205)-Z(815),wallX+(depth+.1)/2,floor+.15,(Z(205)+Z(815))/2,darkWood);
   // Paintings: 3D frames around the artwork cropped from the reference.
-  function painting(x0,y0,x1,y1,depthOut=.05,inset=10,lean=0){
+  function painting(x0,y0,x1,y1,depthOut=.05,inset=10,lean=0,image=null){
    const w=(x1-x0)*k,h=(y1-y0)*k,g=new THREE.Group();root.add(g);
-   const art=mesh(new THREE.PlaneGeometry(w-2*inset*k,h-2*inset*k),new THREE.MeshBasicMaterial({map:crop(x0+inset,y0+inset,x1-inset,y1-inset),color:'#e6e6e6'}),g);art.position.z=.06;art.castShadow=false;
+   const map=image?tex((c,W,H)=>c.drawImage(image,0,0,W,H),image.width,image.height):crop(x0+inset,y0+inset,x1-inset,y1-inset);
+   const art=mesh(new THREE.PlaneGeometry(w-2*inset*k,h-2*inset*k),new THREE.MeshBasicMaterial({map,color:'#e6e6e6'}),g);art.position.z=.06;art.castShadow=false;
    const f=ring(w,h,inset*k+.02,gold);g.add(f);f.position.set(0,0,0);
    onWall(g,depthOut);g.position.y=Y((y0+y1)/2);g.position.z=Z((x0+x1)/2);g.rotation.z=0;if(lean)g.rotateX(-lean);return g;
   }
-  painting(425,187,598,405);painting(398,430,623,698,.05,14);
+  // The two centre paintings are Donte's family portraits, framed to each image's own proportions
+  // (landscape on top, filling the gap between the towers; portrait below). Without them, the reference crops show.
+  if(aboutPaintings?.family)painting(382,197,641,395.3,.05,10,0,aboutPaintings.family);else painting(425,187,598,405);
+  if(aboutPaintings?.father)painting(416.8,430,604.2,698,.05,14,0,aboutPaintings.father);else painting(398,430,623,698,.05,14);
   painting(243,343,325,443,.14,7,.08);painting(248,490,318,585,.14,7,.08);painting(683,355,785,445,.16,8,.06);painting(700,620,765,720,.16,6,.08);
   // Blue-and-white plates on the top shelf and the right tower.
   function plate(cx,cy,r,depthOut=.12){const d=mesh(new THREE.CircleGeometry(r*k,32),new THREE.MeshBasicMaterial({map:crop(cx-r,cy-r,cx+r,cy+r),color:'#e8e8e8'}));onWall(d,depthOut);d.position.set(wallX+depthOut,Y(cy),Z(cx));d.rotateX(-.12);const rim=mesh(new THREE.TorusGeometry(r*k,.015,6,32),china);onWall(rim,depthOut);rim.position.set(wallX+depthOut,Y(cy),Z(cx));rim.rotateX(-.12);}
