@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Workshop whiteboard and computer are ready for review** (October 30, 2026, branch `workshop-objects` at `b91bcd2cab87ee0fd4a755735958de82f2495f99`, pushed; Vercel preview; not merged, not live; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
+**Workshop whiteboard and computer are live** (October 30, 2026, `main` merge `ed3c9e3bf351fcba35d83ce47fe6e42c991c3a81`; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
 
 **Family portraits on the About wall are live** (October 30, 2026, `main` merge `e5468e0d7a10278a9365ef519d95aabf8e594e7f`; cache `app.js?v=family-paintings-47`): the two centre paintings show Donte's supplied portraits — Donte with the baby on top (portrait frame), the family painting below (landscape frame).
 
@@ -246,7 +246,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `workshop-objects` (build-plan §20) and approves release before it is merged to `main`.
+Updated October 30, 2026: the Workshop whiteboard and EnDAO computer are live (build-plan §20); Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: the family portraits are live; Donte checks the About wall on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
@@ -273,6 +273,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Workshop whiteboard and computer are live** at Donte's explicit request ("Release it"). Merged `workshop-objects` into `main` as `ed3c9e3bf351fcba35d83ce47fe6e42c991c3a81` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel commit status `success`; the live page (via donte.villagemicrofund.com, same deployment) loads `app.js?v=workshop-objects-48`, and the three workshop images return 200. Live browser check at 1280×800: the Workshop shows the whiteboard and the deck on the monitor; EnDAO zooms in and opens the deck; no console errors. Not checked live: phone size, real devices, reduced motion. Rollback: revert `ed3c9e3` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Workshop whiteboard and computer** (Donte: turn the Worker's Equity Fund sketchpad into a whiteboard that opens into the supplied infographic; remove the EnDAO sketchpad and make EnDAO a zoom into the desk computer, opening into the first two pages of the EnDAO investor deck as one continuous page with a link to EnDAO.ai; update the build plan first). Build plan §20 added and synced to `main` first. Cache `app.js?v=workshop-objects-48`, `style.css?v=workshop-objects-25`, `library-scene.js?v=workshop-objects-1`.
   - Assets: `dist/assets/workshop/workers-equity-whiteboard.webp` (Donte's 889×2000 image); `endao-deck-1.webp` and `endao-deck-2.webp` (1600×900), rendered from pages 1–2 of `EnDAO Investor Deck.pdf` (24 pages) with macOS PDFKit.
   - `dist/library-scene.js`: a freestanding whiteboard (1.3 × 2.92, aluminium frame, tray, stand) at the right end of the desk (21.25, 7.05), turned toward the room, shows the infographic; the desk monitor's screen shows deck page 1. Both are pickable as `workers-equity` and `endao` and register a camera focus. Only the Time Bank sketchpad remains on the desk.
