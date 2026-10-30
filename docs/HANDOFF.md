@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Workshop whiteboard and computer are ready for review** (October 30, 2026, branch `workshop-objects` at `b91bcd2cab87ee0fd4a755735958de82f2495f99`, pushed; Vercel preview; not merged, not live; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
+
 **Family portraits on the About wall are live** (October 30, 2026, `main` merge `e5468e0d7a10278a9365ef519d95aabf8e594e7f`; cache `app.js?v=family-paintings-47`): the two centre paintings show Donte's supplied portraits — Donte with the baby on top (portrait frame), the family painting below (landscape frame).
 
 **Phone Home fit and smoother Home arrival are live** (October 30, 2026, `main` merge `4a72e694049097908ca79ec97a5c591e293013cc`; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
@@ -244,6 +246,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews branch `workshop-objects` (build-plan §20) and approves release before it is merged to `main`.
+
 Updated October 30, 2026: the family portraits are live; Donte checks the About wall on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: phone Home fit, the slower About turn and the smoother Table → Home arrival are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
@@ -269,6 +273,15 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Workshop whiteboard and computer** (Donte: turn the Worker's Equity Fund sketchpad into a whiteboard that opens into the supplied infographic; remove the EnDAO sketchpad and make EnDAO a zoom into the desk computer, opening into the first two pages of the EnDAO investor deck as one continuous page with a link to EnDAO.ai; update the build plan first). Build plan §20 added and synced to `main` first. Cache `app.js?v=workshop-objects-48`, `style.css?v=workshop-objects-25`, `library-scene.js?v=workshop-objects-1`.
+  - Assets: `dist/assets/workshop/workers-equity-whiteboard.webp` (Donte's 889×2000 image); `endao-deck-1.webp` and `endao-deck-2.webp` (1600×900), rendered from pages 1–2 of `EnDAO Investor Deck.pdf` (24 pages) with macOS PDFKit.
+  - `dist/library-scene.js`: a freestanding whiteboard (1.3 × 2.92, aluminium frame, tray, stand) at the right end of the desk (21.25, 7.05), turned toward the room, shows the infographic; the desk monitor's screen shows deck page 1. Both are pickable as `workers-equity` and `endao` and register a camera focus. Only the Time Bank sketchpad remains on the desk.
+  - `dist/app.js`: `MODEL_MEDIA` drives the whiteboard and screen readers: images in a shared reader frame, a screen-reader transcript of the image text, "View full size" links on phones, and "Visit EnDAO.ai ↗" (https://endao.ai, new tab). Opening flies the camera to the board or monitor (1.2 s) instead of lifting a pad; closing returns it; hover lift is only for sketchpads; announcements say Whiteboard / Screen / Sketchpad. `dist/style.css`: whiteboard and monitor frames. `dist/index.html`: Workshop card now says "Choose the whiteboard, the computer or the sketchpad".
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA on the local server at 1280×800 (Workshop view; whiteboard → continue → EnDAO screen → continue → Time Bank) and 375×812 (whiteboard reader, Back, EnDAO screen with links); no console errors.
+  - Known: on phones the whiteboard sits outside the Workshop view (the narrow view frames the desk); it is reached by the button or by scrolling. The infographic's diagram labels the sell side "Time Bank" in step 3, while the earlier diagram says "Investment Bank"; flagged to Donte, image unchanged.
+  - Not verified: real devices, reduced motion, the Vercel preview URL.
+  - Git: branch `workshop-objects`, commit `b91bcd2cab87ee0fd4a755735958de82f2495f99`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Family portraits swapped and live** at Donte's request ("switch the position of the two, and then push"). `dist/house-scene.js`: the top centre frame is now the portrait of Donte with the baby (435.7–587.3 × 187–405 on the wall grid, inset 10); the lower frame is the landscape family painting (380–642 × 462.7–665.3, inset 14). Cache `app.js?v=family-paintings-47`, `house-scene.js?v=family-paintings-2`. Branch commit `9c44ac20ee55e5d5f5be6f4c0e79631fdcf2c086`; merged into `main` as `e5468e0d7a10278a9365ef519d95aabf8e594e7f` and pushed. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Local QA at 1280×800 and 375×812 (on phones the portrait now shows above the story card; the family painting sits behind it). Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=family-paintings-47`, both images return 200, and the About wall shows both portraits at 1280×800 with no console errors. Not checked: real phones. Rollback: revert `e5468e0` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Family portraits on the About wall** (Donte supplied two paintings for the two largest About-wall frames; shapes could change). Cache `app.js?v=family-paintings-46`, `house-scene.js?v=family-paintings-1`.
   - `dist/assets/about-painting-family.webp` (1000×746) and `dist/assets/about-painting-father.webp` (598×900), resized from Donte's images.

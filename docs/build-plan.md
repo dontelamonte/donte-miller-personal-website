@@ -557,3 +557,4 @@ Requested by Donte, October 30. Each change replaces one desk sketchpad with a d
 - Assets: `assets/workshop/workers-equity-whiteboard.webp`; `assets/workshop/endao-deck-1.webp` and `-2.webp`, rendered from pages 1–2 of "EnDAO Investor Deck.pdf" at 1600 × 900.
 - Acceptance: the three models open in order by scroll and by button at 1280 × 800 and 375 × 812; the camera reaches the whiteboard and the monitor without passing through the desk or walls; Back returns to the desk view; the EnDAO link opens endao.ai in a new tab; no console errors; tests pass.
 - Branch `workshop-objects`, Vercel preview; merged only with Donte's approval.
+- **Built October 30** (branch `workshop-objects`, not live yet). On phones the whiteboard is outside the Workshop view and is reached by the button or by scrolling.
