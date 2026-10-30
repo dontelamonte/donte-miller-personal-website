@@ -101,7 +101,7 @@ html[data-text-style] #table-view .intro h1{color:var(--ts-fg)}
  html[data-text-style] #living-hotspots #credential-controls .frame-control:hover,
  html[data-text-style] #living-hotspots #credential-controls .frame-control:focus-visible{background:#284c60}
  html[data-text-style] #credential-controls .frame-control span{font:13px/1.3 'DM Sans',sans-serif;color:#fff0d5;text-wrap:pretty}
- html[data-text-style] #credential-controls .frame-control::before{content:"↗";order:2;font:11px/1.2 'DM Sans',sans-serif;letter-spacing:.6px;color:#e8bf8d}
+ html[data-text-style] #credential-controls .frame-control::before{content:none;order:2;font:11px/1.2 'DM Sans',sans-serif;letter-spacing:.6px;color:#e8bf8d}
 }
 
 /* Phase 4: detail panels and readers. Labels at least 11px, notes and links 13px, reading copy 14-16px. */
