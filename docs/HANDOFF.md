@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Family portraits on the About wall are ready for review** (October 30, 2026, branch `family-paintings` at `d76f395a35682835ac7c1ceadca5253b41d55866`, pushed; Vercel preview; not merged, not live; cache `app.js?v=family-paintings-46`): the two centre paintings on the About wall now show Donte's supplied portraits.
+
 **Phone Home fit and smoother Home arrival are live** (October 30, 2026, `main` merge `4a72e694049097908ca79ec97a5c591e293013cc`; cache `app.js?v=home-fit-45`): the phone Home view shows all six plaques, the About → Table turn is 10% slower, and Table → Home no longer jogs left before turning.
 
 **Smoother room flights and logo plaques are live** (October 30, 2026, `main` merge `7b4d4b4fc331afef47fbf33a0a66e8282c596bac`; cache `app.js?v=plaque-logos-44`): Table ↔ Library flights curve smoothly, re-clicking the Table tab no longer looks up, and the six living-room plaques show gold logos.
@@ -242,6 +244,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews branch `family-paintings` and approves release before it is merged to `main`.
+
 Updated October 30, 2026: phone Home fit, the slower About turn and the smoother Table → Home arrival are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: smoother flights and logo plaques are live; Donte checks them on a real phone, including whether any arrival still zooms in. The notepad page redesign stays paused on branch `notepad-page`.
@@ -265,6 +269,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Family portraits on the About wall** (Donte supplied two paintings for the two largest About-wall frames; shapes could change). Cache `app.js?v=family-paintings-46`, `house-scene.js?v=family-paintings-1`.
+  - `dist/assets/about-painting-family.webp` (1000×746) and `dist/assets/about-painting-father.webp` (598×900), resized from Donte's images.
+  - `dist/house-scene.js`: `painting()` accepts an optional image. The top centre frame is now landscape (382–641 × 197–395 on the wall's pixel grid; was 425–598 × 187–405) with the family portrait, filling the gap between the shelf towers. The lower centre frame is now a narrower portrait (417–604 × 430–698; was 398–623) with Donte and the baby. Each frame matches its image's proportions; the reference crops remain as a fallback if an image fails to load. `dist/app.js` loads both.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA at 1280×800 (both portraits visible, frames clear of the towers) and 375×812 (family portrait visible; the story card covers the lower portrait, as it covered the previous painting); no console errors.
+  - Not verified: real phones, the Vercel preview URL.
+  - Git: branch `family-paintings`, commit `d76f395a35682835ac7c1ceadca5253b41d55866`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Phone Home fit, slower About turn and smoother Table → Home are live** at Donte's explicit request ("push it"). Merged `home-fit` into `main` as `4a72e694049097908ca79ec97a5c591e293013cc` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel commit status `success`; the live page (checked via donte.villagemicrofund.com, same deployment) loads `app.js?v=home-fit-45`. Live browser check at 375×812: Home shows all six plaques and the six buttons in the new order; no console errors. Not checked live: desktop, flights on the live site, real devices, reduced motion. Rollback: revert `4a72e69` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Phone Home fit, About turn 10% slower, smoother Table → Home** (Donte: zoom out on the phone Home view to see all plaques; slow the About → Table turn by 10%; Table → Home jerks left before the right turn into Home). Cache `app.js?v=home-fit-45`; `house-path.js`, `house-scene.js`, `library-scene.js`, `navigation-route.js` at `?v=home-fit-1`.
   - `dist/house-path.js`: phones (aspect < 0.85) frame a 10.6-unit opening at Home instead of 8.5, enough for both plaque columns (outer edges x -20.0 to -10.0) with a small margin; `HOUSE_SHELL_FRONT_Z` raised 22 → 28 so the camera stays inside the room on the narrowest phones. Desktop Home framing is unchanged.
