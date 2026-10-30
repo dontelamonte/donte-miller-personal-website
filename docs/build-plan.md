@@ -424,7 +424,7 @@ The small delivery team needs creative development/animation, 3D modeling/textur
 
 ## 17. Content still needed before production completion
 
-The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination, opportunity descriptions, course covers/spines, course descriptions and chapter outlines, Donte's About wall image (§19.1, received October 29; a higher-resolution version would help), Donte's page-design images for the redesigned readers (§19.3), complete written first chapters, remaining paid lessons, and the associated resource files.
+The visual references are supplied. Remaining material includes original portrait/artwork where available, final plaque titles and years, selected press links/covers, the actual ten-year report, verified EnDAO destination (endao.ai, confirmed by Donte October 30; §20), opportunity descriptions, course covers/spines, course descriptions and chapter outlines, Donte's About wall image (§19.1, received October 29; a higher-resolution version would help), Donte's page-design images for the redesigned readers (§19.3), complete written first chapters, remaining paid lessons, and the associated resource files.
 
 Before checkout goes live, define individual prices, access duration, refund/access policy, support route, and payment-provider/account setup. These decisions do not block the camera prototype or the core magazine-to-report interaction.
 
@@ -534,3 +534,26 @@ Donte will supply images to guide the design.
 1. **§19.2 A:** quick, independent, and needs no new assets.
 2. **§19.1:** once the wall image arrives.
 3. **§19.3:** once the page images arrive and a direction is chosen.
+
+## 20. Workshop: whiteboard and computer — October 30, 2026
+
+Requested by Donte, October 30. Each change replaces one desk sketchpad with a different object. The Workshop still presents three models in the same order, opened one after another by scrolling: 01 Worker's Equity Fund, 02 EnDAO, 03 Time Bank. The Time Bank keeps its sketchpad.
+
+### 20.1 Worker's Equity Fund becomes a whiteboard
+
+- **Object:** a freestanding whiteboard on a stand, beside the desk at its right end. The board shows the Worker's Equity Fund infographic (Donte's image, 889 × 2000) as its surface, so it is recognisable from the Workshop view. The desk's first sketchpad is removed.
+- **Opening:** selecting it (click, the "01 · Worker's Equity Fund" button, or scrolling at the desk) moves the camera to face the board. The reader then opens as a whiteboard: the full infographic as one tall, scrollable page in a whiteboard frame, followed by the existing continue link to the next model.
+- **Text access:** the infographic is an image, so the reader carries a screen-reader transcript of its text. On phones the image fills the width, and a "View full size" link opens it on its own so it can be zoomed.
+
+### 20.2 EnDAO becomes the desk computer
+
+- **Object:** the existing computer on the desk. Its screen shows the first page of the EnDAO investor deck. The EnDAO sketchpad is removed.
+- **Opening:** selecting EnDAO zooms the camera into the monitor until the screen fills the view. The reader then opens as the screen: pages 1 and 2 of the deck as one continuous page (no gap between slides), followed by a "Visit EnDAO.ai ↗" link to https://endao.ai, then the continue link to the Time Bank.
+- **Text access:** a screen-reader transcript of both slides, and a "View full size" link on phones.
+
+### 20.3 Shared behaviour and acceptance
+
+- The reader frame (back button, title, counter, scroll-to-continue, scroll up at the top to return) is shared by all three models; only the presentation changes: whiteboard, screen, or sketchpad.
+- Assets: `assets/workshop/workers-equity-whiteboard.webp`; `assets/workshop/endao-deck-1.webp` and `-2.webp`, rendered from pages 1–2 of "EnDAO Investor Deck.pdf" at 1600 × 900.
+- Acceptance: the three models open in order by scroll and by button at 1280 × 800 and 375 × 812; the camera reaches the whiteboard and the monitor without passing through the desk or walls; Back returns to the desk view; the EnDAO link opens endao.ai in a new tab; no console errors; tests pass.
+- Branch `workshop-objects`, Vercel preview; merged only with Donte's approval.
