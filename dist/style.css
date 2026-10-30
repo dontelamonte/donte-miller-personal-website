@@ -239,3 +239,26 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
  .course-stage{inset:64px 9px 13px}.course-book{max-height:none}.course-spine{width:16px}
  #course-content{padding:30px 24px 45px 29px}#course-content h1{font-size:50px}#course-content h2{font-size:29px}#course-content p,#course-content li{font-size:13px}
 }
+
+/* Workshop whiteboard and computer screen (build-plan §20). The sketchpad reader frame is reused;
+   these presentations swap the paper pad for a whiteboard or a monitor and show the supplied images. */
+.model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-binding{display:none}
+.model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-pad{transform:none;border-bottom:0}
+.model-shell:is([data-kind=whiteboard],[data-kind=screen]) #model-content{background:none;padding:0 0 46px}
+.model-shell[data-kind=whiteboard] .model-pad{width:min(760px,100%);max-height:none;background:#fbfbf8;border:10px solid #c4c8cb;border-radius:6px;box-shadow:inset 0 0 0 2px #e9ecee,0 3px 0 #8e9397,0 24px 70px #061624ab}
+.model-shell[data-kind=screen] .model-pad{width:min(1040px,100%);max-height:none;background:#f3f1ec;border:16px solid #1d232b;border-bottom-width:24px;border-radius:12px;box-shadow:0 0 0 2px #39424d,0 24px 70px #061624c0}
+.model-media{margin:0}
+.model-media img{display:block;width:100%;height:auto}
+.model-media-actions{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;padding:26px 34px 0}
+.model-media-actions a{color:#25465a;font-size:15px;text-underline-offset:5px}
+.model-media-link{font:26px/1.2 'Libre Caslon Display',Georgia,serif!important;text-decoration:none;border-bottom:1px solid #315268;padding-bottom:6px}
+.model-media-full{display:none}
+.model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-continuation{margin:34px 34px 0}
+@media(max-width:650px){
+ .model-shell[data-kind=whiteboard] .model-pad{border-width:6px}
+ .model-shell[data-kind=screen] .model-pad{border-width:9px 9px 14px}
+ .model-media-actions{padding:20px 20px 0}
+ .model-media-full{display:inline}
+ .model-media-link{font-size:22px!important}
+ .model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-continuation{margin:28px 20px 0}
+}
