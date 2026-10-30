@@ -1,4 +1,4 @@
-import {cameraAt} from './house-path.js?v=compact-shell-24';
+import {cameraAt} from './house-path.js?v=about-wall-1';
 import {libraryCameraAt} from './library-path.js?v=left-return-28';
 import {WORKSHOP_STOP} from './workshop-route.js';
 

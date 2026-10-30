@@ -2,15 +2,15 @@ import * as THREE from './vendor/three.module.min.js';
 import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
-import {cameraAt,followProgress,TABLE_CAMERA} from './house-path.js?v=compact-shell-24';
-import {buildHouse} from './house-scene.js?v=environment-31';
+import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=about-wall-1';
+import {buildHouse} from './house-scene.js?v=about-wall-4';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
 import {libraryBookReady} from './library-scroll.js';
 import {WORKSHOP_STOP,WORKSHOP_STORY_DISTANCE} from './workshop-route.js';
-import {navigationViews,navigationDirection} from './navigation-route.js?v=left-home-29';
-import {buildLibrary} from './library-scene.js?v=environment-31';
+import {navigationViews,navigationDirection} from './navigation-route.js?v=about-wall-1';
+import {buildLibrary} from './library-scene.js?v=about-wall-1';
 import {curricula,curriculumById} from './library-content.js';
 import {models,modelById} from './workshop-content.js';
 
@@ -28,12 +28,12 @@ let storyStage='';
 const labels = {press:'THE PRESS',report:'TEN-YEAR REPORT',opportunities:'LET’S BUILD'};
 const courseIds=curricula.map(item=>item.id);
 const nextCourse=id=>courseIds[courseIds.indexOf(id)+1]||null;
-const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,workshopOffset:0,modelScrollTarget:'workers-equity',modelSequenceComplete:false,modelCarry:0,modelTouchY:null,courseScrollTarget:'flourish',courseCarry:0,aboutOffset:0,journeyVelocity:0,journeyNavigation:false,homeReturning:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
+const state = {mode:'loading',active:null,token:0,progress:0,houseProgress:0,houseTarget:0,libraryProgress:0,libraryTarget:0,libraryVelocity:0,libraryScrollAmount:0,workshopOffset:0,modelScrollTarget:'workers-equity',modelSequenceComplete:false,modelCarry:0,modelTouchY:null,courseScrollTarget:'flourish',courseCarry:0,aboutOffset:0,aboutTurn:0,aboutTurning:false,journeyVelocity:0,journeyNavigation:false,homeReturning:false,scrollAmount:0,scrollTarget:'press',autoCooldown:0,reduce:matchMedia('(prefers-reduced-motion: reduce)').matches,touchY:null,courseTouchY:null};
 const roomGesture=new RoomGestureGate();
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 const modelFlow=new ScrollFlow({settleTime:0});
-let renderer, scene, camera, photo, portraitImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
+let renderer, scene, camera, photo, portraitImage, aboutWallImage, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
 const pickables = [];
@@ -93,7 +93,7 @@ function readingReady(id,token){
 function openBook(id,{historyChange=true}={}){
  if(!BOOKS.includes(id)||!['exploring','reading'].includes(state.mode))return;
  if(state.mode==='reading'){if(state.active!==id)closeBook(id,{historyChange});return;}
- gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=0;state.libraryProgress=state.libraryTarget=0;state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;travelCamera();
+ gsap.killTweensOf(state);state.journeyNavigation=false;state.journeyVelocity=0;state.libraryProgress=state.libraryTarget=0;state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;resetAboutTurn();travelCamera();
  const token=++state.token;lastFocus=document.activeElement;state.active=id;setMode('opening');if(historyChange)routeTo(id);
  const b=books.get(id);if(camera){canvasHome.position.copy(camera.position);canvasHome.target.copy(target);}if(!b||!camera||state.reduce){readingReady(id,token);return;}
  const tl=gsap.timeline({onUpdate:invalidateShadows,onComplete:()=>readingReady(id,token)});
@@ -259,6 +259,12 @@ function travelCamera(){
  if(!camera||!['exploring','loading'].includes(state.mode))return;
  const r=viewport(),inLibrary=state.libraryProgress>.0001||(state.houseProgress>.999&&state.libraryTarget>0),v=inLibrary?libraryCameraAt(state.libraryProgress,r.width/r.height):cameraAt(state.houseProgress,r.width/r.height);
  camera.position.set(...v.position);target.set(...v.target);camera.fov=v.fov;
+ if(!inLibrary&&state.houseProgress<.001&&state.aboutTurn>0){
+  // Turn left from Home to the About wall: move along a straight line and sweep the gaze between the two views.
+  const k=state.aboutTurn,wall=aboutWallView(r.width/r.height),from=new THREE.Vector3(...v.target).sub(new THREE.Vector3(...v.position)).normalize(),to=new THREE.Vector3(...wall.target).sub(new THREE.Vector3(...wall.position)).normalize();
+  camera.position.lerpVectors(new THREE.Vector3(...v.position),new THREE.Vector3(...wall.position),k);
+  const gaze=from.lerp(to,k).normalize();target.copy(camera.position).addScaledVector(gaze,8);
+ }
  if(inLibrary&&state.libraryProgress<.22){const fade=1-(state.libraryProgress/.22)**2*(3-2*state.libraryProgress/.22);camera.position.y-=.8*state.progress*fade;camera.position.z-=1.5*state.progress*fade;}
  if(!inLibrary&&state.houseProgress>.999){const aspect=r.width/r.height,mobile=aspect<.9,fit=mobile?Math.min(1,TABLE_PHONE_HALF_WIDTH/(Math.tan(TABLE_CAMERA.fov*Math.PI/360)*aspect)/Math.hypot(TABLE_CAMERA.position[1],TABLE_CAMERA.position[2])):1;camera.position.set(mobile?TABLE_PHONE_CENTER:-1.3,TABLE_CAMERA.position[1]*fit-.8*state.progress,TABLE_CAMERA.position[2]*fit-1.5*state.progress);target.set(mobile?TABLE_PHONE_CENTER:-1.3,0,0);}
  camera.updateProjectionMatrix();look();updateHouseUI(v.room);if(state.mode==='exploring'&&!state.journeyNavigation&&!livingItems[location.hash.slice(1)]&&!BOOKS.includes(location.hash.slice(1))&&!location.hash.startsWith('#course-')&&!location.hash.startsWith('#model-')){if(state.libraryProgress>.999&&state.libraryTarget===1){routeTo('library',true);document.title='Donte Miller — The Library';}else if(Math.abs(state.libraryProgress-WORKSHOP_STOP)<.004&&state.libraryTarget===WORKSHOP_STOP){routeTo('workshop',true);document.title='Donte Miller — The Workshop';}else if(state.houseProgress>.999&&state.houseTarget===1&&state.libraryProgress<.001&&state.libraryTarget===0){routeTo('table',true);document.title='Donte Miller — The Dining Table';}else if(state.houseProgress<.001&&state.houseTarget===0){routeTo('living',true);document.title='Donte Miller — Make yourself at home.';}}
@@ -306,7 +312,7 @@ function navigationOrigin(destination){
 function settleNavigation(id){
  resetTableSequence();state.houseProgress=state.houseTarget=id==='living'?0:1;
  state.libraryProgress=state.libraryTarget=id==='library'?1:id==='workshop'?WORKSHOP_STOP:0;
- state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;
+ state.aboutOffset=id==='living'?0:ABOUT_DISTANCE;resetAboutTurn();
  state.workshopOffset=id==='library'?WORKSHOP_STORY_DISTANCE:0;
  state.modelSequenceComplete=id==='library';state.modelScrollTarget='workers-equity';
  state.scrollTarget=state.libraryTarget?'library':'press';state.courseScrollTarget='flourish';
@@ -351,7 +357,7 @@ function navigateRoom(id,{historyChange=true}={}){
 function returnHomeFromLibrary({historyChange=true}={}){
  // Use the shared direction-aware flight used by room tabs so the final book
  // returns directly through the house without its older, hand-built gaze turn.
- state.aboutOffset=0;resetTableSequence();navigateRoom('living',{historyChange});
+ state.aboutOffset=0;resetAboutTurn();resetTableSequence();navigateRoom('living',{historyChange});
 }
 function goRoom(id,{historyChange=true}={}){
  if(id==='dining')id='table';
@@ -375,7 +381,13 @@ function advanceTable(delta){
  if(!roomGesture.accept(delta,now,state.journeyNavigation||now<state.autoCooldown,sceneTouch!==null))return;
  if(state.mode!=='exploring'||state.journeyNavigation||state.homeReturning||performance.now()<state.autoCooldown||!Number.isFinite(delta))return;
  if(state.houseTarget===0&&state.houseProgress<.001&&(state.aboutOffset<ABOUT_DISTANCE||delta<0)){
-  const intro=advanceAbout(state.aboutOffset,delta,ABOUT_DISTANCE);state.aboutOffset=intro.offset;updateAboutStory();updateHouseUI('living');delta=intro.overflow;if(!delta)return;
+  if(state.aboutTurning)return;
+  if(state.aboutTurn<.5){if(delta>0){roomGesture.lock();turnToAboutWall();}return;}
+  const intro=advanceAbout(state.aboutOffset,delta,ABOUT_DISTANCE);
+  if(delta<0&&intro.offset<ABOUT_STORY_START){roomGesture.lock();state.aboutOffset=0;turnFromAboutWall(()=>updateHouseUI('living'));return;}
+  state.aboutOffset=intro.offset;updateAboutStory();updateHouseUI('living');
+  if(intro.overflow>0){roomGesture.lock();state.aboutOffset=ABOUT_DISTANCE;resetAboutTurn();updateAboutStory();navigateRoom('table');}
+  return;
  }
  const destination=roomScrollDestination(state,delta,ABOUT_DISTANCE,WORKSHOP_STOP);
  if(destination){roomGesture.lock();navigateRoom(destination);return;}
@@ -405,15 +417,29 @@ function navigateTab(id){
  goRoom(id);
 }
 document.querySelectorAll('[data-room-go]').forEach(b=>b.addEventListener('click',()=>navigateTab(b.dataset.roomGo)));
+// About wall (build-plan 19.1): the first scroll at Home turns to the wall; the story appears once the
+// camera settles; scrolling past its end walks straight from the wall to the table, turning on the way.
+const ABOUT_STORY_START=ABOUT_CHAPTER_DISTANCE+260;
+function setAboutTurn(value,{onComplete}={}){
+ gsap.killTweensOf(state,'aboutTurn');state.aboutTurning=!state.reduce;
+ const done=()=>{state.aboutTurning=false;document.documentElement.toggleAttribute('data-about-wall',state.aboutTurn>.5);updateAboutStory();invalidate();onComplete?.();};
+ document.documentElement.toggleAttribute('data-about-wall',value>.5);
+ if(state.reduce){state.aboutTurn=value;travelCamera();done();return;}
+ gsap.to(state,{aboutTurn:value,duration:1.5,ease:'power2.inOut',onUpdate:()=>{travelCamera();updateAboutStory();invalidate();},onComplete:done});
+}
+function resetAboutTurn(){gsap.killTweensOf(state,'aboutTurn');state.aboutTurn=0;state.aboutTurning=false;document.documentElement.removeAttribute('data-about-wall');}
+function turnToAboutWall(){state.aboutOffset=ABOUT_STORY_START;updateAboutStory();setAboutTurn(1);}
+function turnFromAboutWall(onComplete){setAboutTurn(0,{onComplete});}
 function updateAboutStory(){
  const view=storyFrame(state.aboutOffset,ABOUT_DISTANCE),stage=view.welcome?'welcome':'story';
- const story=$('about-story'),reveal=view.welcome?0:storyReveal(state.aboutOffset);story.dataset.stage=stage;story.style.opacity=String(view.welcome?1:reveal);story.style.transform=`translateY(${view.welcome?0:(1-reveal)*22}px)`;
+ const story=$('about-story'),reveal=view.welcome?0:storyReveal(state.aboutOffset);story.dataset.stage=stage;const settled=Math.max(0,Math.min(1,(state.aboutTurn-.94)/.06));story.style.opacity=String(view.welcome?1-Math.min(1,state.aboutTurn*4):reveal*settled);story.style.transform=`translateY(${view.welcome?0:(1-reveal)*22}px)`;
  if(stage!==storyStage){storyStage=stage;$('about-story-label').textContent=view.welcome?'WELCOME TO MY HOUSE':'ABOUT DONTE MILLER';$('about-story-title').textContent=view.welcome?'Make yourself at home.':'A little about me.';$('about-story-text').textContent=view.welcome?'Scroll through my story, then join me at the table.':aboutText;}
- $('about-story-counter').textContent=view.welcome?'SCROLL TO READ':`${Math.round(view.progress*100)}% OF MY STORY`;
+ const read=Math.max(0,Math.min(1,(state.aboutOffset-ABOUT_STORY_START)/(ABOUT_DISTANCE-ABOUT_STORY_START)));
+ $('about-story-counter').textContent=view.welcome?'SCROLL TO READ':`${Math.round(read*100)}% OF MY STORY`;
  const passage=$('about-story-text'),window=$('about-story-viewport');
- passage.style.transform=`translateY(${-Math.max(0,passage.scrollHeight-window.clientHeight)*view.progress}px)`;
+ passage.style.transform=`translateY(${-Math.max(0,passage.scrollHeight-window.clientHeight)*read}px)`;
 }
-function showAbout(){goRoom('living');state.aboutOffset=ABOUT_CHAPTER_DISTANCE*1.25;updateAboutStory();}
+function showAbout(){goRoom('living');if(state.houseProgress<.001&&!state.journeyNavigation&&state.aboutTurn<.5)turnToAboutWall();}
 function openLiving(id,{historyChange=true}={}){
  if(id==='about'){showAbout();return;}
  if(!livingItems[id]||state.mode!=='exploring')return;
@@ -433,7 +459,7 @@ function closeLiving({historyChange=true}={}){
 }
 livingControls.forEach(b=>b.addEventListener('click',()=>openLiving(b.dataset.living)));
 $('close-living').addEventListener('click',()=>closeLiving());
-$('living-panel').addEventListener('click',e=>{if(e.target===$('living-panel'))closeLiving();if(e.target.closest('[data-go-table]')){closeLiving({historyChange:false});goRoom('table');}if(e.target.closest('[data-open-report]')){closeLiving({historyChange:false});state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;travelCamera();openBook('report');}});
+$('living-panel').addEventListener('click',e=>{if(e.target===$('living-panel'))closeLiving();if(e.target.closest('[data-go-table]')){closeLiving({historyChange:false});goRoom('table');}if(e.target.closest('[data-open-report]')){closeLiving({historyChange:false});state.houseProgress=state.houseTarget=1;state.aboutOffset=ABOUT_DISTANCE;resetAboutTurn();travelCamera();openBook('report');}});
 
 // Browser-native procedural surfaces keep the scene independent of a flat tabletop image.
 function seeded(seed=1){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};}
@@ -473,7 +499,7 @@ function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('
  makeChair(-4.8,0,Math.PI/2);makeChair(4.8,0,-Math.PI/2);for(const x of [-1.5,1.5])makeChair(x,3.4,0);for(const x of [-1.5,1.5])makeChair(x,-3.4,Math.PI);
  makeBook('press',-1.75,.05,-.13);makeBook('report',0,-.03,.07);makeBook('opportunities',1.72,.13,-.08);layoutTable();
  const sceneAspect=viewport().width/viewport().height;
- house=buildHouse(scene,{portrait:portraitImage,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
+ house=buildHouse(scene,{portrait:portraitImage,aboutWall:aboutWallImage,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
  travelCamera();
  function pick(e){updatePointer(e);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(state.libraryProgress>.94?library.pickables:Math.abs(state.libraryProgress-WORKSHOP_STOP)<.035?library.modelPickables:state.houseProgress<.25?house.pickables:state.houseProgress>.94?pickables:[],false)[0]?.object;}
  renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||hit?.userData.courseId||hit?.userData.modelId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));library.books.forEach((b,key)=>gsap.to(b.group.position,{z:b.home.position.z+(key===id ? .12 : 0),duration:.25,onUpdate:invalidateShadows}));library.modelPads.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));});
@@ -505,14 +531,14 @@ async function start(){
   if(!gsap)throw new Error('Animation library did not load');
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(viewport().width,viewport().height);renderer.shadowMap.enabled=true;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;$('scene').append(renderer.domElement);
   const loadImage=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;});
-  [photo,portraitImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg')]);
+  [photo,portraitImage,aboutWallImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg'),loadImage('/assets/about-wall.webp')]);
   const direct=location.hash.slice(1);
   state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'||direct==='workshop'||direct==='library'||direct.startsWith('course-')||direct.startsWith('model-')?1:0;
   state.libraryProgress=state.libraryTarget=direct==='workshop'||direct.startsWith('model-')?WORKSHOP_STOP:direct==='library'||direct.startsWith('course-')?1:0;
   state.workshopOffset=direct==='library'||direct.startsWith('course-')?WORKSHOP_STORY_DISTANCE:0;
   state.modelSequenceComplete=direct==='library'||direct.startsWith('course-');
   if(state.libraryTarget)state.scrollTarget='library';
-  state.aboutOffset=state.houseTarget===1?ABOUT_DISTANCE:direct==='about'?ABOUT_CHAPTER_DISTANCE*1.25:0;
+  const aboutDirect=state.houseTarget!==1&&direct==='about';state.aboutOffset=state.houseTarget===1?ABOUT_DISTANCE:aboutDirect?ABOUT_STORY_START:0;state.aboutTurn=aboutDirect?1:0;document.documentElement.toggleAttribute('data-about-wall',aboutDirect);
   buildScene();setMode('exploring');travelCamera();frame();
   if(direct==='library')document.title='Donte Miller — The Library';
   else if(direct==='workshop')document.title='Donte Miller — The Workshop';
