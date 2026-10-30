@@ -3,7 +3,7 @@ import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
 import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=home-fit-1';
-import {buildHouse} from './house-scene.js?v=home-fit-1';
+import {buildHouse} from './house-scene.js?v=family-paintings-2';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
@@ -33,7 +33,7 @@ const roomGesture=new RoomGestureGate();
 const scrollFlow=new ScrollFlow();
 const courseFlow=new ScrollFlow({settleTime:0});
 const modelFlow=new ScrollFlow({settleTime:0});
-let renderer, scene, camera, photo, portraitImage, aboutWallImage, plaqueLogos, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
+let renderer, scene, camera, photo, portraitImage, aboutWallImage, aboutPaintings, plaqueLogos, house, library, dirty=true, hovered=null, lastFocus=null, livingFocus=null, courseFocus=null, navigationTween=null;
 const target = new THREE.Vector3(0,0,0);
 const books = new Map();
 const pickables = [];
@@ -517,7 +517,7 @@ function buildScene(){scene=new THREE.Scene();scene.background=new THREE.Color('
  makeChair(-4.8,0,Math.PI/2);makeChair(4.8,0,-Math.PI/2);for(const x of [-1.5,1.5])makeChair(x,3.4,0);for(const x of [-1.5,1.5])makeChair(x,-3.4,Math.PI);
  makeBook('press',-1.75,.05,-.13);makeBook('report',0,-.03,.07);makeBook('opportunities',1.72,.13,-.08);layoutTable();
  const sceneAspect=viewport().width/viewport().height;
- house=buildHouse(scene,{portrait:portraitImage,aboutWall:aboutWallImage,plaqueLogos,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
+ house=buildHouse(scene,{portrait:portraitImage,aboutWall:aboutWallImage,aboutPaintings,plaqueLogos,rugMap:rugTexture(),aspect:sceneAspect});library=buildLibrary(scene,{aspect:sceneAspect});
  travelCamera();
  function pick(e){updatePointer(e);raycaster.setFromCamera(pointer,camera);return raycaster.intersectObjects(state.libraryProgress>.94?library.pickables:Math.abs(state.libraryProgress-WORKSHOP_STOP)<.035?library.modelPickables:state.houseProgress<.25?house.pickables:state.houseProgress>.94?pickables:[],false)[0]?.object;}
  renderer.domElement.addEventListener('pointermove',e=>{if(state.mode!=='exploring')return;const hit=pick(e),id=hit?.userData.bookId||hit?.userData.livingId||hit?.userData.courseId||hit?.userData.modelId||null;if(id===hovered)return;hovered=id;renderer.domElement.style.cursor=id?'pointer':'default';books.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));library.books.forEach((b,key)=>gsap.to(b.group.position,{z:b.home.position.z+(key===id ? .12 : 0),duration:.25,onUpdate:invalidateShadows}));library.modelPads.forEach((b,key)=>gsap.to(b.group.position,{y:b.home.position.y+(key===id ? .1 : 0),duration:.25,onUpdate:invalidateShadows}));});
@@ -552,6 +552,8 @@ async function start(){
   [photo,portraitImage,aboutWallImage]=await Promise.all([loadImage('/assets/akua-ribbon.jpg'),loadImage('/assets/living-room-reference.jpg'),loadImage('/assets/about-wall.webp')]);
   // Gold logo silhouettes for the living-room plaques; a missing logo falls back to the plaque's lettering.
   const plaqueIds=['forbes','georgia','atlanta','morehouse','village','echoing'];
+  // Family portraits for the two centre paintings on the About wall; a missing one keeps the reference artwork.
+  aboutPaintings=Object.fromEntries(await Promise.all(['family','father'].map(id=>loadImage(`/assets/about-painting-${id}.webp`).then(img=>[id,img],()=>[id,null]))));
   plaqueLogos=Object.fromEntries(await Promise.all(plaqueIds.map(id=>loadImage(`/assets/plaques/${id}.png`).then(img=>[id,img],()=>[id,null]))));
   const direct=location.hash.slice(1);
   state.houseProgress=state.houseTarget=BOOKS.includes(direct)||direct==='table'||direct==='dining'||direct==='workshop'||direct==='library'||direct.startsWith('course-')||direct.startsWith('model-')?1:0;
