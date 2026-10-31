@@ -262,3 +262,9 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
  .model-media-link{font-size:22px!important}
  .model-shell:is([data-kind=whiteboard],[data-kind=screen]) .model-continuation{margin:28px 20px 0}
 }
+/* Time Bank sketchpad opens on the stitched notepad image: keep the pad and binding, drop the ruled page. */
+.model-shell[data-kind=sketchpad] #model-content:has(>.model-media){background:none;padding:0 0 46px 24px}
+@media(max-width:650px){.model-shell[data-kind=sketchpad] #model-content:has(>.model-media){padding-left:15px}}
+.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-continuation{margin:34px 34px 0 40px}
+.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-media-actions{padding-left:40px}
+@media(max-width:650px){.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-continuation{margin:28px 20px 0 26px}.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-media-actions{padding-left:26px}}
