@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**EnDAO top-of-page fix and Time Bank notepad are ready for review** (October 30, 2026, branch `timebank-notepad` at `e7b7e6589bc4c5818cb3888a09ef3177e4e9951c`, pushed; Vercel preview; not merged, not live; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
+**EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
 
 **Larger desk computer is live** (October 30, 2026, `main` merge `3e9021aff7139c2563010e963f3e378b798d96a3`; cache `app.js?v=endao-screen-51`): the computer on the Workshop desk is 50% larger than the original, and the two EnDAO deck slides join without the stripe between them.
 
@@ -250,7 +250,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 30, 2026: Donte reviews branch `timebank-notepad` and approves release before it is merged to `main`.
+Updated October 30, 2026: the EnDAO fix and Time Bank notepad are live; Donte checks them on a real phone and a Mac trackpad. The notepad page redesign for the Table stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: the larger desk computer and joined EnDAO slides are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
@@ -281,6 +281,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **EnDAO top-of-page fix and Time Bank notepad are live** at Donte's explicit request ("Release it"). Merged `timebank-notepad` into `main` as `6223ebeb524d412f4798e9cc304937faf6264c7a` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=timebank-notepad-52`, `time-bank-notepad.webp` returns 200, and the Time Bank sketchpad opens on the notepad at its top with no console errors. Not checked live: phone size, real devices, trackpad momentum. Rollback: revert `6223ebe` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **EnDAO opens at the top; Time Bank notepad** (Donte: the EnDAO computer opens in the middle of the page instead of the top; replace the Time Bank sketchpad with `TimeBankInfographic.pdf` as one continuous scroll without page breaks). Cache `app.js?v=timebank-notepad-52`, `style.css?v=timebank-notepad-29`.
   - Cause of the EnDAO bug: when a model was reached by scrolling, the scroll momentum saved during the camera move (up to 240 px) was replayed after opening, and trackpad inertia kept scrolling the new page; EnDAO's short first slide made it land mid-page. `dist/app.js`: no replay, and wheel input is ignored for 650 ms after any model opens. Verified: whiteboard → EnDAO by continued scrolling stays at scrollTop 0.
   - `dist/assets/workshop/time-bank-notepad.webp` (1100 × 5810, 540 KB): the 4-page PDF (612 × 816 pt pages, each a photo of a spiral notepad on a desk) rendered at 1400 px with PDFKit, cropped to the paper (x 58–1345; tops below the spiral rings and page numbers, with page 1's number painted out; bottoms above the page curls), joined with 56-px plain-paper gaps whose colour is sampled per column, and cross-faded over 10 px.
