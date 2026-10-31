@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Workshop desk preview (not live)** (October 31, 2026, branch `workshop-desk`, commit `ce18aef4aeb278723b6561e4f2684dfc9dfb1a44`; cache `app.js?v=workshop-desk-55`, `library-scene.js?v=workshop-desk-1`): desk, chair and desk plants reshaped after Donte's studio reference; the centre painting is 20% larger without the outer wooden frame. Awaiting Donte's review and release approval. Live is `7f19440`.
+
 **New table chairs are live** (October 31, 2026, `main` merge `7f1944042b448db616d194c4b43b2a1cc849501d`; cache `app.js?v=table-chairs-54`): carved armchairs at the table ends and padded stools along the sides, after Donte's overhead reference; the table itself is unchanged. The couch preview (`couch-reference`) was declined and stays unmerged.
 
 **EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
@@ -252,6 +254,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 31, 2026: Donte reviews the Workshop desk preview on branch `workshop-desk` (note: on phones the larger painting is now cropped at the sides) and approves or adjusts it before release.
+
 Updated October 31, 2026: the new table chairs are live; Donte checks them on a real phone. Branch `couch-reference` is declined and stays unmerged.
 
 Updated October 30, 2026: Donte reviews the couch preview on branch `couch-reference` and approves or adjusts it before release. Next reference comparison: the Table view against Donte's overhead table image (shape and texture only).
@@ -287,6 +291,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Workshop desk, chair, plants and painting (preview)**. Donte supplied a painted studio reference: make the Workshop desk and chair look like it, remove the painting's second outer frame (the image already has one) and make the painting 20% larger; then reshape the desk plants and make them sit on the desk. Shape and texture only; colours unchanged. Cache `app.js?v=workshop-desk-55`, `library-scene.js?v=workshop-desk-1`.
+  - `dist/library-scene.js`: painting plane 4.1 × 3.5 → 4.92 × 4.2 (same centre); the four outer wooden frame bars removed. Desk: thicker butcher-block top with a strip-and-grain texture; each pedestal now has four drawers (shallow top drawer) with raised edge frames, brass cup pulls and a plinth; a back panel joins the pedestals; new worn-paint texture (scuffs and chipped edges) in the same blue. Chair: a wooden swivel chair with a curved crest rail, curved arms, spindles and a centre splat, a round padded blue cushion, a wooden column and four curved legs (crest rail at y 1.36, below the EnDAO zoom camera). Desk plants: they stood past both ends of the desk top (z −0.2 and 6.7); now at z 0.12 and 6.38 at the back of the top, in rimmed pots with soil and 26 arching leaf blades each (instanced). Unused `plantGreen` removed.
+  - `dist/app.js`, `dist/index.html`: cache identifiers.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Workshop view at desktop width and 375 × 812; no console errors. On phones the larger painting now runs past the screen edges.
+  - Not verified: real devices, the Vercel preview URL, the EnDAO and whiteboard zooms with the new chair (the chair stays below and behind both cameras by geometry).
+  - Git: branch `workshop-desk`, commit `ce18aef4aeb278723b6561e4f2684dfc9dfb1a44`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 31, 2026 (Claude Code session): **New table chairs are live** at Donte's explicit request ("Release it"). Merged `table-reference` into `main` as `7f1944042b448db616d194c4b43b2a1cc849501d` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=table-chairs-54`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`6223ebe`).
 - October 31, 2026 (Claude Code session): **Original table restored; new chairs kept (preview)**. Donte likes the chairs but not the new table. `dist/app.js`: `grainTexture`, `roundedShape` and the rounded-rectangle tabletop restored exactly from `main`; the armchairs, stools and suede/carved textures stay. The diff against `main` is now chairs only. Cache `app.js?v=table-chairs-54`.
   - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Table view at desktop width; no console errors.
