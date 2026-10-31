@@ -1,6 +1,6 @@
 # Donte Miller personal website — handoff
 
-Last updated: October 30, 2026 (America/New_York)
+Last updated: October 31, 2026 (America/New_York)
 
 ## Purpose and update rule
 
@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Couch preview (not live)** (October 30, 2026, branch `couch-reference`, commit `a2d3684eb3256284b39d494221ab9e9cb504dcc4`; cache `app.js?v=couch-reference-53`, `house-scene.js?v=couch-reference-1`): the Home sofa is reshaped toward Donte's reference painting. Awaiting Donte's review and release approval. Live is still `6223ebe`.
+**Table and chairs preview (not live)** (October 31, 2026, branch `table-reference`, commit `abb75c78f17cae230337be65b69da6bca8f026bb`; cache `app.js?v=table-reference-53`): oval painted-plank table, carved end armchairs and padded side stools after Donte's overhead reference. Awaiting Donte's review and release approval. Live is still `6223ebe`. The couch preview (`couch-reference`) was declined; Donte prefers the old couch.
 
 **EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
 
@@ -252,6 +252,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 31, 2026: Donte reviews the Table and chairs preview on branch `table-reference` and approves or adjusts it before release. Branch `couch-reference` is declined and stays unmerged.
+
 Updated October 30, 2026: Donte reviews the couch preview on branch `couch-reference` and approves or adjusts it before release. Next reference comparison: the Table view against Donte's overhead table image (shape and texture only).
 
 Updated October 30, 2026: the EnDAO fix and Time Bank notepad are live; Donte checks them on a real phone and a Mac trackpad. The notepad page redesign for the Table stays paused on branch `notepad-page`.
@@ -285,6 +287,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Couch declined; Table and chairs reshaped after Donte's overhead reference (preview)**. Donte prefers the old couch, so `couch-reference` stays unmerged and the live sofa is unchanged. Donte then asked to move on to the table and the chairs around it, again changing only shape and texture. Cache `app.js?v=table-reference-53`.
+  - `dist/app.js`: the tabletop is a true oval (superellipse, same 8.1 × 4.35 footprint) instead of a rounded rectangle; `roundedShape` removed as unused. `grainTexture` redrawn as eight lengthwise painted planks with crisp seams, staggered end joints and dry-brushed wear, in the same blue `#305272`. The two end chairs are now carved armchairs (tall back posts, spindles, a carved centre panel, armrests, stretchers, a square suede seat cushion, legs to the floor). The four side chairs are round padded stools with a rolled edge, an apron and four splayed legs. New canvas-generated suede and carved-panel textures in the existing chair colours `#bf7244` and `#875a36`. Chair positions and count are unchanged.
+  - `dist/index.html`: cache identifier.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Table view at desktop width and 375 × 812; no console errors.
+  - Not verified: real devices, the Vercel preview URL, a close view of the end armchairs (they sit at the frame edge in the Table view).
+  - Git: branch `table-reference`, commit `abb75c78f17cae230337be65b69da6bca8f026bb`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Home sofa reshaped after the reference painting (preview)**. Donte supplied a painting of the living room and asked to bring the couch closer to it, changing only the shape and texture of things (no colour, position or object-set changes). Cache `app.js?v=couch-reference-53`, `house-scene.js?v=couch-reference-1`.
   - `dist/house-scene.js` (sofa block): one long deep seat cushion replaces the three seat cushions; three separate square back cushions with no buttons or top rail replace the tall tufted back; legs removed; orange fringed piping on the seat edges, back-cushion outlines, arm ends, pillows and bolster; 44 thick tassels (knot over a flared skirt) along the front and sides reach the rug; the two round pillows and the bolster are reshaped (fringed rims, gathered bolster ends). New painterly velvet texture and a strand texture for the trim, both canvas-generated in the existing sofa blue `#30668a` and rust `#cb6b3e`; the sofa uses its own random seed so nothing else in the room moves. Tassels and fringe are instanced (3 draw calls).
   - `dist/app.js`, `dist/index.html`: cache identifiers.
