@@ -66,17 +66,39 @@ export function buildHouse(scene,{portrait,aboutWall,aboutPaintings,plaqueLogos,
  const art=mesh(new THREE.PlaneGeometry(3.98,4.38),new THREE.MeshBasicMaterial({map:portraitMap}));art.position.set(-15,4.65,-5.48);art.castShadow=false;register(art,'about');anchors.set('about',new THREE.Vector3(-15,2.2,-5.25));
  const plaqueDefinitions=[['forbes',-19.1,6.25,'Forbes','30 under 30'],['georgia',-19.1,4.65,'Georgia','500'],['atlanta',-19.1,3.05,'Atlanta','500'],['morehouse',-10.9,6.25,'MOREHOUSE','COLLEGE'],['village',-10.9,4.65,'VILLAGE','MICRO FUND'],['echoing',-10.9,3.05,'ECHOING','GREEN']];
  for(const [id,x,y,title,sub] of plaqueDefinitions){const g=new THREE.Group();root.add(g);g.position.set(x,y,-5.62);const s=new THREE.Shape();const w=1.8,h=1.32,k=.23;for(const [i,p] of [[-w/2+k,-h/2],[w/2-k,-h/2],[w/2,-h/2+k],[w/2,h/2-k],[w/2-k,h/2],[-w/2+k,h/2],[-w/2,h/2-k],[-w/2,-h/2+k]].entries()){i?s.lineTo(...p):s.moveTo(...p);}s.closePath();mesh(new THREE.ExtrudeGeometry(s,{depth:.095,bevelEnabled:true,bevelSize:.035,bevelThickness:.035,bevelSegments:2,steps:1}),gold,g);const map=tex((c,W,H)=>{c.fillStyle='#463125';c.fillRect(0,0,W,H);for(let i=0;i<6000;i++){c.fillStyle=`rgba(205,150,78,${rand()*.1})`;c.fillRect(rand()*W,rand()*H,rand()*16,rand()*8);}c.strokeStyle='#a47943';c.lineWidth=3;c.strokeRect(30,30,W-60,H-60);const logo=plaqueLogos?.[id];if(logo){const k=Math.min(500/logo.width,300/logo.height);c.drawImage(logo,(W-logo.width*k)/2,(H-logo.height*k)/2,logo.width*k,logo.height*k);return;}c.fillStyle='#e1c085';c.textAlign='center';c.font=`${id==='morehouse'?46:id==='echoing'?56:72}px Georgia`;c.fillText(title,W/2,H*.43);c.font=`${sub==='500'?100:sub==='30 under 30'?56:35}px Georgia`;c.fillText(sub,W/2,H*.72);c.font='14px Georgia';c.fillText(id==='morehouse'?'EDUCATION':'DONTE MILLER',W/2,H*.9);},640,440);const face=mesh(new THREE.PlaneGeometry(w-.16,h-.13),new THREE.MeshBasicMaterial({map}),g);face.position.z=.15;register(g,id);anchors.set(id,new THREE.Vector3(x,y,-5.25));}
- // Sofa, rolled arms, cushions, piping and a tasseled skirt.
+ // Sofa after the reference painting: one deep seat, three square back cushions,
+ // fringed piping on every edge and a full tasseled skirt in place of legs.
  const sofa=new THREE.Group();root.add(sofa);sofa.position.set(-15,0,-3.85);
- box(7.8,.48,1.8,0,.35,0,fabric,sofa);box(7.65,.13,1.78,0,.62,.05,rust,sofa);
- const back=roundBox(7.55,1.75,.4,.22,fabric,sofa);back.position.set(0,1.35,-.68);
- box(7.45,.07,.1,0,2.16,-.62,rust,sofa);
- for(const x of [-2.48,0,2.48]){const cushion=roundBox(2.4,.27,1.63,.12,fabric,sofa);cushion.position.set(x,.77,.16);const seam=box(2.33,.025,.035,x,.85,.98,rust,sofa);seam.castShadow=false;const pad=roundBox(2.36,1.3,.31,.2,fabric,sofa);pad.position.set(x,1.5,-.4);for(const u of [-.55,.55]){const button=mesh(new THREE.SphereGeometry(.045,8,6),navy,sofa);button.position.set(x+u,1.6,-.18);}}
- for(const x of [-3.82,3.82]){const arm=mesh(new THREE.CylinderGeometry(.34,.34,1.9,20),fabric,sofa);arm.rotation.x=Math.PI/2;arm.position.set(x,1.12,.02);const end=mesh(new THREE.TorusGeometry(.3,.025,6,24),rust,sofa);end.position.set(x,1.12,1.01);}
- for(let i=0;i<27;i++){const tassel=mesh(new THREE.CylinderGeometry(.045,.09,.23,8),rust,sofa);tassel.position.set(-3.65+i*.28,-.02,1.02);}
- for(const x of [-3.5,3.5])for(const z of [-.6,.65])box(.12,.32,.12,x,-.18,z,wood,sofa);
- for(const x of [-1.5,1.65]){const p=mesh(new THREE.SphereGeometry(.48,18,12),rust,sofa);p.scale.set(1.1,1,.58);p.position.set(x,1.22,.05);p.rotation.z=x*.13;}
- const bolster=mesh(new THREE.CylinderGeometry(.31,.31,1.6,20),rust,sofa);bolster.rotation.z=Math.PI/2;bolster.position.set(0,1.1,.3);
+ let sofaSeed=7;const sofaRand=()=>((sofaSeed=sofaSeed*16807%2147483647)-1)/2147483646;
+ const velvetMap=tex((c,W,H)=>{c.fillStyle='#d5d5d5';c.fillRect(0,0,W,H);for(let i=0;i<34;i++){const x=sofaRand()*W,y=sofaRand()*H,r=40+sofaRand()*120,g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%3?'rgba(255,255,255,.2)':'rgba(30,30,30,.14)');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);}for(let i=0;i<900;i++){c.save();c.translate(sofaRand()*W,sofaRand()*H);c.rotate(-.7+(sofaRand()-.5)*.5);c.fillStyle=i%3?'rgba(255,255,255,.07)':'rgba(30,30,30,.07)';c.fillRect(0,0,14+sofaRand()*46,2+sofaRand()*5);c.restore();}},512,512);
+ const velvet=new THREE.MeshStandardMaterial({color:'#30668a',map:velvetMap,roughness:.92});
+ const strandMap=tex((c,W,H)=>{c.fillStyle='#d5d5d5';c.fillRect(0,0,W,H);for(let x=0;x<W;x+=2){c.fillStyle=sofaRand()<.5?'rgba(255,255,255,.16)':'rgba(40,40,40,.16)';c.fillRect(x,0,1+sofaRand()*1.5,H);}},128,128);
+ const strands=new THREE.MeshStandardMaterial({color:'#cb6b3e',map:strandMap,roughness:1});
+ function pad(w,h,d,r,x,y,z,m=velvet){const o=roundBox(w,h,d,r,m,sofa);o.position.set(x,y,z-d/2);return o;}
+ const tuftPoses=[],up=new THREE.Vector3(0,-1,0);
+ function fringe(a,b,n,dir){const q=new THREE.Quaternion().setFromUnitVectors(up,dir.clone().normalize());for(let i=0;i<n;i++){const p=a.clone().lerp(b,(i+.5)/n);tuftPoses.push([p,q,.8+sofaRand()*.45]);}}
+ function fringeRing(center,radius,n,axis='z',sx=1,sy=1){for(let i=0;i<n;i++){const t=i/n*Math.PI*2,d=axis==='z'?new THREE.Vector3(Math.cos(t)*sx,Math.sin(t)*sy,0):new THREE.Vector3(0,Math.sin(t),Math.cos(t));const p=center.clone().addScaledVector(d,radius);tuftPoses.push([p,new THREE.Quaternion().setFromUnitVectors(up,d.normalize()),.75+sofaRand()*.4]);}}
+ function piping(a,b){const v=new THREE.Vector3().subVectors(b,a),o=mesh(new THREE.CylinderGeometry(.034,.034,v.length(),8),rust,sofa);o.position.copy(a).lerp(b,.5);o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());}
+ const V=(x,y,z)=>new THREE.Vector3(x,y,z),down=V(0,-1,0);
+ box(7.6,.72,1.8,0,.31,0,velvet,sofa);
+ pad(7.5,.36,1.72,.14,0,.86,.06);
+ box(7.5,1,.34,0,1.15,-.74,velvet,sofa);
+ piping(V(-3.75,1.06,.98),V(3.75,1.06,.98));fringe(V(-3.7,1.04,1),V(3.7,1.04,1),220,down);
+ piping(V(-3.8,.67,.92),V(3.8,.67,.92));fringe(V(-3.75,.65,.94),V(3.75,.65,.94),200,down);
+ piping(V(-3.82,-.03,.92),V(3.82,-.03,.92));
+ for(const x of [-2.47,0,2.47]){pad(2.4,1.08,.42,.2,x,1.56,-.42);const f=-.16,l=x-1.2,r=x+1.2,b=1.02,t=2.1;piping(V(l,t,f),V(r,t,f));piping(V(l,b+.08,f),V(l,t,f));piping(V(r,b+.08,f),V(r,t,f));fringe(V(l+.05,t+.02,f),V(r-.05,t+.02,f),56,V(0,1,.25));fringe(V(l-.02,b+.12,f),V(l-.02,t-.05,f),24,V(-1,0,.2));fringe(V(r+.02,b+.12,f),V(r+.02,t-.05,f),24,V(1,0,.2));}
+ for(const x of [-3.82,3.82]){const arm=mesh(new THREE.CylinderGeometry(.34,.34,1.9,24),velvet,sofa);arm.rotation.x=Math.PI/2;arm.position.set(x,1.12,.02);const end=mesh(new THREE.TorusGeometry(.3,.03,6,28),rust,sofa);end.position.set(x,1.12,.98);fringeRing(V(x,1.12,.99),.32,54);}
+ // Thick tassels along the front and sides, knot over a flared skirt, down to the rug.
+ const tasselSpots=[];for(let i=0;i<30;i++)tasselSpots.push([-3.68+i*7.36/29,.94]);for(const x of [-3.86,3.86])for(let i=0;i<7;i++)tasselSpots.push([x,-.72+i*.24]);
+ const knots=new THREE.InstancedMesh(new THREE.SphereGeometry(.075,10,8),strands,tasselSpots.length),skirts=new THREE.InstancedMesh(new THREE.CylinderGeometry(.05,.14,.34,12),strands,tasselSpots.length),pose=new THREE.Object3D();
+ tasselSpots.forEach(([x,z],i)=>{pose.position.set(x,-.09,z);pose.rotation.set(0,0,0);pose.scale.setScalar(1);pose.updateMatrix();knots.setMatrixAt(i,pose.matrix);pose.position.y=-.29;pose.rotation.y=sofaRand()*3;pose.scale.set(.95+sofaRand()*.15,1,.95+sofaRand()*.15);pose.updateMatrix();skirts.setMatrixAt(i,pose.matrix);});
+ for(const t of [knots,skirts]){t.castShadow=t.receiveShadow=true;sofa.add(t);}
+ // Plump fringed pillows and a gathered bolster, reshaped from the original three.
+ for(const x of [-1.5,1.65]){const p=mesh(new THREE.SphereGeometry(.48,24,16),rust,sofa);p.scale.set(1.12,1,.5);p.position.set(x,1.5,.08);p.rotation.z=x*.13;const rim=mesh(new THREE.TorusGeometry(.48,.045,8,40),rust,sofa);rim.scale.set(1.12,1,1);rim.position.copy(p.position);rim.rotation.z=p.rotation.z;fringeRing(p.position.clone().add(V(0,0,.02)),.49,76,'z',1.12,1);}
+ const bolster=mesh(new THREE.CylinderGeometry(.3,.3,1.6,24),rust,sofa);bolster.rotation.z=Math.PI/2;bolster.position.set(0,1.36,.42);
+ for(const s of [-1,1]){const cap=mesh(new THREE.ConeGeometry(.3,.16,24),rust,sofa);cap.rotation.z=-s*Math.PI/2;cap.position.set(s*.88,1.36,.42);fringeRing(V(s*.8,1.36,.42),.31,48,'x');for(const u of [-.45,.45]){const band=mesh(new THREE.TorusGeometry(.305,.018,6,28),strands,sofa);band.rotation.y=Math.PI/2;band.position.set(u,1.36,.42);}}
+ const tufts=new THREE.InstancedMesh(new THREE.CylinderGeometry(.022,.032,.065,5).translate(0,-.03,0),strands,tuftPoses.length);
+ tuftPoses.forEach(([p,q,s],i)=>{pose.position.copy(p);pose.quaternion.copy(q);pose.scale.set(1,s,1);pose.updateMatrix();tufts.setMatrixAt(i,pose.matrix);});tufts.castShadow=true;sofa.add(tufts);
  // Blue-and-white porcelain lamps echo the supplied room.
  const chinaMap=tex((c,W,H)=>{c.fillStyle='#e7ddc5';c.fillRect(0,0,W,H);c.strokeStyle='#24476a';for(let i=0;i<120;i++){const x=rand()*W,y=rand()*H;c.beginPath();c.ellipse(x,y,8+rand()*10,14+rand()*18,rand()*3,0,Math.PI*2);c.lineWidth=3;c.stroke();}for(const y of [10,30,H-30,H-10]){c.fillStyle='#214768';c.fillRect(0,y,W,5);}},512,768);
  const china=new THREE.MeshStandardMaterial({map:chinaMap,roughness:.6});
