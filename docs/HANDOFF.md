@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Chairs preview (not live)** (October 31, 2026, branch `table-reference`, commit `eaa4de5f9f9e11bed0e2b47d78f423defff06def`; cache `app.js?v=table-chairs-54`): carved end armchairs and padded side stools after Donte's overhead reference; the table itself is unchanged from live. Awaiting Donte's review and release approval. Live is still `6223ebe`. The couch preview (`couch-reference`) was declined; Donte prefers the old couch.
+**New table chairs are live** (October 31, 2026, `main` merge `7f1944042b448db616d194c4b43b2a1cc849501d`; cache `app.js?v=table-chairs-54`): carved armchairs at the table ends and padded stools along the sides, after Donte's overhead reference; the table itself is unchanged. The couch preview (`couch-reference`) was declined and stays unmerged.
 
 **EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
 
@@ -252,7 +252,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 31, 2026: Donte reviews the chairs preview (table restored) on branch `table-reference` and approves or adjusts it before release. Branch `couch-reference` is declined and stays unmerged.
+Updated October 31, 2026: the new table chairs are live; Donte checks them on a real phone. Branch `couch-reference` is declined and stays unmerged.
 
 Updated October 30, 2026: Donte reviews the couch preview on branch `couch-reference` and approves or adjusts it before release. Next reference comparison: the Table view against Donte's overhead table image (shape and texture only).
 
@@ -287,6 +287,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **New table chairs are live** at Donte's explicit request ("Release it"). Merged `table-reference` into `main` as `7f1944042b448db616d194c4b43b2a1cc849501d` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=table-chairs-54`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`6223ebe`).
 - October 31, 2026 (Claude Code session): **Original table restored; new chairs kept (preview)**. Donte likes the chairs but not the new table. `dist/app.js`: `grainTexture`, `roundedShape` and the rounded-rectangle tabletop restored exactly from `main`; the armchairs, stools and suede/carved textures stay. The diff against `main` is now chairs only. Cache `app.js?v=table-chairs-54`.
   - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Table view at desktop width; no console errors.
   - Not verified: real devices, the Vercel preview URL, a close view of the end armchairs.
