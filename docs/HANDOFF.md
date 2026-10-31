@@ -1,6 +1,6 @@
 # Donte Miller personal website — handoff
 
-Last updated: October 29, 2026 (America/New_York)
+Last updated: October 30, 2026 (America/New_York)
 
 ## Purpose and update rule
 
@@ -11,6 +11,8 @@ This is the maintained working record for the personal website. Update it at mea
 Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October 29, 2026). Follow them for every change.
 
 ## Current status
+
+**Couch preview (not live)** (October 30, 2026, branch `couch-reference`, commit `a2d3684eb3256284b39d494221ab9e9cb504dcc4`; cache `app.js?v=couch-reference-53`, `house-scene.js?v=couch-reference-1`): the Home sofa is reshaped toward Donte's reference painting. Awaiting Donte's review and release approval. Live is still `6223ebe`.
 
 **EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
 
@@ -250,6 +252,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews the couch preview on branch `couch-reference` and approves or adjusts it before release. Next reference comparison: the Table view against Donte's overhead table image (shape and texture only).
+
 Updated October 30, 2026: the EnDAO fix and Time Bank notepad are live; Donte checks them on a real phone and a Mac trackpad. The notepad page redesign for the Table stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: the larger desk computer and joined EnDAO slides are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
@@ -281,6 +285,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **Home sofa reshaped after the reference painting (preview)**. Donte supplied a painting of the living room and asked to bring the couch closer to it, changing only the shape and texture of things (no colour, position or object-set changes). Cache `app.js?v=couch-reference-53`, `house-scene.js?v=couch-reference-1`.
+  - `dist/house-scene.js` (sofa block): one long deep seat cushion replaces the three seat cushions; three separate square back cushions with no buttons or top rail replace the tall tufted back; legs removed; orange fringed piping on the seat edges, back-cushion outlines, arm ends, pillows and bolster; 44 thick tassels (knot over a flared skirt) along the front and sides reach the rug; the two round pillows and the bolster are reshaped (fringed rims, gathered bolster ends). New painterly velvet texture and a strand texture for the trim, both canvas-generated in the existing sofa blue `#30668a` and rust `#cb6b3e`; the sofa uses its own random seed so nothing else in the room moves. Tassels and fringe are instanced (3 draw calls).
+  - `dist/app.js`, `dist/index.html`: cache identifiers.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA at desktop width and 375×812 Home views; no console errors.
+  - Not verified: real devices, the Vercel preview URL, closer camera angles of the sofa during room flights.
+  - Git: branch `couch-reference`, commit `a2d3684eb3256284b39d494221ab9e9cb504dcc4`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **EnDAO top-of-page fix and Time Bank notepad are live** at Donte's explicit request ("Release it"). Merged `timebank-notepad` into `main` as `6223ebeb524d412f4798e9cc304937faf6264c7a` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=timebank-notepad-52`, `time-bank-notepad.webp` returns 200, and the Time Bank sketchpad opens on the notepad at its top with no console errors. Not checked live: phone size, real devices, trackpad momentum. Rollback: revert `6223ebe` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **EnDAO opens at the top; Time Bank notepad** (Donte: the EnDAO computer opens in the middle of the page instead of the top; replace the Time Bank sketchpad with `TimeBankInfographic.pdf` as one continuous scroll without page breaks). Cache `app.js?v=timebank-notepad-52`, `style.css?v=timebank-notepad-29`.
   - Cause of the EnDAO bug: when a model was reached by scrolling, the scroll momentum saved during the camera move (up to 240 px) was replayed after opening, and trackpad inertia kept scrolling the new page; EnDAO's short first slide made it land mid-page. `dist/app.js`: no replay, and wheel input is ignored for 650 ms after any model opens. Verified: whiteboard → EnDAO by continued scrolling stays at scrollTop 0.
