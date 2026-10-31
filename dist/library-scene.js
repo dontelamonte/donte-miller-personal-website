@@ -10,7 +10,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  const edge=environmentMaterial('#bd874d','wood');
  const blue=environmentMaterial('#26516d','plaster');
  const dark=new THREE.MeshStandardMaterial({color:'#162a38',roughness:1});
- const green=new THREE.MeshStandardMaterial({color:'#4d6547',roughness:1});
+ const green=new THREE.MeshStandardMaterial({color:'#4d6547',roughness:1,side:THREE.DoubleSide});
  const cream=environmentMaterial('#e4d1ae');
  function mesh(geometry,material,parent=root){const m=new THREE.Mesh(geometry,material);parent.add(m);m.castShadow=true;m.receiveShadow=true;return m;}
  function box(w,h,d,x,y,z,material,parent=root){const m=mesh(new THREE.BoxGeometry(w,h,d),material,parent);m.position.set(x,y,z);return m;}
@@ -127,7 +127,25 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  for(const y of [.02,2.42,4.96,7.35]){box(14.05,.2,1.25,15.4,y,-4.9,wood);box(14.05,.06,.12,15.4,y-.1,-4.22,edge);}
  let seed=129;const random=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
  const colors=['#9c4d30','#cf9860','#d4b78d','#355a68','#6a754e','#7d5a48','#e0cba0','#ad6d41'];
- for(const row of [0,1,2]){const bottom=[.13,5.08,7.48][row],height=[1.9,1.65,.62][row];for(let x=8.75;x<22.05;){const w=.11+random()*.17,h=height*(.7+random()*.27),z=-4.52+random()*.15;if(row===2&&Math.abs(x-15.4)<.65){x+=.3;continue;}const m=environmentMaterial(colors[Math.floor(random()*colors.length)],'fabric');const book=box(w,h,.58,x+w/2,bottom+h/2,z,m);book.rotation.z=(random()-.5)*.08;if(random()>.8)box(w*.7,.025,.61,x+w/2,bottom+h*.75,z,edge);x+=w+.018;}}
+ // Spines vary by texture (gilt bands, raised ridges, title labels, plain worn cloth) and the shelves mix
+ // sizes and depths, a few leaning books and flat stacks, all in the existing palette.
+ const spineMaps=[0,1,2,3].map(v=>canvasTexture((c,w,h)=>{c.fillStyle='#d5d5d5';c.fillRect(0,0,w,h);for(let i=0;i<900;i++){c.fillStyle=i%2?'rgba(255,255,255,.08)':'rgba(30,30,30,.08)';c.fillRect(random()*w,random()*h,1+random()*3,1);}
+  c.fillStyle='rgba(20,15,10,.22)';c.fillRect(0,0,4,h);c.fillRect(w-4,0,4,h);
+  if(v===0){c.fillStyle='rgba(255,245,215,.6)';for(const y of [14,22,h-22,h-14])c.fillRect(6,y,w-12,3);c.fillStyle='rgba(20,15,10,.35)';c.fillRect(10,h*.32,w-20,h*.22);c.fillStyle='rgba(255,245,215,.55)';for(let y=h*.36;y<h*.5;y+=9)c.fillRect(16,y,(w-32)*(.5+random()*.5),3);}
+  if(v===1){for(const y of [.18,.36,.54,.72])c.fillStyle='rgba(20,15,10,.4)',c.fillRect(0,h*y,w,6),c.fillStyle='rgba(255,255,255,.22)',c.fillRect(0,h*y+6,w,2);}
+  if(v===2){c.fillStyle='rgba(250,240,220,.75)';c.fillRect(9,h*.12,w-18,h*.2);c.fillStyle='rgba(30,25,20,.5)';for(let y=h*.15;y<h*.29;y+=8)c.fillRect(14,y,(w-28)*(.4+random()*.6),2);c.fillStyle='rgba(255,245,215,.4)';c.fillRect(6,h-18,w-12,3);}
+  if(v===3){for(let i=0;i<40;i++){c.fillStyle='rgba(255,250,235,.18)';c.fillRect(random()*w,random()<.5?random()*20:h-random()*20,2+random()*8,1+random()*3);}}
+ },64,256));
+ const spineMats=new Map(),spineMat=(color,v)=>{const k=color+v;if(!spineMats.has(k))spineMats.set(k,new THREE.MeshStandardMaterial({color,map:spineMaps[v],roughness:.92}));return spineMats.get(k);};
+ const pick=()=>colors[Math.floor(random()*colors.length)];
+ for(const row of [0,1,2]){const bottom=[.13,5.08,7.48][row],height=[1.9,1.65,.62][row];for(let x=8.75;x<22.05;){
+  if(row===2&&Math.abs(x-15.4)<.65){x+=.3;continue;}
+  if(row<2&&random()>.94&&x<21.2){const n=3+Math.floor(random()*3),len=.7+random()*.25;let y=bottom;for(let k=0;k<n;k++){const th=.08+random()*.08,cloth=environmentMaterial(pick(),'fabric'),m=spineMat(pick(),3),b=box(len*(.88+random()*.12),th,.5+random()*.08,x+len/2,y+th/2,-4.5,[cloth,cloth,cloth,cloth,m,cloth]);b.rotation.y=(random()-.5)*.12;y+=th;}x+=len+.06;continue;}
+  const w=.08+random()*.22,h=height*(.6+random()*.37),d=.46+random()*.14,z=-4.52-(.58-d)/2+random()*.1,color=pick(),cloth=environmentMaterial(color,'fabric');
+  const lean=row<2&&random()>.92?(random()<.5?-1:1)*(.14+random()*.1):(random()-.5)*.06;
+  const book=box(w,h,d,x+w/2+Math.max(0,lean)*h,bottom+h/2*Math.cos(lean)+w/2*Math.abs(Math.sin(lean)),z,[cloth,cloth,cloth,cloth,spineMat(color,Math.floor(random()*4)),cloth]);book.rotation.z=-lean;
+  if(random()>.8)box(w*.7,.025,d+.03,x+w/2,bottom+h*.75,z,edge);
+  x+=w+h*Math.abs(Math.sin(lean))+.012+(random()>.95?.08:0);}}
  for(const [i,item] of curricula.entries()){
   const x=9.67+i*2.25,group=new THREE.Group();root.add(group);group.position.set(x,3.65,-4.55);group.rotation.y=(i%2?-.06:.06);
   const coverMap=canvasTexture((c,w,h)=>{c.fillStyle=item.theme;c.fillRect(0,0,w,h);c.strokeStyle='#e6c18b';c.lineWidth=5;c.strokeRect(22,22,w-44,h-44);c.fillStyle='#f3e4c6';c.font='22px Georgia';c.fillText('DONTE MILLER',45,92);const parts=item.title==='Flourish Fellowship'?['Flourish','Fellowship']:[item.title];c.font=parts.length>1?'62px Georgia':'78px Georgia';parts.forEach((part,j)=>c.fillText(part,43,300+j*78));c.fillRect(45,575,w-90,2);c.font='24px Georgia';c.fillText(item.comingSoon?'COMING SOON':'CURRICULUM PREVIEW',45,622);},512,768);
@@ -141,7 +159,13 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  // Globe, plant clusters and a bench give the library its own silhouette.
  box(3.8,.18,1.2,15.4,.53,-3.3,wood);for(const x of [13.7,17.1])box(.14,.65,.14,x,.18,-3.3,wood);
  const globe=mesh(new THREE.SphereGeometry(.32,20,12),new THREE.MeshStandardMaterial({color:'#bba26e',roughness:.8}));globe.position.set(15.4,7.99,-4.5);const stand=mesh(new THREE.CylinderGeometry(.025,.04,.32,8),edge);stand.position.set(15.4,7.54,-4.5);
- for(const x of [8.4,22.4]){const pot=mesh(new THREE.CylinderGeometry(.38,.28,.7,12),cream);pot.position.set(x,-.1,-2.8);for(let i=0;i<7;i++){const leaf=mesh(new THREE.SphereGeometry(1,7,5),green);leaf.scale.set(.22,.67,.13);leaf.position.set(x+(random()-.5)*.9,.75+random()*1.4,-2.8+(random()-.5)*.9);leaf.rotation.z=(random()-.5)*1.2;}};
+ // Leafy pothos mounds spill over round pots, after Donte's library reference.
+ const heart=new THREE.Shape();heart.moveTo(0,0);heart.bezierCurveTo(.13,.04,.15,.2,0,.3);heart.bezierCurveTo(-.15,.2,-.13,.04,0,0);
+ const heartLeaf=new THREE.ShapeGeometry(heart,5),leafPose=new THREE.Object3D(),tip=new THREE.Vector3();
+ for(const x of [8.4,22.4]){const z=-2.8,pot=mesh(new THREE.LatheGeometry([[0,0],[.22,0],[.33,.12],[.39,.34],[.35,.58],[.38,.64],[.38,.68],[0,.68]].map(p=>new THREE.Vector2(...p)),24),cream);pot.position.set(x,-.5,z);
+  const spots=[];for(let i=0;i<90;i++){const a=random()*Math.PI*2,e=random()*1.35,r=.45+random()*.2;spots.push([x+Math.cos(a)*Math.sin(e)*r*1.15,.25+Math.cos(e)*r*.95,z+Math.sin(a)*Math.sin(e)*r*1.15,Math.cos(a)*Math.sin(e),Math.cos(e),Math.sin(a)*Math.sin(e)]);}
+  for(let s=0;s<7;s++){const a=s*.9+random()*.5;for(let k=0;k<7;k++){const r=.42+k*.012,y=.15-k*.09;spots.push([x+Math.cos(a+k*.05)*r,y,z+Math.sin(a+k*.05)*r,Math.cos(a),-.2,Math.sin(a)]);}}
+  const set=new THREE.InstancedMesh(heartLeaf,green,spots.length);spots.forEach(([px,py,pz,nx,ny,nz],i)=>{leafPose.position.set(px,py,pz);tip.set(px+nx,py+ny,pz+nz);leafPose.lookAt(tip);leafPose.rotateZ((random()-.5)*2.6+Math.PI);leafPose.scale.setScalar(.8+random()*.6);leafPose.updateMatrix();set.setMatrixAt(i,leafPose.matrix);});set.castShadow=true;root.add(set);}
  const light=new THREE.PointLight('#ffcf96',14,23,2);light.position.set(16,6,2);root.add(light);
  return {root,pickables,books,anchors,modelPads,modelPickables};
 }
