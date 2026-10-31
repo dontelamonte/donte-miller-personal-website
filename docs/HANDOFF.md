@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Workshop plants and painting preview (not live)** (October 31, 2026, branch `workshop-desk`, commit `b9543df3c7c8b58fa7aba12a382200fc88f17354`; cache `app.js?v=workshop-plants-56`, `library-scene.js?v=workshop-plants-1`): the desk plants are reshaped and sit on the desk; the centre painting is 20% larger without the outer wooden frame. The desk and chair are unchanged from live. Awaiting Donte's review and release approval. Live is `7f19440`.
+**Workshop plants and larger painting are live** (October 31, 2026, `main` merge `0146e9685b5192d8d7e623e1a420db9d0e08fdd0`; cache `app.js?v=workshop-plants-56`, `library-scene.js?v=workshop-plants-1`): the desk plants are reshaped and sit on the desk; the centre painting is 20% larger without the outer wooden frame. Desk and chair unchanged.
 
 **New table chairs are live** (October 31, 2026, `main` merge `7f1944042b448db616d194c4b43b2a1cc849501d`; cache `app.js?v=table-chairs-54`): carved armchairs at the table ends and padded stools along the sides, after Donte's overhead reference; the table itself is unchanged. The couch preview (`couch-reference`) was declined and stays unmerged.
 
@@ -254,7 +254,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 31, 2026: Donte reviews the Workshop plants and painting preview on branch `workshop-desk` (note: on phones the larger painting is now cropped at the sides) and approves or adjusts it before release.
+Updated October 31, 2026: the Workshop plants and larger painting are live; Donte checks them on a real phone (the larger painting runs past the screen edges on phones).
 
 Updated October 31, 2026: the new table chairs are live; Donte checks them on a real phone. Branch `couch-reference` is declined and stays unmerged.
 
@@ -291,6 +291,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Workshop plants and larger painting are live** at Donte's explicit request ("Release it"). Merged `workshop-desk` into `main` as `0146e9685b5192d8d7e623e1a420db9d0e08fdd0` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=workshop-plants-56`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`7f19440`).
 - October 31, 2026 (Claude Code session): **Original Workshop desk and chair restored; plants and painting kept (preview)**. Donte doesn't like the new desk and chair but likes the plants and the frame change. `dist/library-scene.js`: desk and chair blocks restored exactly from `main`; the plants (pots now resting on the original 1.41 desk top) and the 20%-larger frameless painting stay. Cache `app.js?v=workshop-plants-56`, `library-scene.js?v=workshop-plants-1`.
   - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Workshop view at desktop width; no console errors.
   - Not verified: real devices, the Vercel preview URL. On phones the larger painting runs past the screen edges.
