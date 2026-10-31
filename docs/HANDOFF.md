@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**Home lamps preview (not live)** (October 31, 2026, branch `home-lamps`, commit `0ff5bfe2cb415163edef9202d5a765d3a24c5f2d`; cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`): side tables, lamps and floor jars reshaped after Donte's living-room reference. Awaiting Donte's review and release approval. Live is `8694f9a`.
+
 **Room plants and varied bookshelf are live** (October 31, 2026, `main` merge `8694f9ad1c86b64e5bc77a70865cfb91b2cc9900`; cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`): bamboo palms beside the table, pothos in the library, and more varied, textured books on the library shelves.
 
 **Workshop plants and larger painting are live** (October 31, 2026, `main` merge `0146e9685b5192d8d7e623e1a420db9d0e08fdd0`; cache `app.js?v=workshop-plants-56`, `library-scene.js?v=workshop-plants-1`): the desk plants are reshaped and sit on the desk; the centre painting is 20% larger without the outer wooden frame. Desk and chair unchanged.
@@ -256,6 +258,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 31, 2026: Donte reviews the Home lamps preview on branch `home-lamps` and approves or adjusts it before release.
+
 Updated October 31, 2026: the room plants and varied bookshelf are live; Donte checks them on a real phone.
 
 Updated October 31, 2026: the Workshop plants and larger painting are live; Donte checks them on a real phone (the larger painting runs past the screen edges on phones).
@@ -295,6 +299,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Home side tables, lamps and floor jars reshaped (preview)**. Donte supplied the living-room reference again to refine the shape and texture of the side tables, the lamps and the vases under the tables. Shape and texture only; colours and positions unchanged. Cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`.
+  - `dist/house-scene.js` (`lamp`): tables have a molded top, a carved apron (canvas carving texture in the table wood colour) and four curved cabriole legs with pad feet. Lamp bases are lidded ginger jars on a small wooden stand with a dense blue-and-white floral texture (new lamp-only material, so the About-wall vases and dining urns that share `china` are unchanged), a brass stem and finial, and a shade with eight scalloped petal tips and a leaded-glass texture (lead lines and mottled glass; same cream and glow). The old shade ribs and rim ring are replaced by the texture. Floor jars are larger lidded ginger jars resting on the floor. The point light is unchanged. Own random seed.
+  - `dist/app.js`, `dist/index.html`: cache identifiers.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Home view at desktop width; no console errors.
+  - Not verified: real devices, phone size, the Vercel preview URL.
+  - Git: branch `home-lamps`, commit `0ff5bfe2cb415163edef9202d5a765d3a24c5f2d`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 31, 2026 (Claude Code session): **Room plants and varied bookshelf are live** at Donte's explicit request ("Release it"). Merged `room-plants` into `main` as `8694f9ad1c86b64e5bc77a70865cfb91b2cc9900` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=room-plants-57`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`0146e96`).
 - October 31, 2026 (Claude Code session): **Table and Library plants reshaped; bookshelf books varied (preview)**. Donte supplied a dining-room reference and a library reference and asked to fix the plants in the library and by the table, then to add variety and texture to the books on the bookshelf. Shape and texture only; colours and positions unchanged. Cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`.
   - `dist/house-scene.js` (`plant`, the two pots flanking the mural at x ±6.1): tall bamboo palms — eight slender curved canes (TubeGeometry) up to about 4.5 high with drooping lance leaves at the nodes (one instanced mesh per plant, existing greens `#536a42` / `#314c39`), in a rimmed china urn resting on the floor, with soil. Own random seed (no later code uses the shared `rand`).
