@@ -34,9 +34,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  paintingMap.colorSpace=THREE.SRGBColorSpace;
  // UV crop of the framed painting in the supplied composition (not the desk or wall).
  paintingMap.repeat.set(.445,.38);paintingMap.offset.set(.273,.493);
- const painting=mesh(new THREE.PlaneGeometry(4.1,3.5),new THREE.MeshBasicMaterial({map:paintingMap,side:THREE.DoubleSide}));painting.position.set(22.79,5.4,3.25);painting.rotation.y=-Math.PI/2;painting.castShadow=false;
- for(const z of [1.13,5.37])box(.16,3.63,.12,22.72,5.4,z,studioWood);
- for(const y of [3.6,7.2])box(.16,.12,4.26,22.72,y,3.25,studioWood);
+ const painting=mesh(new THREE.PlaneGeometry(4.92,4.2),new THREE.MeshBasicMaterial({map:paintingMap,side:THREE.DoubleSide}));painting.position.set(22.79,5.4,3.25);painting.rotation.y=-Math.PI/2;painting.castShadow=false;
  // Work surface and two drawer pedestals sit in front of the wall.
  box(1.28,.16,6.7,21.76,1.33,3.25,studioWood);
  for(const z of [.94,5.56]){
@@ -94,10 +92,16 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  }
  // Small working materials and greenery keep the studio lived in without flattening it.
  for(const [z,count] of [[.35,5],[5.9,4]])for(let i=0;i<count;i++)box(.42,.06,.55,21.42,1.46+i*.063,z+i*.13,i%2?studioCream:studioWood);
- const plantGreen=new THREE.MeshStandardMaterial({color:'#4b6845',roughness:1});
- for(const z of [-.2,6.7]){
-  const pot=mesh(new THREE.CylinderGeometry(.26,.19,.38,10),studioCream);pot.position.set(21.65,1.57,z);
-  for(let i=0;i<7;i++){const leaf=mesh(new THREE.SphereGeometry(.29,7,5),plantGreen);leaf.scale.set(.48,1.9,.38);leaf.position.set(21.65+(i%3-1)*.2,1.97+(i%2)*.3,z+(i-3)*.13);leaf.rotation.z=(i-3)*.17;}
+ // Desk plants sit on the desk top behind the book stacks: a rimmed pot, soil and arching leaf blades.
+ const bladeShape=new THREE.Shape();bladeShape.moveTo(0,0);bladeShape.bezierCurveTo(.13,.1,.12,.28,0,.4);bladeShape.bezierCurveTo(-.12,.28,-.13,.1,0,0);
+ const blade=new THREE.ShapeGeometry(bladeShape,6),leafMat=new THREE.MeshStandardMaterial({color:'#4b6845',roughness:1,side:THREE.DoubleSide});
+ let plantSeed=13;const plantRand=()=>((plantSeed=plantSeed*16807%2147483647)-1)/2147483646;
+ for(const z of [.12,6.38]){
+  const pot=mesh(new THREE.LatheGeometry([[0,0],[.16,0],[.19,.04],[.22,.28],[.25,.29],[.25,.34],[0,.34]].map(p=>new THREE.Vector2(...p)),18),studioCream);pot.position.set(21.95,1.41,z);
+  const soil=mesh(new THREE.CircleGeometry(.22,18),dark);soil.rotation.x=-Math.PI/2;soil.position.set(21.95,1.73,z);
+  const leaves=new THREE.InstancedMesh(blade,leafMat,26),pose=new THREE.Object3D();
+  for(let i=0;i<26;i++){const a=i*2.4+plantRand()*.5,tilt=.25+plantRand()*.9;pose.position.set(21.95+Math.cos(a)*.05,1.72,z+Math.sin(a)*.05);pose.rotation.set(0,-a+Math.PI/2,0);pose.rotateX(tilt);pose.scale.setScalar(.8+plantRand()*.7);pose.updateMatrix();leaves.setMatrixAt(i,pose.matrix);}
+  leaves.castShadow=true;root.add(leaves);
  }
  for(const z of [.25,6.25]){
   box(.025,1.3,.025,21.9,7.63,z,dark);
