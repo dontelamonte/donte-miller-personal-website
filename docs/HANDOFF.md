@@ -12,6 +12,8 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
+**EnDAO top-of-page fix and Time Bank notepad are ready for review** (October 30, 2026, branch `timebank-notepad` at `e7b7e6589bc4c5818cb3888a09ef3177e4e9951c`, pushed; Vercel preview; not merged, not live; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
+
 **Larger desk computer is live** (October 30, 2026, `main` merge `3e9021aff7139c2563010e963f3e378b798d96a3`; cache `app.js?v=endao-screen-51`): the computer on the Workshop desk is 50% larger than the original, and the two EnDAO deck slides join without the stripe between them.
 
 **Workshop whiteboard and computer are live** (October 30, 2026, `main` merge `ed3c9e3bf351fcba35d83ce47fe6e42c991c3a81`; cache `app.js?v=workshop-objects-48`): the Worker's Equity Fund is a whiteboard that opens into Donte's infographic, and EnDAO is the desk computer that zooms into the first two pages of the investor deck with a link to endao.ai (build-plan §20).
@@ -248,6 +250,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated October 30, 2026: Donte reviews branch `timebank-notepad` and approves release before it is merged to `main`.
+
 Updated October 30, 2026: the larger desk computer and joined EnDAO slides are live; Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
 
 Updated October 30, 2026: the Workshop whiteboard and EnDAO computer are live (build-plan §20); Donte checks them on a real phone. The notepad page redesign stays paused on branch `notepad-page`.
@@ -277,6 +281,14 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 30, 2026 (Claude Code session): **EnDAO opens at the top; Time Bank notepad** (Donte: the EnDAO computer opens in the middle of the page instead of the top; replace the Time Bank sketchpad with `TimeBankInfographic.pdf` as one continuous scroll without page breaks). Cache `app.js?v=timebank-notepad-52`, `style.css?v=timebank-notepad-29`.
+  - Cause of the EnDAO bug: when a model was reached by scrolling, the scroll momentum saved during the camera move (up to 240 px) was replayed after opening, and trackpad inertia kept scrolling the new page; EnDAO's short first slide made it land mid-page. `dist/app.js`: no replay, and wheel input is ignored for 650 ms after any model opens. Verified: whiteboard → EnDAO by continued scrolling stays at scrollTop 0.
+  - `dist/assets/workshop/time-bank-notepad.webp` (1100 × 5810, 540 KB): the 4-page PDF (612 × 816 pt pages, each a photo of a spiral notepad on a desk) rendered at 1400 px with PDFKit, cropped to the paper (x 58–1345; tops below the spiral rings and page numbers, with page 1's number painted out; bottoms above the page curls), joined with 56-px plain-paper gaps whose colour is sampled per column, and cross-faded over 10 px.
+  - `dist/app.js`: the Time Bank is a `MODEL_MEDIA` entry of kind `sketchpad` with a full screen-reader transcript of the handwriting; the 3D sketchpad on the desk is unchanged. `dist/style.css`: the notepad image fills the pad beside the binding (no ruled lines), with the closing links clear of the binding.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA at 1280×800 (scroll continuation into EnDAO; Time Bank top, middle, end) and 375×812 (Time Bank top and end); no console errors.
+  - Not verified: real devices (especially trackpad momentum on a Mac and touch scrolling on phones), the Vercel preview URL.
+  - Git: branch `timebank-notepad`, commit `e7b7e6589bc4c5818cb3888a09ef3177e4e9951c`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Desk computer 50% larger, released** at Donte's request ("Make the computer 50% bigger and then push it"). Read as 150% of the original monitor (up from the 120% preview). `dist/library-scene.js`: bezel 1.23 × 2.025, screen 1.77 × 1.02, bottom edge kept above the stand; EnDAO zoom camera at x 20.28 (clear of the chair back, which tops out near y 1.55). Cache `app.js?v=endao-screen-51`, `library-scene.js?v=endao-screen-3`. Merged `endao-screen` (larger computer, joined slides, scene-aspect guard) into `main` as `3e9021aff7139c2563010e963f3e378b798d96a3` and pushed. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean; local QA at 1280×800 and 375×812. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=endao-screen-51`, the re-cut slide returns 200, and the Workshop shows the larger computer with no console errors. Not checked: real devices. Rollback: revert `3e9021a` on `main` or promote the previous Vercel deployment.
 - October 30, 2026 (Claude Code session): **Correction: the desk computer, not the screen view.** Donte meant the 3D computer on the Workshop desk. `dist/library-scene.js`: bezel .82 × 1.35 → .984 × 1.62 and screen 1.18 × .68 → 1.416 × .816 (20%), with the bottom edge kept at the same height above the stand; the EnDAO zoom camera steps back (x 20.86 → 20.63) to frame it. `dist/style.css`: the screen view is back to 1040 px. The joined slides and the scene-aspect guard stay. Cache `app.js?v=endao-screen-50`, `style.css?v=endao-screen-27`, `library-scene.js?v=endao-screen-2`. Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean; browser QA at 1280×800 (larger monitor in the Workshop view; zoom fills the frame; screen view 1040 px). Commit `07713fa68f6af40be84318f433ace67d4afe42e0` on `endao-screen`, pushed; not merged, not live. Next: Donte reviews and approves release.
 - October 30, 2026 (Claude Code session): **Larger EnDAO screen, slides joined** (Donte: make the computer screen 20% larger and remove the border between the two slides). Read as the screen view that opens for EnDAO. Cache `app.js?v=endao-screen-49`, `style.css?v=endao-screen-26`, `library-scene.js?v=endao-screen-1`.
