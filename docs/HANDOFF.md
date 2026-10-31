@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Home lamps preview (not live)** (October 31, 2026, branch `home-lamps`, commit `0ff5bfe2cb415163edef9202d5a765d3a24c5f2d`; cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`): side tables, lamps and floor jars reshaped after Donte's living-room reference. Awaiting Donte's review and release approval. Live is `8694f9a`.
+**Home side tables, lamps and floor jars are live** (October 31, 2026, `main` merge `6c816855427aba6e2ce68c3351ddea44fe3ec351`; cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`): carved tables on cabriole legs, ginger-jar lamps with leaded petal shades, and lidded floor jars, after Donte's living-room reference.
 
 **Room plants and varied bookshelf are live** (October 31, 2026, `main` merge `8694f9ad1c86b64e5bc77a70865cfb91b2cc9900`; cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`): bamboo palms beside the table, pothos in the library, and more varied, textured books on the library shelves.
 
@@ -258,7 +258,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 31, 2026: Donte reviews the Home lamps preview on branch `home-lamps` and approves or adjusts it before release.
+Updated October 31, 2026: the Home side tables, lamps and floor jars are live; Donte checks them on a real phone.
 
 Updated October 31, 2026: the room plants and varied bookshelf are live; Donte checks them on a real phone.
 
@@ -299,6 +299,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Home side tables, lamps and floor jars are live** at Donte's explicit request ("Release it"). Merged `home-lamps` into `main` as `6c816855427aba6e2ce68c3351ddea44fe3ec351` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=home-lamps-58`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`8694f9a`).
 - October 31, 2026 (Claude Code session): **Home side tables, lamps and floor jars reshaped (preview)**. Donte supplied the living-room reference again to refine the shape and texture of the side tables, the lamps and the vases under the tables. Shape and texture only; colours and positions unchanged. Cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`.
   - `dist/house-scene.js` (`lamp`): tables have a molded top, a carved apron (canvas carving texture in the table wood colour) and four curved cabriole legs with pad feet. Lamp bases are lidded ginger jars on a small wooden stand with a dense blue-and-white floral texture (new lamp-only material, so the About-wall vases and dining urns that share `china` are unchanged), a brass stem and finial, and a shade with eight scalloped petal tips and a leaded-glass texture (lead lines and mottled glass; same cream and glow). The old shade ribs and rim ring are replaced by the texture. Floor jars are larger lidded ginger jars resting on the floor. The point light is unchanged. Own random seed.
   - `dist/app.js`, `dist/index.html`: cache identifiers.
