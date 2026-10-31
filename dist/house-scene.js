@@ -80,7 +80,38 @@ export function buildHouse(scene,{portrait,aboutWall,aboutPaintings,plaqueLogos,
  // Blue-and-white porcelain lamps echo the supplied room.
  const chinaMap=tex((c,W,H)=>{c.fillStyle='#e7ddc5';c.fillRect(0,0,W,H);c.strokeStyle='#24476a';for(let i=0;i<120;i++){const x=rand()*W,y=rand()*H;c.beginPath();c.ellipse(x,y,8+rand()*10,14+rand()*18,rand()*3,0,Math.PI*2);c.lineWidth=3;c.stroke();}for(const y of [10,30,H-30,H-10]){c.fillStyle='#214768';c.fillRect(0,y,W,5);}},512,768);
  const china=new THREE.MeshStandardMaterial({map:chinaMap,roughness:.6});
- function lamp(x,z){box(1.45,.13,1.1,x,.72,z,wood);for(const a of [-.54,.54])for(const b of [-.38,.38])box(.07,1.18,.07,x+a,.1,z+b,wood);const points=[[.12,0],[.35,.12],[.36,.55],[.21,.9],[.14,1.02]].map(p=>new THREE.Vector2(...p));const vase=mesh(new THREE.LatheGeometry(points,24),china);vase.position.set(x,.8,z);const stem=mesh(new THREE.CylinderGeometry(.035,.035,.5,10),gold);stem.position.set(x,1.95,z);const shade=mesh(new THREE.LatheGeometry([[.58,-.32],[.55,-.19],[.46,.02],[.31,.19],[.12,.28],[.05,.3]].map(p=>new THREE.Vector2(...p)),24),new THREE.MeshStandardMaterial({color:'#f6dbad',roughness:1,side:THREE.DoubleSide,emissive:'#bd782b',emissiveIntensity:.25}));shade.position.set(x,2.35,z);for(let i=0;i<10;i++){const a=i*Math.PI/5;const curve=new THREE.CatmullRomCurve3([[.58,-.32],[.46,.02],[.12,.28]].map(([r,h])=>new THREE.Vector3(x+Math.cos(a)*r,2.35+h,z+Math.sin(a)*r)));mesh(new THREE.TubeGeometry(curve,8,.009,3,false),dark);}const rim=mesh(new THREE.TorusGeometry(.58,.022,6,28),dark);rim.rotation.x=Math.PI/2;rim.position.set(x,2.03,z);const light=new THREE.PointLight('#ffd19a',7,5,2);light.position.set(x,2.12,z);root.add(light);const jar=mesh(new THREE.LatheGeometry(points,20),china);jar.scale.set(.7,.7,.7);jar.position.set(x,-.45,z);}
+ // Side tables, lamps and floor jars after Donte's living-room reference: carved tables on cabriole legs,
+ // blue-and-white ginger-jar lamps under leaded petal shades, and lidded ginger jars on the floor.
+ let lampSeed=11;const lampRand=()=>((lampSeed=lampSeed*16807%2147483647)-1)/2147483646;
+ const floralMap=tex((c,W,H)=>{c.fillStyle='#e7ddc5';c.fillRect(0,0,W,H);c.fillStyle='#24476a';for(const y of [6,18,H-24,H-10])c.fillRect(0,y,W,y%2?3:6);
+  for(let i=0;i<120;i++){const x=lampRand()*W,y=34+lampRand()*(H-80),r=14+lampRand()*20;c.strokeStyle='#24476aaa';c.lineWidth=2;c.beginPath();c.moveTo(x,y);c.bezierCurveTo(x+30,y+20,x-20,y+50,x+lampRand()*40-20,y+70);c.stroke();
+   for(let k=0;k<5;k++){const a=k/5*Math.PI*2+lampRand();c.fillStyle=k%2?'#24476ad0':'#2f5a86c0';c.beginPath();c.ellipse(x+Math.cos(a)*r*.7,y+Math.sin(a)*r*.7,r*.62,r*.36,a,0,Math.PI*2);c.fill();}
+   c.fillStyle='#e7ddc5';c.beginPath();c.arc(x,y,r*.28,0,Math.PI*2);c.fill();
+   for(let k=0;k<3;k++){c.fillStyle='#24476ab0';c.beginPath();c.ellipse(x+(lampRand()-.5)*70,y+(lampRand()-.3)*50,14,6,lampRand()*3,0,Math.PI*2);c.fill();}}},1024,512);
+ const lampChina=new THREE.MeshStandardMaterial({map:floralMap,roughness:.45});
+ const leadedMap=tex((c,W,H)=>{c.fillStyle='#ffffff';c.fillRect(0,0,W,H);for(let i=0;i<60;i++){const x=lampRand()*W,y=lampRand()*H,r=10+lampRand()*40,g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,i%2?'rgba(255,250,240,.5)':'rgba(170,150,120,.25)');g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(0,0,W,H);}
+  c.strokeStyle='#2a2117';c.lineWidth=6;for(let k=0;k<8;k++){const x=k/8*W;c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();c.beginPath();c.moveTo(x,H*.08);c.quadraticCurveTo(x+W/16,H*.55,x+W/8,H*.08);c.stroke();}
+  for(const v of [.55,.82])c.beginPath(),c.moveTo(0,H*v),c.lineTo(W,H*v),c.stroke();c.lineWidth=7;c.beginPath();c.moveTo(0,3);c.lineTo(W,3);c.stroke();},512,256);
+ const shadeMat=new THREE.MeshStandardMaterial({color:'#f6dbad',map:leadedMap,roughness:1,side:THREE.DoubleSide,emissive:'#bd782b',emissiveIntensity:.25});
+ const carvedWood=new THREE.MeshStandardMaterial({color:'#805334',roughness:.84,map:tex((c,W,H)=>{c.fillStyle='#d5d5d5';c.fillRect(0,0,W,H);c.strokeStyle='#3a2a1c99';c.lineWidth=4;for(let x=16;x<W;x+=32){c.beginPath();c.arc(x,H*.2,12,0,Math.PI);c.stroke();c.beginPath();c.moveTo(x,H*.45);c.bezierCurveTo(x-10,H*.6,x+10,H*.7,x,H*.85);c.stroke();}c.fillStyle='#3a2a1c55';c.fillRect(0,0,W,6);c.fillRect(0,H-6,W,6);},512,96)});
+ const jarProfile=(pts)=>new THREE.LatheGeometry(pts.map(p=>new THREE.Vector2(...p)),32);
+ function lamp(x,z){
+  // Table: molded top over a carved apron on four cabriole legs.
+  box(1.45,.09,1.1,x,.75,z,wood);box(1.52,.04,1.17,x,.69,z,wood);box(1.3,.17,.97,x,.585,z,carvedWood);
+  for(const a of [-1,1])for(const b of [-1,1]){const o=new THREE.Vector3(a,0,b).normalize();const pt=(out,y)=>new THREE.Vector3(x+a*.6+o.x*out,y,z+b*.42+o.z*out);
+   mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([pt(0,.6),pt(.1,.36),pt(.02,.05),pt(-.04,-.25),pt(.04,-.44)]),20,.045,8,false),wood);
+   const foot=mesh(new THREE.SphereGeometry(.07,10,8),wood);foot.scale.set(1.2,.55,1.2);foot.position.copy(pt(.06,-.46));}
+  // Lamp: ginger jar on a wooden stand, brass stem, scalloped leaded-glass shade.
+  const stand=mesh(new THREE.CylinderGeometry(.27,.3,.06,24),wood);stand.position.set(x,.825,z);
+  const jar=mesh(jarProfile([[0,0],[.17,0],[.19,.04],[.28,.22],[.34,.42],[.32,.6],[.22,.72],[.13,.76],[.13,.82],[.16,.82],[.17,.86],[.12,.93],[.05,.97],[0,.98]]),lampChina);jar.position.set(x,.855,z);
+  const stem=mesh(new THREE.CylinderGeometry(.03,.03,.78,10),gold);stem.position.set(x,2.2,z);
+  const g=new THREE.LatheGeometry([[.6,-.3],[.58,-.22],[.52,-.06],[.42,.09],[.28,.21],[.12,.29],[.04,.31]].map(p=>new THREE.Vector2(...p)),48),pos=g.attributes.position,n=7;
+  for(let i=0;i<pos.count;i++){const j=i%n;if(j>1)continue;const th=Math.atan2(pos.getZ(i),pos.getX(i)),tipDepth=Math.pow(Math.abs(Math.cos(4*th)),3)*.09;pos.setY(i,pos.getY(i)-tipDepth*(j===0?1:.5));}
+  g.computeVertexNormals();const shade=mesh(g,shadeMat);shade.position.set(x,2.35,z);
+  const finial=mesh(new THREE.SphereGeometry(.05,10,8),gold);finial.position.set(x,2.68,z);
+  const light=new THREE.PointLight('#ffd19a',7,5,2);light.position.set(x,2.12,z);root.add(light);
+  // Lidded ginger jar on the floor under the table.
+  const floorJar=mesh(jarProfile([[0,0],[.19,0],[.23,.04],[.34,.24],[.4,.44],[.36,.6],[.25,.7],[.16,.74],[.16,.78],[.19,.78],[.2,.82],[.14,.88],[.06,.91],[0,.92]]),lampChina);floorJar.position.set(x,-.5,z);}
  lamp(-19.9,-4.55);lamp(-10.1,-4.55);
  // About wall shelving scene in 3D, laid out from Donte's reference image: px/py are pixels in the
  // 1024×955 reference, mapped onto the wall (left edge ABOUT_PANEL_LEFT_Z, bottom at the floor).

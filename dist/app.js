@@ -3,7 +3,7 @@ import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
 import {cameraAt,followProgress,TABLE_CAMERA,aboutWallView} from './house-path.js?v=home-fit-1';
-import {buildHouse} from './house-scene.js?v=room-plants-1';
+import {buildHouse} from './house-scene.js?v=home-lamps-1';
 import {livingItems} from './living-content.js';
 import {ABOUT_CHAPTER_DISTANCE,advanceAbout,storyFrame,storyReveal} from './about-story.js';
 import {LIBRARY_SCROLL_DISTANCE,libraryCameraAt} from './library-path.js?v=left-home-29';
