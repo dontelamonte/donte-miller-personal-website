@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Table and chairs preview (not live)** (October 31, 2026, branch `table-reference`, commit `abb75c78f17cae230337be65b69da6bca8f026bb`; cache `app.js?v=table-reference-53`): oval painted-plank table, carved end armchairs and padded side stools after Donte's overhead reference. Awaiting Donte's review and release approval. Live is still `6223ebe`. The couch preview (`couch-reference`) was declined; Donte prefers the old couch.
+**Chairs preview (not live)** (October 31, 2026, branch `table-reference`, commit `eaa4de5f9f9e11bed0e2b47d78f423defff06def`; cache `app.js?v=table-chairs-54`): carved end armchairs and padded side stools after Donte's overhead reference; the table itself is unchanged from live. Awaiting Donte's review and release approval. Live is still `6223ebe`. The couch preview (`couch-reference`) was declined; Donte prefers the old couch.
 
 **EnDAO top-of-page fix and Time Bank notepad are live** (October 30, 2026, `main` merge `6223ebeb524d412f4798e9cc304937faf6264c7a`; cache `app.js?v=timebank-notepad-52`): EnDAO always opens at its top, and the Time Bank sketchpad opens on Donte's notepad infographic as one continuous scroll.
 
@@ -252,7 +252,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 31, 2026: Donte reviews the Table and chairs preview on branch `table-reference` and approves or adjusts it before release. Branch `couch-reference` is declined and stays unmerged.
+Updated October 31, 2026: Donte reviews the chairs preview (table restored) on branch `table-reference` and approves or adjusts it before release. Branch `couch-reference` is declined and stays unmerged.
 
 Updated October 30, 2026: Donte reviews the couch preview on branch `couch-reference` and approves or adjusts it before release. Next reference comparison: the Table view against Donte's overhead table image (shape and texture only).
 
@@ -287,6 +287,11 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Original table restored; new chairs kept (preview)**. Donte likes the chairs but not the new table. `dist/app.js`: `grainTexture`, `roundedShape` and the rounded-rectangle tabletop restored exactly from `main`; the armchairs, stools and suede/carved textures stay. The diff against `main` is now chairs only. Cache `app.js?v=table-chairs-54`.
+  - Checks: `npm run check` passed; `npm test` 53/53; `git diff --check` clean. Browser QA of the Table view at desktop width; no console errors.
+  - Not verified: real devices, the Vercel preview URL, a close view of the end armchairs.
+  - Git: branch `table-reference`, commit `eaa4de5f9f9e11bed0e2b47d78f423defff06def`, pushed. Not merged; not deployed to production.
+  - Next: Donte reviews and approves release.
 - October 31, 2026 (Claude Code session): **Couch declined; Table and chairs reshaped after Donte's overhead reference (preview)**. Donte prefers the old couch, so `couch-reference` stays unmerged and the live sofa is unchanged. Donte then asked to move on to the table and the chairs around it, again changing only shape and texture. Cache `app.js?v=table-reference-53`.
   - `dist/app.js`: the tabletop is a true oval (superellipse, same 8.1 × 4.35 footprint) instead of a rounded rectangle; `roundedShape` removed as unused. `grainTexture` redrawn as eight lengthwise painted planks with crisp seams, staggered end joints and dry-brushed wear, in the same blue `#305272`. The two end chairs are now carved armchairs (tall back posts, spindles, a carved centre panel, armrests, stretchers, a square suede seat cushion, legs to the floor). The four side chairs are round padded stools with a rolled edge, an apron and four splayed legs. New canvas-generated suede and carved-panel textures in the existing chair colours `#bf7244` and `#875a36`. Chair positions and count are unchanged.
   - `dist/index.html`: cache identifier.
