@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Room plants and bookshelf preview (not live)** (October 31, 2026, branch `room-plants`, commit `6835e230067aa6282bee889895501d2aeccbb12b`; cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`): bamboo palms beside the table and pothos in the library after Donte's references, and more varied, textured books on the library shelves. Awaiting Donte's review and release approval. Live is `0146e96`.
+**Room plants and varied bookshelf are live** (October 31, 2026, `main` merge `8694f9ad1c86b64e5bc77a70865cfb91b2cc9900`; cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`): bamboo palms beside the table, pothos in the library, and more varied, textured books on the library shelves.
 
 **Workshop plants and larger painting are live** (October 31, 2026, `main` merge `0146e9685b5192d8d7e623e1a420db9d0e08fdd0`; cache `app.js?v=workshop-plants-56`, `library-scene.js?v=workshop-plants-1`): the desk plants are reshaped and sit on the desk; the centre painting is 20% larger without the outer wooden frame. Desk and chair unchanged.
 
@@ -256,7 +256,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated October 31, 2026: Donte reviews the room plants and bookshelf preview on branch `room-plants` and approves or adjusts it before release.
+Updated October 31, 2026: the room plants and varied bookshelf are live; Donte checks them on a real phone.
 
 Updated October 31, 2026: the Workshop plants and larger painting are live; Donte checks them on a real phone (the larger painting runs past the screen edges on phones).
 
@@ -295,6 +295,7 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- October 31, 2026 (Claude Code session): **Room plants and varied bookshelf are live** at Donte's explicit request ("Release it"). Merged `room-plants` into `main` as `8694f9ad1c86b64e5bc77a70865cfb91b2cc9900` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=room-plants-57`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`0146e96`).
 - October 31, 2026 (Claude Code session): **Table and Library plants reshaped; bookshelf books varied (preview)**. Donte supplied a dining-room reference and a library reference and asked to fix the plants in the library and by the table, then to add variety and texture to the books on the bookshelf. Shape and texture only; colours and positions unchanged. Cache `app.js?v=room-plants-57`, `house-scene.js?v=room-plants-1`, `library-scene.js?v=room-plants-1`.
   - `dist/house-scene.js` (`plant`, the two pots flanking the mural at x ±6.1): tall bamboo palms — eight slender curved canes (TubeGeometry) up to about 4.5 high with drooping lance leaves at the nodes (one instanced mesh per plant, existing greens `#536a42` / `#314c39`), in a rimmed china urn resting on the floor, with soil. Own random seed (no later code uses the shared `rand`).
   - `dist/library-scene.js`: the two floor plants (x 8.4 and 22.4) are leafy pothos mounds of heart-shaped leaves with strands spilling over a round cream pot (instanced; the `green` material is now double-sided). Bookshelf: four canvas spine textures (gilt bands with a title block, raised ridges, a title label, plain worn cloth) on the spine face only, cloth elsewhere; wider spread of widths, heights and depths with backs aligned; about 8% leaning books; occasional flat stacks of 3–5 books on the two lower rows; occasional small gaps. Same eight-colour palette.
