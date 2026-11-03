@@ -734,3 +734,47 @@ production `7nXDq2TSMHPu1tUGojkVM3AntphA` succeeded. Live app `mobile-images-60`
 and mobile report URLs were verified; the production mobile Workshop screenshot
 is pixel-identical to the approved preview. This completes only the image-only
 pass. Remaining phases still require separate previews and approval.
+
+
+## 23. Mobile Chrome clipped-header / bottom-gap fix — November 3, 2026
+
+Donte supplied three iPhone Chrome screenshots: navigation is clipped above the
+visible page and a blank page-colour band appears below the scene in Home,
+Workshop and Library. Scope: fix page/gesture anchoring without changing artwork,
+room design or the approved image-only delivery.
+
+Observed source/layout: the body only had overflow:hidden, its measured height was
+zero, root overflow was visible, and scene touchmove handlers were passive. The
+same swipe could drive the house and remain eligible for native browser panning.
+This matches a known class of iOS WebKit viewport/overflow behavior, but the exact
+physical Chrome toolbar sequence has not been reproduced on a real iPhone.
+
+Preview `fix-mobile-page-pan`, app `mobile-viewport-61`, CSS `mobile-viewport-32`:
+- Give html/body viewport dimensions, pin the body and suppress root overscroll.
+- Consume one-finger vertical scene swipes with a non-passive handler. Preserve
+  touch distance/gain and the held-touch room gate; exclude readers, panels and
+  navigation. Leave pinch, zoomed panning and horizontal browser gestures native.
+- Reset unzoomed root scroll on history/page show and unexpected root scroll.
+- Coalesce window / VisualViewport resizing; avoid resetting a camera flight
+  while it is moving. Keep internal reader scroll independent of the page lock.
+
+Validation: 66 tests pass, including eight gesture regressions; original asset
+hashes pass. Local WebKit Home/Workshop/Library screenshots at 390×666 are
+pixel-identical to the live baseline at an unshifted origin. Body/root/scene/header
+remain anchored and canvas height matches viewport during 744→666→580→666 resize
+checks. Synthetic browser touch checks confirm prevention of native scene panning
+and pinch pass-through; an attempted root scroll remains at zero. Publication
+scroll advanced from 0 to 952 while body/header stayed at top zero.
+
+Saved local QA: `prototype/qa/mobile-viewport/`. Physical iPhone Chrome toolbar
+collapse/expand, real swipes/pinch and the reported bad state still require a
+phone check. Preview first; obtain release approval before changing production.
+
+Hosted preview: [PR #3](https://github.com/dontelamonte/donte-miller-personal-website/pull/3),
+source `e5acc1d0bc96b68527e4ea2e6f964ecd2c496cce`, pushed on `fix-mobile-page-pan`.
+Vercel deployment `2KQPtH9WfpfQTKybWpUwtZmcjBKm` succeeded:
+https://donte-miller-personal-website-git-f-580321-donte-8096s-projects.vercel.app.
+Hosted Chrome phone-width Workshop confirms new cache IDs, full-height canvas,
+header at top zero, EnDAO opening/scroll and no console errors. Local animated
+Workshop-to-Home flight completed while viewport height changed. Production
+source remains the approved image-only pass until the phone check and release approval.
