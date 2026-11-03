@@ -728,5 +728,9 @@ preview `2BzWofjzn72dBsxcFywfn3XTombL` succeeded; desktop Home and mobile
 Workshop/report (including both mobile image URLs) were verified without site
 errors. Preview: https://donte-miller-personal-website-git-m-3ba743-donte-8096s-projects.vercel.app.
 
-This pass is a preview. No production release is authorized by “ok, go”; show
-Donte the comparison and obtain release approval before merging source.
+Donte approved the comparison with “Better. Let’s push it.” on November 3.
+Released through merge `d4af83433ca55739fa64623a32b7d2da08d81a1f`; Vercel
+production `7nXDq2TSMHPu1tUGojkVM3AntphA` succeeded. Live app `mobile-images-60`
+and mobile report URLs were verified; the production mobile Workshop screenshot
+is pixel-identical to the approved preview. This completes only the image-only
+pass. Remaining phases still require separate previews and approval.
