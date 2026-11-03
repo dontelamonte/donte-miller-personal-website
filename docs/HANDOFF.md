@@ -1,6 +1,6 @@
 # Donte Miller personal website — handoff
 
-Last updated: November 2, 2026 (America/New_York)
+Last updated: November 3, 2026 (America/New_York)
 
 ## Purpose and update rule
 
@@ -12,7 +12,7 @@ Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October
 
 ## Current status
 
-**Mobile performance first pass is implemented for preview** (November 2, 2026, branch `mobile-performance`, cache `app.js?v=mobile-performance-59`, `house-scene.js` / `library-scene.js` `mobile-performance-1`, CSS `mobile-performance-31`). Mobile startup images: 3,910,074 → 655,094 bytes (83% smaller, including pre-rendered textures). The house design and camera routes are preserved. East-room construction and Workshop texture downloads are deferred; mobile uses a 1.25 pixel-ratio cap and 1024 shadows. Source `d841ec49a80f9c07f20f56f0e69b1d44a1af525f` is pushed; draft PR https://github.com/dontelamonte/donte-miller-personal-website/pull/1. Vercel preview build `5MMJxxHiGhHYz8DmtTPeTntQBwnW` succeeded: https://donte-miller-personal-website-git-m-ced3c6-donte-8096s-projects.vercel.app. Production runtime remains `home-lamps-58`. 57 tests, syntax and whitespace checks pass; local desktop and 390×844 browser QA completed. Hosted browser verification is blocked by the Vercel sign-in redirect; automatic approval review rejected that account-origin access and Donte was asked whether to allow the sign-in check. Physical-device performance remains unverified. See build-plan §21 and the latest change-log entry.
+**Mobile performance first pass is implemented for preview** (November 2, 2026, branch `mobile-performance`, cache `app.js?v=mobile-performance-59`, `house-scene.js` / `library-scene.js` `mobile-performance-1`, CSS `mobile-performance-31`). Mobile startup images: 3,910,074 → 655,094 bytes (83% smaller, including pre-rendered textures). The house design and camera routes are preserved. East-room construction and Workshop texture downloads are deferred; mobile uses a 1.25 pixel-ratio cap and 1024 shadows. Source `d841ec49a80f9c07f20f56f0e69b1d44a1af525f` is pushed; draft PR https://github.com/dontelamonte/donte-miller-personal-website/pull/1. Vercel preview build `5MMJxxHiGhHYz8DmtTPeTntQBwnW` succeeded: https://donte-miller-personal-website-git-m-ced3c6-donte-8096s-projects.vercel.app. Production runtime remains `home-lamps-58`. 57 tests, syntax and whitespace checks pass; local desktop and 390×844 browser QA completed. Hosted preview verification passed November 3 after Donte authorized the Vercel sign-in check: the existing Chrome Vercel session opened the preview without a new login. Desktop Home and the 390×844 mobile profile, Home→Workshop→Library navigation, EnDAO and AI readers, the report photo and lazy report cover were verified; no website console errors. Physical-device performance remains unverified. See build-plan §21 and the latest change-log entry.
 
 **Home side tables, lamps and floor jars are live** (October 31, 2026, `main` merge `6c816855427aba6e2ce68c3351ddea44fe3ec351`; cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`): carved tables on cabriole legs, ginger-jar lamps with leaded petal shades, and lidded floor jars, after Donte's living-room reference.
 
@@ -260,7 +260,7 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
-Updated November 2, 2026: review draft PR #1 and its successful Vercel preview on a real iPhone/Android. Hosted browser verification needs authorization for the Vercel sign-in redirect or Donte can open the preview personally. Donte approves a production release after reviewing loading and navigation. Follow-on work: full room-module splitting, usable content during initialization, and input/idle-render cleanup. Do not merge source to `main` without release approval.
+Updated November 3, 2026: hosted browser verification passed. Review draft PR #1 and its successful Vercel preview on a real iPhone/Android. Donte approves a production release after reviewing loading and navigation. Follow-on work: full room-module splitting, usable content during initialization, and input/idle-render cleanup. Do not merge source to `main` without release approval.
 
 Updated October 31, 2026: the Home side tables, lamps and floor jars are live; Donte checks them on a real phone.
 
@@ -303,6 +303,11 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- November 3, 2026 (Codex session): **Hosted mobile performance preview verified**. Donte explicitly allowed the Vercel sign-in check. IAB showed the Vercel login page; the existing Chrome Vercel session opened the exact preview directly, so no credentials, login change, permission change or protection bypass was needed.
+  - Hosted QA: expected `app.js?v=mobile-performance-59` served; desktop Home loaded; after a 390×844 viewport reload the mobile profile was active. Home→Workshop and Workshop→Library flights completed; EnDAO opened both deck images and returned; AI curriculum preview opened; direct report opened the optimized `ribbon-768.webp`; the cover loaded on scroll at the correct 75×53 proportion. No website console errors (unrelated extension warnings excluded). No measured physical-device speed or frame-rate claim.
+  - Source unchanged: implementation `d841ec49a80f9c07f20f56f0e69b1d44a1af525f`; tested branch head `dd81643389f6b8ebd55015c5a6f568540ea35c95`, already pushed. Preview deployment `HVFKM5GYTjSaCZnUo5NaujAJSezS` reported success; URL https://donte-miller-personal-website-git-m-ced3c6-donte-8096s-projects.vercel.app. Draft PR #1 remains open; production source remains `home-lamps-58`.
+  - Records: canonical `HANDOFF.md`, its mirrored `docs/HANDOFF.md` and PR validation note updated. Syntax/tests/whitespace checks are rerun before the required docs commits. No website code or asset changes in this session.
+  - Still unverified: physical iPhone/Android, field Web Vitals, throttled frame rate and real offline networking. Next: Donte's phone review and explicit production release approval. Full room-module splitting and input/render scheduling remain follow-on work.
 - November 2, 2026 (Codex session): **Mobile performance first pass (preview)**. Donte approved the audit plan and requested implementation. Cache `mobile-performance-59`; scene caches `mobile-performance-1`; CSS `mobile-performance-31`.
   - Source: `dist/app.js`, `house-scene.js`, `library-scene.js`, new `performance.js` and `scene-assets.js`: concurrently load optimized boot images, use pre-cropped portrait/art, share baked rug/grain maps, defer east-room construction until idle/entry and load Workshop media on entry, use lower mobile render/shadow resolution, and expose optional first-render diagnostics. Room geometry, furniture, artwork content, camera rails and scrolling rules preserved.
   - Assets/build: committed generated `dist/assets/optimized/` display WebPs and manifest; `scripts/build-assets.mjs` / `texture-recipes.mjs` reproduce crops and the existing deterministic rug/grain recipes; development-only pinned canvas package and lockfile. Mobile boot images measured at 655,094 bytes versus 3,910,074 before (83% smaller, including baked maps). Originals/PDF unchanged. This is not a measured percentage load-time improvement.
