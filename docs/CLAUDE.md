@@ -38,6 +38,13 @@ The planning docs are mirrored into the repo's `docs/` folder (public). The copi
 - Mirrored: `HANDOFF.md`, `CLAUDE.md`, `build-plan.md`, `camera-storyboard.md`, `environment-audit.md`, `readability-plan.md`, `reference-manifest.csv`, `../personal-website-strategy.md`. Images, research snapshots and workbooks are not mirrored.
 - The repo is public: never put private or sensitive personal details in these docs.
 
+## Appearance and image preservation (Donte, November 3, 2026)
+
+- Treat the restored `home-lamps-58` site as the visual baseline for performance cleanup. Preserve room geometry, furniture/art placement, framing, image crops, colours, lighting, shadows, blur, typography and navigation/reader behaviour.
+- Keep every existing content image and artwork visible and accessible. Never completely remove an image or replace it with a permanent placeholder unless Donte explicitly asks. Keep originals; add smaller mobile derivatives with the same content, aspect ratio, crop and colour appearance.
+- Lower-resolution mobile images are allowed. This does not authorize lower renderer resolution, reduced shadows, removing blur, hiding objects or delaying scene construction so objects disappear or pop into view.
+- Compare previews against the restored baseline at identical viewport sizes and camera positions. Test image readiness and navigation, not only syntax/unit tests. Release one small, independently reviewable change at a time after approval.
+
 ## Deployment
 
 Since October 29, 2026 the live site is **https://www.dontelamonte.com** (apex redirects to www), hosted on Vercel project `donte-8096s-projects/donte-miller-personal-website`, connected to this GitHub repo.

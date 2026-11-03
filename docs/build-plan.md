@@ -562,6 +562,8 @@ Requested by Donte, October 30. Each change replaces one desk sketchpad with a d
 
 ## 21. Mobile performance — November 2, 2026
 
+**Historical; rolled back November 3 at Donte’s request.** Donte disliked the Workshop changes and reported intermittent bugs. Do not reapply this pass. The replacement plan is §22.
+
 Donte approved the performance refactor plan and requested implementation. Preserve
 the connected 3D house, room sequence, artwork, reading content and camera paths.
 
@@ -593,3 +595,102 @@ then physical iPhone Safari and Android loading/scrolling review. Preview first,
 production release only after Donte's approval. Remaining refactor work: complete
 room-module code splitting, readable content during 3D initialization, input and
 idle-render scheduling cleanup, and repeatable real-device performance budgets.
+
+
+## 22. Appearance-preserving performance cleanup — November 3, 2026
+
+### Scope and acceptance
+
+Plan only. Keep the restored `home-lamps-58` site live. Donte permits lower-resolution
+mobile images, but no image may be completely removed without an explicit request.
+Preserve the entire house and all paintings, portrait, plaques, Workshop media,
+publication photographs, report cover and original PDF. Preserve their crops,
+positions, proportions and colours, plus the existing lighting/shadows, blur,
+renderer resolution, furniture, camera routes and reader/scroll behaviour.
+
+The previous pass bundled visual/rendering changes with load-time changes. Its
+lower shadow resolution, lower renderer resolution, blur removal, changed artwork
+cropping and delayed room construction are excluded from this replacement plan.
+The specific cause of Donte's intermittent bugs is not yet established.
+
+### Pass 1 — Baseline and image inventory
+
+Capture the restored Home, About, Table, Workshop and Library, including open
+publication/model/course readers, at the same desktop and phone viewports and
+camera positions used for later comparisons. Record every image reference and
+source asset. Measure cold and repeat loads, image bytes and decoding time, scene
+startup work and frame/interaction timing; distinguish real devices from a
+phone-sized desktop browser. Observe forward/reverse room travel and first visits.
+
+Acceptance: an explicit visual/image inventory and baseline measurements exist.
+No site changes or images removed. Use this to select the smallest valuable pass.
+
+### Pass 2 — Smaller mobile images with identical composition
+
+Add mobile derivatives and select them by display needs while retaining original
+files and desktop quality. Prioritize the 4625-pixel ribbon-cutting photo and
+2048-pixel living-room reference, then the Workshop painting source and reader
+cover. Keep the original Workshop texture coordinates (`repeat` / `offset`) and
+its full source composition; do not replace it with a newly interpreted crop.
+Preserve portrait framing and all family paintings, logo plaques and model media.
+Do not resize the 1024×955 About reference in this pass: its height and absolute
+pixel coordinates currently determine scene dimensions and artwork crops.
+
+For ordinary reader images use responsive sources and correct intrinsic ratios.
+Load all images needed for the visible scene before considering it ready. Any
+lazy loading is limited to offscreen reader media and must be tested to load
+before it is visible, with stable dimensions and a visible original-image fallback.
+
+Acceptance: every inventoried image is still present; mobile transfer/decoded
+pixels improve; framing, colours and geometry match the baseline. Compare both
+image-loaded and slow-network paths. Do not claim load-time gains from byte
+reductions alone. Publish this as the first separate preview.
+
+### Pass 3 — Reduce repeated startup work without redrawing artwork
+
+Create the existing deterministic rug texture once and reuse that same texture
+for the living and dining rugs, instead of running its 140,000 drawing operations
+twice. Keep the original drawing recipe, dimensions and renderer settings. Review
+other duplicate texture/material creation only where sharing does not alter UVs,
+repeat settings, animation or independent material properties.
+
+Start independent existing image requests together rather than waiting through
+three serial batches; preserve the same readiness barrier, error fallbacks and
+complete starting scene. Keep all rooms built before navigation. Do not introduce
+room popping, blank artwork, colour placeholders or new asynchronous navigation
+states. Test every direct room/model/course link under cold cache and failures.
+
+Acceptance: baseline appearance and reading/travel behaviour match exactly; less
+measured CPU/startup work. A separate preview and comparison follow Pass 2.
+
+### Pass 4 — Code and delivery cleanup
+
+Profile pointer/hotspot work. Cache viewport measurements per frame and batch
+layout reads/writes while keeping the exact hotspot positions and input behaviour.
+Remove proven dead code; separate content, loading, navigation, readers and scene
+construction into clear modules in small behaviour-preserving steps. A production
+minification/compression/caching pass must preserve licenses, safely invalidate
+changed assets, and leave HTML refreshable. Inspect deployed headers before
+changing cache policy. No framework migration is needed for this plan.
+
+Leave scroll sequencing, room construction timing and idle/render scheduling
+unchanged unless measurements show a remaining bottleneck and a dedicated preview
+proves the same behaviour. Existing dirty-frame drawing and shadow caching should
+be preserved, not described as missing features.
+
+### Release gate for every pass
+
+- Run syntax, existing navigation/scroll tests and whitespace checks.
+- Compare desktop and mobile screenshots at matching viewpoints. Accept only
+  reduced fine image detail explicitly allowed for mobile; reject changed artwork,
+  missing images, blank states, geometry, colour, shadows, blur or layout.
+- Check all twelve directed room-tab routes, reverse travel, reader continuation,
+  direct links, rapid tab changes, first visits, rotation and slow/cold loads.
+- Check a physical iPhone and Android when available; report any checks still open.
+- Show the individual preview and visual comparison before release approval.
+- If a pass regresses appearance or behaviour, revert that pass rather than masking
+  it by removing images or objects.
+
+Recommended implementation order: baseline → mobile image derivatives → shared
+existing textures/concurrent requests → delivery and small module cleanups. No
+replacement implementation has been started; Donte requested this revised plan.
