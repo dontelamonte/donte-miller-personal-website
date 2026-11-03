@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server.mjs",
-    "check": "node --check dist/app.js && node --check dist/environment-materials.js && node --check dist/room-scroll.js && node --check dist/scroll-flow.js && node --check dist/house-path.js && node --check dist/house-scene.js && node --check dist/living-content.js && node --check dist/about-story.js && node --check dist/library-path.js && node --check dist/navigation-route.js && node --check dist/library-scroll.js && node --check dist/workshop-route.js && node --check dist/library-scene.js && node --check dist/library-content.js && node --check dist/workshop-content.js && node --check server.mjs && node --check dist/mobile-images.js",
+    "check": "node --check dist/app.js && node --check dist/environment-materials.js && node --check dist/room-scroll.js && node --check dist/scroll-flow.js && node --check dist/house-path.js && node --check dist/house-scene.js && node --check dist/living-content.js && node --check dist/about-story.js && node --check dist/library-path.js && node --check dist/navigation-route.js && node --check dist/library-scroll.js && node --check dist/workshop-route.js && node --check dist/library-scene.js && node --check dist/library-content.js && node --check dist/workshop-content.js && node --check server.mjs && node --check dist/mobile-images.js && node --check dist/scene-touch.js",
     "test": "node --test tests/*.test.mjs"
   }
 }

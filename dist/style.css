@@ -268,3 +268,7 @@ html[data-room=dining] .room-navigation{background:#f3ead7db;padding:0 15px;bord
 .model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-continuation{margin:34px 34px 0 40px}
 .model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-media-actions{padding-left:40px}
 @media(max-width:650px){.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-continuation{margin:28px 20px 0 26px}.model-shell[data-kind=sketchpad] #model-content:has(>.model-media) .model-media-actions{padding-left:26px}}
+
+/* Keep custom scene swipes from sliding the iOS page under browser controls. */
+html{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;height:100%;overscroll-behavior:none}
