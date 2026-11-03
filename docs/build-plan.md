@@ -723,5 +723,10 @@ real-phone frame rate, throttled networking and all twelve animated flights
 remain unverified. A 58-test suite includes unchanged-original-asset hashes,
 mobile selection, full-image proportions and one-time fallback checks.
 
+Source `ab62b3a` is pushed on `mobile-images-only`, draft PR #2. Hosted Vercel
+preview `2BzWofjzn72dBsxcFywfn3XTombL` succeeded; desktop Home and mobile
+Workshop/report (including both mobile image URLs) were verified without site
+errors. Preview: https://donte-miller-personal-website-git-m-3ba743-donte-8096s-projects.vercel.app.
+
 This pass is a preview. No production release is authorized by “ok, go”; show
 Donte the comparison and obtain release approval before merging source.
