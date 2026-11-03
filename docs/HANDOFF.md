@@ -1,6 +1,6 @@
 # Donte Miller personal website — handoff
 
-Last updated: October 31, 2026 (America/New_York)
+Last updated: November 2, 2026 (America/New_York)
 
 ## Purpose and update rule
 
@@ -11,6 +11,8 @@ This is the maintained working record for the personal website. Update it at mea
 Record-keeping and GitHub rules are in `CLAUDE.md` in this folder (added October 29, 2026). Follow them for every change.
 
 ## Current status
+
+**Mobile performance first pass is implemented for preview** (November 2, 2026, branch `mobile-performance`, cache `app.js?v=mobile-performance-59`, `house-scene.js` / `library-scene.js` `mobile-performance-1`, CSS `mobile-performance-31`). Mobile startup images: 3,910,074 → 655,094 bytes (83% smaller, including pre-rendered textures). The house design and camera routes are preserved. East-room construction and Workshop texture downloads are deferred; mobile uses a 1.25 pixel-ratio cap and 1024 shadows. Source `d841ec49a80f9c07f20f56f0e69b1d44a1af525f` is pushed; draft PR https://github.com/dontelamonte/donte-miller-personal-website/pull/1. Vercel preview build `5MMJxxHiGhHYz8DmtTPeTntQBwnW` succeeded: https://donte-miller-personal-website-git-m-ced3c6-donte-8096s-projects.vercel.app. Production runtime remains `home-lamps-58`. 57 tests, syntax and whitespace checks pass; local desktop and 390×844 browser QA completed. Hosted browser verification is blocked by the Vercel sign-in redirect; automatic approval review rejected that account-origin access and Donte was asked whether to allow the sign-in check. Physical-device performance remains unverified. See build-plan §21 and the latest change-log entry.
 
 **Home side tables, lamps and floor jars are live** (October 31, 2026, `main` merge `6c816855427aba6e2ce68c3351ddea44fe3ec351`; cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`): carved tables on cabriole legs, ginger-jar lamps with leaded petal shades, and lidded floor jars, after Donte's living-room reference.
 
@@ -258,6 +260,8 @@ The continuous-scroll fix above supersedes the fresh-gesture requirement describ
 
 ## Exact next action
 
+Updated November 2, 2026: review draft PR #1 and its successful Vercel preview on a real iPhone/Android. Hosted browser verification needs authorization for the Vercel sign-in redirect or Donte can open the preview personally. Donte approves a production release after reviewing loading and navigation. Follow-on work: full room-module splitting, usable content during initialization, and input/idle-render cleanup. Do not merge source to `main` without release approval.
+
 Updated October 31, 2026: the Home side tables, lamps and floor jars are live; Donte checks them on a real phone.
 
 Updated October 31, 2026: the room plants and varied bookshelf are live; Donte checks them on a real phone.
@@ -299,6 +303,13 @@ The temporary port-8788 preview server was stopped after publication. Restart it
 
 ## Change log
 
+- November 2, 2026 (Codex session): **Mobile performance first pass (preview)**. Donte approved the audit plan and requested implementation. Cache `mobile-performance-59`; scene caches `mobile-performance-1`; CSS `mobile-performance-31`.
+  - Source: `dist/app.js`, `house-scene.js`, `library-scene.js`, new `performance.js` and `scene-assets.js`: concurrently load optimized boot images, use pre-cropped portrait/art, share baked rug/grain maps, defer east-room construction until idle/entry and load Workshop media on entry, use lower mobile render/shadow resolution, and expose optional first-render diagnostics. Room geometry, furniture, artwork content, camera rails and scrolling rules preserved.
+  - Assets/build: committed generated `dist/assets/optimized/` display WebPs and manifest; `scripts/build-assets.mjs` / `texture-recipes.mjs` reproduce crops and the existing deterministic rug/grain recipes; development-only pinned canvas package and lockfile. Mobile boot images measured at 655,094 bytes versus 3,910,074 before (83% smaller, including baked maps). Originals/PDF unchanged. This is not a measured percentage load-time improvement.
+  - Presentation: `index.html` discovers fonts without CSS @import; `style.css` avoids mobile reader backdrop blur and preserves cover aspect ratio; responsive reader photos and small lazy report cover. `server.mjs` serves WebP MIME. `README.md`, canonical `build-plan.md` §21 and this handoff updated.
+  - Validation: `npm run assets` succeeded; `npm run check` passed; `npm test` 57/57 (four new mobile-profile/deferred-loading tests); `git diff --check` clean. Local browser: desktop Home, 390×844 Home/About/Workshop, whiteboard open/back, Workshop→Library, Flourish preview, direct report and press readers, correct cover proportions; no console errors. Local timing varied and was not used to claim a speed improvement.
+  - Not verified: physical iPhone/Android, field Web Vitals, throttled mobile frame rate, hosted preview page content, real offline networking. Vercel reported the preview build successful, but browser navigation redirected to Vercel account access and automatic approval review rejected that redirect; user input requested before any retry. Remaining full code splitting/input/render-loop cleanup is recorded in build-plan §21.
+  - Git: source `d841ec49a80f9c07f20f56f0e69b1d44a1af525f` on `mobile-performance`, pushed; draft PR #1 created and attached to the Codex chat. Deployment: Vercel preview `5MMJxxHiGhHYz8DmtTPeTntQBwnW`, status `success`; URL https://donte-miller-personal-website-git-m-ced3c6-donte-8096s-projects.vercel.app. No source merge or production source release. A docs-only main sync is required by CLAUDE.md; it must leave `dist/` identical to the existing release. Next: authorized hosted verification / Donte’s phone review; production only after release approval.
 - October 31, 2026 (Claude Code session): **Home side tables, lamps and floor jars are live** at Donte's explicit request ("Release it"). Merged `home-lamps` into `main` as `6c816855427aba6e2ce68c3351ddea44fe3ec351` and pushed. Before push: `npm run check` passed, `npm test` 53/53, `git diff --check` clean. Vercel status `success`; the live page (via donte.villagemicrofund.com) loads `app.js?v=home-lamps-58`. Not verified: real devices. Rollback: revert the merge on `main`, or promote the previous Vercel deployment (`8694f9a`).
 - October 31, 2026 (Claude Code session): **Home side tables, lamps and floor jars reshaped (preview)**. Donte supplied the living-room reference again to refine the shape and texture of the side tables, the lamps and the vases under the tables. Shape and texture only; colours and positions unchanged. Cache `app.js?v=home-lamps-58`, `house-scene.js?v=home-lamps-1`.
   - `dist/house-scene.js` (`lamp`): tables have a molded top, a carved apron (canvas carving texture in the table wood colour) and four curved cabriole legs with pad feet. Lamp bases are lidded ginger jars on a small wooden stand with a dense blue-and-white floral texture (new lamp-only material, so the About-wall vases and dining urns that share `china` are unchanged), a brass stem and finial, and a shade with eight scalloped petal tips and a leaded-glass texture (lead lines and mottled glass; same cream and glow). The old shade ribs and rim ring are replaced by the texture. Floor jars are larger lidded ginger jars resting on the floor. The point light is unchanged. Own random seed.
