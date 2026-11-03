@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {imageSource} from './mobile-images.js';
 import {environmentMaterial,addTrailingVine} from './environment-materials.js';
 import {curricula} from './library-content.js';
 import {houseShellFrontZ} from './house-path.js?v=home-fit-1';
@@ -30,7 +31,12 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  const upholstery=environmentMaterial('#446d89','fabric');
  for(const z of [-.95,7.45])box(.11,8.2,1.4,22.87,3.55,z,studioCream);
  box(.12,.14,7.4,22.85,7.75,3.25,studioWood);box(.12,.14,7.4,22.85,.08,3.25,studioWood);
- const paintingMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>window.dispatchEvent(new Event('scene-asset-ready')));
+ const paintingSource=imageSource('/assets/workshop-wall.jpg');
+ const paintingReady=()=>window.dispatchEvent(new Event('scene-asset-ready'));
+ const paintingMap=new THREE.TextureLoader().load(paintingSource,paintingReady,undefined,()=>{
+  if(paintingSource==='/assets/workshop-wall.jpg')return;
+  new THREE.ImageLoader().load('/assets/workshop-wall.jpg',image=>{paintingMap.image=image;paintingMap.needsUpdate=true;paintingReady();});
+ });
  paintingMap.colorSpace=THREE.SRGBColorSpace;
  // UV crop of the framed painting in the supplied composition (not the desk or wall).
  paintingMap.repeat.set(.445,.38);paintingMap.offset.set(.273,.493);
