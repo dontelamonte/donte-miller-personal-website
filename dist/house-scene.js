@@ -61,7 +61,7 @@ export function buildHouse(scene,{portrait,aboutWall,aboutPaintings,plaqueLogos,
   const wall=mesh(new THREE.PlaneGeometry(length,height),new THREE.MeshBasicMaterial({map,color:'#ececec'}));
   wall.rotation.y=Math.PI/2;wall.position.set(-22.94,(y0+y1)/2,(z0+z1)/2);wall.castShadow=false;
  }
- const portraitMap=tex((c,w,h)=>c.drawImage(portrait,portrait.width*.321,portrait.height*.154,portrait.width*.357,portrait.height*.393,0,0,w,h),768,844);
+ const portraitMap=tex((c,w,h)=>c.drawImage(portrait,0,0,w,h),768,844);
  wallFrame(4.35,4.75,-15,4.65,-5.72);
  const art=mesh(new THREE.PlaneGeometry(3.98,4.38),new THREE.MeshBasicMaterial({map:portraitMap}));art.position.set(-15,4.65,-5.48);art.castShadow=false;register(art,'about');anchors.set('about',new THREE.Vector3(-15,2.2,-5.25));
  const plaqueDefinitions=[['forbes',-19.1,6.25,'Forbes','30 under 30'],['georgia',-19.1,4.65,'Georgia','500'],['atlanta',-19.1,3.05,'Atlanta','500'],['morehouse',-10.9,6.25,'MOREHOUSE','COLLEGE'],['village',-10.9,4.65,'VILLAGE','MICRO FUND'],['echoing',-10.9,3.05,'ECHOING','GREEN']];
