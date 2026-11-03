@@ -769,3 +769,12 @@ scroll advanced from 0 to 952 while body/header stayed at top zero.
 Saved local QA: `prototype/qa/mobile-viewport/`. Physical iPhone Chrome toolbar
 collapse/expand, real swipes/pinch and the reported bad state still require a
 phone check. Preview first; obtain release approval before changing production.
+
+Hosted preview: [PR #3](https://github.com/dontelamonte/donte-miller-personal-website/pull/3),
+source `e5acc1d0bc96b68527e4ea2e6f964ecd2c496cce`, pushed on `fix-mobile-page-pan`.
+Vercel deployment `2KQPtH9WfpfQTKybWpUwtZmcjBKm` succeeded:
+https://donte-miller-personal-website-git-f-580321-donte-8096s-projects.vercel.app.
+Hosted Chrome phone-width Workshop confirms new cache IDs, full-height canvas,
+header at top zero, EnDAO opening/scroll and no console errors. Local animated
+Workshop-to-Home flight completed while viewport height changed. Production
+source remains the approved image-only pass until the phone check and release approval.
