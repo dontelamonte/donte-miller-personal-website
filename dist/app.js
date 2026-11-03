@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
 import {imageSource,fallbackImage} from './mobile-images.js';
+import {connectSceneTouch} from './scene-touch.js';
 import {roomScrollDestination,RoomGestureGate} from './room-scroll.js';
 import {environmentMaterial} from './environment-materials.js';
 import {ScrollFlow} from './scroll-flow.js';
@@ -421,7 +422,7 @@ function goWorkshop({historyChange=true}={}){
 function updateTableHint(){$('table-scroll-hint').textContent='Scroll down';}
 function advanceTable(delta){
  const now=performance.now();
- if(!roomGesture.accept(delta,now,state.journeyNavigation||now<state.autoCooldown,sceneTouch!==null))return;
+ if(!roomGesture.accept(delta,now,state.journeyNavigation||now<state.autoCooldown,sceneTouch.active))return;
  if(state.mode!=='exploring'||state.journeyNavigation||state.homeReturning||performance.now()<state.autoCooldown||!Number.isFinite(delta))return;
  if(state.houseTarget===0&&state.houseProgress<.001&&(state.aboutOffset<ABOUT_DISTANCE||delta<0)){
   if(state.aboutTurning)return;
@@ -448,10 +449,10 @@ function advanceTable(delta){
  if(state.scrollAmount>=620){state.scrollAmount=0;savedReader.delete(state.scrollTarget);openBook(state.scrollTarget);}
 }
 window.addEventListener('wheel',e=>{if(e.ctrlKey||e.target.closest('.reader-shell,.course-shell,.model-shell,.living-panel,.room-navigation'))return;const delta=e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?innerHeight:1);if(['course-opening','course-closing'].includes(state.mode)){queueCourseScroll(delta);return;}if(['model-opening','model-closing'].includes(state.mode)){queueModelScroll(delta);return;}if(state.mode==='exploring')advanceTable(delta);},{passive:true});
-let sceneTouch=null;
-document.addEventListener('touchstart',e=>{if(state.mode==='exploring'&&e.touches.length===1)sceneTouch=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchmove',e=>{if(state.mode!=='exploring'||sceneTouch===null||e.touches.length!==1)return;advanceTable((sceneTouch-e.touches[0].clientY)*2);sceneTouch=e.touches[0].clientY;},{passive:true});
-for(const event of ['touchend','touchcancel'])document.addEventListener(event,()=>{sceneTouch=null;roomGesture.releaseTouch();},{passive:true});
+const sceneTouch=connectSceneTouch(document,{
+ isExploring:()=>state.mode==='exploring',advance:advanceTable,
+ release:()=>roomGesture.releaseTouch(),getScale:()=>window.visualViewport?.scale||1
+});
 document.addEventListener('keydown',e=>{if(state.mode==='living-detail'){if(e.key==='Escape'){e.preventDefault();closeLiving();}if(e.key==='Tab'){const nodes=[...$('living-panel').querySelectorAll('button,a,[tabindex="0"]')],first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}if(e.key==='Escape'&&state.mode==='course-reading'){e.preventDefault();closeCourse();return;}if(e.key==='Escape'&&state.mode==='model-reading'){e.preventDefault();closeModel({fromStart:true});return;}if(e.key==='Escape'&&state.mode==='reading'){closeBook();return;}if(state.mode!=='exploring'||e.ctrlKey||e.metaKey||e.target.closest('button,a,input,textarea,select'))return;const delta={ArrowDown:100,PageDown:650,' ':e.shiftKey?-650:650,ArrowUp:-100,PageUp:-650}[e.key];if(delta!==undefined){e.preventDefault();advanceTable(delta);}});
 function navigateTab(id){
  if(state.mode==='course-reading'){routeTo(id);closeCourse({historyChange:false});return;}
@@ -585,7 +586,27 @@ function frame(now=performance.now()){
  if(state.mode==='exploring'&&performance.now()>=state.autoCooldown&&libraryBookReady(state.libraryTarget,state.libraryProgress,state.libraryScrollAmount)){state.courseCarry=Math.min(240,Math.max(0,state.libraryScrollAmount-160));state.libraryScrollAmount=0;openCourse(state.courseScrollTarget);}
  if(!dirty||!renderer||!scene||!camera)return;dirty=false;if(state.mode==='exploring')positionHotspots();renderer.render(scene,camera);
 }
-window.addEventListener('resize',()=>{if(!camera||!renderer)return;layoutTable();camera.aspect=viewport().width/viewport().height;camera.updateProjectionMatrix();renderer.setSize(viewport().width,viewport().height);if(state.mode==='exploring')travelCamera();invalidate();if(state.mode==='reading')updateProgress();});
+function resizeScene(){
+ if(!camera||!renderer)return;
+ const r=viewport();if(r.width<=0||r.height<=0)return;
+ layoutTable();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height);
+ if(state.mode==='exploring'&&!state.journeyNavigation)travelCamera();invalidate();if(state.mode==='reading')updateProgress();
+}
+// Root scrolling is never part of the house tour; reading regions scroll internally.
+function restorePageOrigin(){
+ if((window.visualViewport?.scale||1)>1.01)return;
+ if(window.scrollX||window.scrollY)window.scrollTo(0,0);
+}
+let pendingViewportResize=0;
+function requestSceneResize(){
+ if(pendingViewportResize)return;
+ pendingViewportResize=requestAnimationFrame(()=>{pendingViewportResize=0;resizeScene();});
+}
+window.addEventListener('resize',requestSceneResize);
+window.addEventListener('pageshow',()=>{restorePageOrigin();requestSceneResize();});
+window.addEventListener('scroll',restorePageOrigin,{passive:true});
+window.visualViewport?.addEventListener('resize',()=>{if(window.visualViewport.scale<=1.01)requestSceneResize();});
+restorePageOrigin();
 async function start(){
  try{
   if(!gsap)throw new Error('Animation library did not load');

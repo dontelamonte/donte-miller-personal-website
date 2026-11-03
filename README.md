@@ -60,3 +60,23 @@ a Python environment with the development-only dependencies in
 `scripts/requirements-images.txt`, then run `python scripts/build-mobile-images.py`.
 The script resizes the complete images without cropping and preserves their
 embedded ICC profiles. Original files must never be overwritten.
+
+## Mobile page-pan fix preview
+
+Cache `mobile-viewport-61` / CSS `mobile-viewport-32` addresses the clipped header
+and blank bottom band reported in iPhone Chrome screenshots. The page root/body
+are fixed to the viewport; one-finger vertical house swipes cancel native page
+panning. Reader/panel gestures, pinch zoom, zoomed panning and horizontal browser
+gestures are not claimed by the house controller. Touch release keeps the existing
+room-boundary gate. No images, room geometry, visual styling or camera paths change.
+
+Window and VisualViewport resize notifications share a coalesced canvas resize;
+active room flights keep ownership of the camera. Unzoomed root scroll restoration
+returns the page to its origin, including on page-show/history restore. All reader
+content continues to scroll inside its own region.
+
+Local WebKit checks include a real-document synthetic touch fixture (native page
+pan cancelled, pinch passed through, root scroll attempt remains at zero), header /
+canvas bounds at 390px width with heights 580/666/744, reader scroll, and unchanged
+Home/Workshop/Library screenshots at 390×666. These do not emulate the actual iPhone
+Chrome toolbar. Verify the preview in that same phone/browser before release.
