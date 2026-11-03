@@ -558,3 +558,38 @@ Requested by Donte, October 30. Each change replaces one desk sketchpad with a d
 - Acceptance: the three models open in order by scroll and by button at 1280 × 800 and 375 × 812; the camera reaches the whiteboard and the monitor without passing through the desk or walls; Back returns to the desk view; the EnDAO link opens endao.ai in a new tab; no console errors; tests pass.
 - Branch `workshop-objects`, Vercel preview; merged only with Donte's approval.
 - **Built and released October 30** (`main` merge `ed3c9e3`). On phones the whiteboard is outside the Workshop view and is reached by the button or by scrolling.
+
+
+## 21. Mobile performance — November 2, 2026
+
+Donte approved the performance refactor plan and requested implementation. Preserve
+the connected 3D house, room sequence, artwork, reading content and camera paths.
+
+First preview (`mobile-performance`, cache `mobile-performance-59`):
+
+- Export cropped portrait and Workshop painting, responsive publication photos,
+  smaller family paintings, plaque logos and report cover as WebP display assets.
+  Keep original files and the complete PDF unchanged.
+- Bake the deterministic rug and table-grain recipes once during development;
+  share the rug map and serve half-size versions on mobile.
+- Fetch boot artwork concurrently. Render Home before constructing the east room;
+  warm its geometry during idle time or prepare it on entry. Load its painting,
+  monitor and whiteboard textures only when entering Workshop/Library. Preserve
+  direct model/course routes and independent failure/retry of optional textures.
+- On mobile/coarse-pointer devices cap pixel ratio at 1.25 and shadow maps at
+  1024, while keeping desktop's 1.6 / 2048 settings. Remove reader backdrop blur.
+- Discover fonts directly from HTML. Add responsive reader images with explicit
+  dimensions and lazy loading for the small report cover.
+
+Verified asset budget: mobile startup images total 655,094 bytes versus
+3,910,074 bytes before (83% smaller), including both pre-rendered maps. Additional
+Workshop image downloads are deferred. This is a byte comparison, not an observed
+83% improvement in loading time. First-render timing is available via
+`?performance`; normal browsing does not log those diagnostics.
+
+Acceptance before production: 57 automated tests and syntax/whitespace checks;
+phone/desktop browser review, direct reader/room links, optional image failures;
+then physical iPhone Safari and Android loading/scrolling review. Preview first,
+production release only after Donte's approval. Remaining refactor work: complete
+room-module code splitting, readable content during 3D initialization, input and
+idle-render scheduling cleanup, and repeatable real-device performance budgets.

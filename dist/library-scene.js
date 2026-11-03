@@ -1,10 +1,12 @@
 import * as THREE from './vendor/three.module.min.js';
 import {environmentMaterial,addTrailingVine} from './environment-materials.js';
+import {deferredTextureBatch} from './scene-assets.js';
 import {curricula} from './library-content.js';
 import {houseShellFrontZ} from './house-path.js?v=home-fit-1';
 
 export function buildLibrary(scene,{aspect=16/9}={}){
  const root=new THREE.Group();root.name='The library';scene.add(root);
+ const assets=deferredTextureBatch();
  const pickables=[],books=new Map(),anchors=new Map(),modelPads=new Map(),modelPickables=[];
  const wood=environmentMaterial('#875535','wood');
  const edge=environmentMaterial('#bd874d','wood');
@@ -30,10 +32,9 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  const upholstery=environmentMaterial('#446d89','fabric');
  for(const z of [-.95,7.45])box(.11,8.2,1.4,22.87,3.55,z,studioCream);
  box(.12,.14,7.4,22.85,7.75,3.25,studioWood);box(.12,.14,7.4,22.85,.08,3.25,studioWood);
- const paintingMap=new THREE.TextureLoader().load('/assets/workshop-wall.jpg',()=>window.dispatchEvent(new Event('scene-asset-ready')));
+ const paintingMap=assets.texture('/assets/optimized/workshop-painting.webp');
  paintingMap.colorSpace=THREE.SRGBColorSpace;
- // UV crop of the framed painting in the supplied composition (not the desk or wall).
- paintingMap.repeat.set(.445,.38);paintingMap.offset.set(.273,.493);
+ // The display asset is already cropped to the framed painting.
  const painting=mesh(new THREE.PlaneGeometry(4.92,4.2),new THREE.MeshBasicMaterial({map:paintingMap,side:THREE.DoubleSide}));painting.position.set(22.79,5.4,3.25);painting.rotation.y=-Math.PI/2;painting.castShadow=false;
  // Work surface and two drawer pedestals sit in front of the wall.
  box(1.28,.16,6.7,21.76,1.33,3.25,studioWood);
@@ -43,7 +44,7 @@ export function buildLibrary(scene,{aspect=16/9}={}){
  }
  // The desk computer is the EnDAO model (build-plan §20.2): its screen shows the deck's first page,
  // and selecting it zooms the camera into the monitor.
- const assetMap=(src,set)=>{const t=new THREE.TextureLoader().load(src,()=>window.dispatchEvent(new Event('scene-asset-ready')));t.colorSpace=THREE.SRGBColorSpace;set?.(t);return t;};
+ const assetMap=(src,set)=>assets.texture(src,set);
  const monitor=new THREE.Group();root.add(monitor);
  // 50% larger than the first version (bezel .82 × 1.35), with its bottom edge kept at the same height above the stand.
  box(.08,1.23,2.025,22.08,2.285,3.25,dark,monitor);
@@ -167,5 +168,5 @@ export function buildLibrary(scene,{aspect=16/9}={}){
   for(let s=0;s<7;s++){const a=s*.9+random()*.5;for(let k=0;k<7;k++){const r=.42+k*.012,y=.15-k*.09;spots.push([x+Math.cos(a+k*.05)*r,y,z+Math.sin(a+k*.05)*r,Math.cos(a),-.2,Math.sin(a)]);}}
   const set=new THREE.InstancedMesh(heartLeaf,green,spots.length);spots.forEach(([px,py,pz,nx,ny,nz],i)=>{leafPose.position.set(px,py,pz);tip.set(px+nx,py+ny,pz+nz);leafPose.lookAt(tip);leafPose.rotateZ((random()-.5)*2.6+Math.PI);leafPose.scale.setScalar(.8+random()*.6);leafPose.updateMatrix();set.setMatrixAt(i,leafPose.matrix);});set.castShadow=true;root.add(set);}
  const light=new THREE.PointLight('#ffcf96',14,23,2);light.position.set(16,6,2);root.add(light);
- return {root,pickables,books,anchors,modelPads,modelPickables};
+ return {root,pickables,books,anchors,modelPads,modelPickables,loadAssets:assets.load};
 }

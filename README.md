@@ -14,7 +14,7 @@ The portrait jumps to the inline About story; six frames open Forbes, Georgia Tr
 
 On phones, a focused portrait view and a six-item recognition menu keep all credentials accessible.
 
-The connected room geometry and furniture are modeled in Three.js. The house is enclosed by a shared exterior shell and continuous ceiling sized beyond the narrow-screen camera framing, with the room-to-room archways left open. Reverse tab travel and the final Library-to-Home return use the same direction-aware camera flight as forward tab travel. The portrait texture is cropped at runtime from a compressed copy of the supplied living-room reference; the original remains in the parent reference folder. Wall, upholstery and mural textures are procedural. No screenshot is used as a flat room background.
+The connected room geometry and furniture are modeled in Three.js. The house is enclosed by a shared exterior shell and continuous ceiling sized beyond the narrow-screen camera framing, with the room-to-room archways left open. Reverse tab travel and the final Library-to-Home return use the same direction-aware camera flight as forward tab travel. The portrait is exported ahead of time as a cropped WebP from the supplied living-room reference; the original remains in the parent reference folder. Wall, upholstery and mural textures are procedural; fixed rug and table-grain maps are pre-rendered and shared. No screenshot is used as a flat room background.
 
 ## Interaction
 
@@ -39,3 +39,32 @@ The maintained project handoff is `../HANDOFF.md`. Visual checks and source extr
 - Three.js 0.186.0, MIT: https://github.com/mrdoob/three.js
 - GSAP 3.13.0: https://gsap.com/standard-license/
 - Vendored files downloaded from version-pinned jsDelivr package paths. Preserve license headers.
+
+## Mobile performance preview
+
+Cache `mobile-performance-59` reduces startup image files from 3,910,074 bytes to
+655,094 bytes on mobile (83% smaller, including the new pre-rendered textures).
+These are asset byte counts, not a measured load-time improvement. Desktop keeps
+larger display images and its existing rendering quality. Source photos and the
+original report PDF remain intact.
+
+- `dist/performance.js` selects a 1.25 mobile pixel-ratio cap and a 1024 shadow map;
+  desktop keeps 1.6 and 2048. CSS layout and camera routes are unchanged.
+- All startup images load in one concurrent batch. Home renders before east-room
+  construction; the Workshop/Library geometry warms during idle time or builds on
+  entry. Workshop painting, monitor and whiteboard images load only on entry.
+- Publication images use responsive WebPs; the small report cover loads near view.
+- Optional room-image failures settle independently and can retry on a later visit.
+- `?performance` logs first-render timing and initial image bytes for local
+  diagnosis. This is not an LCP or physical-device benchmark.
+
+Generated files in `dist/assets/optimized/` are committed, so running the website
+still needs no installation or build step. To regenerate them after editing a
+source image or texture recipe, run `npm ci` and `npm run assets`. The canvas
+package is development-only; it is never downloaded by website visitors. The
+recipes and image-crop settings live in `scripts/texture-recipes.mjs` and
+`scripts/build-assets.mjs`. Do not edit generated images directly.
+
+Remaining work: physical iPhone/Android loading and interaction measurements,
+full room-code splitting, and broader input/render-loop cleanup. Review this
+preview on a real phone before releasing it to production.
