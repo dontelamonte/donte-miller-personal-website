@@ -601,7 +601,9 @@ idle-render scheduling cleanup, and repeatable real-device performance budgets.
 
 ### Scope and acceptance
 
-Plan only. Keep the restored `home-lamps-58` site live. Donte permits lower-resolution
+Donte authorized implementation with “ok, go” on November 3. Start with the
+mobile-image-only pass in its own preview; keep `home-lamps-58` live pending review.
+Donte permits lower-resolution
 mobile images, but no image may be completely removed without an explicit request.
 Preserve the entire house and all paintings, portrait, plaques, Workshop media,
 publication photographs, report cover and original PDF. Preserve their crops,
@@ -693,4 +695,33 @@ be preserved, not described as missing features.
 
 Recommended implementation order: baseline → mobile image derivatives → shared
 existing textures/concurrent requests → delivery and small module cleanups. No
-replacement implementation has been started; Donte requested this revised plan.
+other cleanup has been implemented. The image-only preview record follows.
+
+
+### First image-only preview — mobile-images-60
+
+Branch `mobile-images-only` contains four additional mobile JPEGs. At widths up
+to 760 pixels the scene/reader references select these; desktop keeps original
+URLs. Complete image compositions and embedded colour profiles are preserved.
+The Workshop uses its unchanged repeat/offset crop. The About-wall image and
+all model media, family artwork, plaques, originals and PDF are untouched.
+Original images are retried if a mobile derivative fails to load.
+
+The three scene files total 1,238,840 bytes versus 3,939,141 bytes before (68.6%
+smaller); the separate report-cover derivative is also smaller. These are file
+sizes, not measured real-phone loading times. No scene construction, readiness
+barriers, render/lighting/shadow/blur settings, CSS or navigation logic changed.
+
+Local QA is saved under ignored `prototype/qa/mobile-images/`: all five desktop
+room screenshots are pixel-identical; mobile About/Library and the Workshop's
+three model-reader views plus AI reader are pixel-identical. Home/Table/Workshop
+and publication photos differ only in image detail at the same framing/layout.
+All-original fallback tests for Home/Workshop/report produce pixel-identical
+baseline screenshots. All twelve directed tab routes passed in reduced-motion
+mode; the normal Home→Table flight completed. Continuous physical swipes,
+real-phone frame rate, throttled networking and all twelve animated flights
+remain unverified. A 58-test suite includes unchanged-original-asset hashes,
+mobile selection, full-image proportions and one-time fallback checks.
+
+This pass is a preview. No production release is authorized by “ok, go”; show
+Donte the comparison and obtain release approval before merging source.

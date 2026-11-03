@@ -39,3 +39,24 @@ The maintained project handoff is `../HANDOFF.md`. Visual checks and source extr
 - Three.js 0.186.0, MIT: https://github.com/mrdoob/three.js
 - GSAP 3.13.0: https://gsap.com/standard-license/
 - Vendored files downloaded from version-pinned jsDelivr package paths. Preserve license headers.
+
+## Mobile image-only preview
+
+Cache `mobile-images-60` selects smaller full-composition JPEGs for widths up to
+760 CSS pixels. Desktop retains the original URLs. Only the ribbon-cutting photo,
+living-room source image, Workshop painting source and report cover get mobile
+copies. Every original asset and the PDF remain untouched. About-wall dimensions,
+Workshop UV crop, scene geometry, shadows, blur, rendering settings and loading /
+navigation sequencing are unchanged. Failed mobile copies retry the original.
+
+The three large scene-image files total 1,238,840 bytes on mobile versus 3,939,141
+bytes originally (68.6% smaller). This is a file-size comparison, not a measured
+load-time improvement. New checks protect all original assets by SHA-256 and
+verify desktop selection and fallback behavior.
+
+Mobile files and their manifest in `dist/assets/mobile/` are committed; running
+or deploying the website requires no new dependencies. To regenerate them, use
+a Python environment with the development-only dependencies in
+`scripts/requirements-images.txt`, then run `python scripts/build-mobile-images.py`.
+The script resizes the complete images without cropping and preserves their
+embedded ICC profiles. Original files must never be overwritten.

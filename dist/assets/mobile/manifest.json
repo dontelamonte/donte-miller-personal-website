@@ -1,0 +1,66 @@
+{
+  "akua-ribbon.jpg": {
+    "mobile": "akua-ribbon.jpg",
+    "sourceDimensions": [
+      4625,
+      2679
+    ],
+    "mobileDimensions": [
+      1536,
+      890
+    ],
+    "sourceBytes": 1667852,
+    "mobileBytes": 448147,
+    "sourceSha256": "ac0fc58e1fe72bc5fd9b94503003d07dac2edea81dfa54f21a3aa5f062c13efb",
+    "sourceIccSha256": "2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e",
+    "crop": "none"
+  },
+  "living-room-reference.jpg": {
+    "mobile": "living-room-reference.jpg",
+    "sourceDimensions": [
+      2048,
+      2048
+    ],
+    "mobileDimensions": [
+      1024,
+      1024
+    ],
+    "sourceBytes": 1567090,
+    "mobileBytes": 374422,
+    "sourceSha256": "5a174762cf315cd7a790d708d2de7f98b26b56ab02a02f9a5eb7d5add8c92b79",
+    "sourceIccSha256": null,
+    "crop": "none"
+  },
+  "workshop-wall.jpg": {
+    "mobile": "workshop-wall.jpg",
+    "sourceDimensions": [
+      1400,
+      1400
+    ],
+    "mobileDimensions": [
+      1024,
+      1024
+    ],
+    "sourceBytes": 704199,
+    "mobileBytes": 416271,
+    "sourceSha256": "a31c53983c85da49bc69cf776a1f4f50820b6033aa3e36c29cbf8d7ac8bcb77d",
+    "sourceIccSha256": null,
+    "crop": "none"
+  },
+  "original-report-cover.png": {
+    "mobile": "original-report-cover.jpg",
+    "sourceDimensions": [
+      1400,
+      990
+    ],
+    "mobileDimensions": [
+      560,
+      396
+    ],
+    "sourceBytes": 1095935,
+    "mobileBytes": 34624,
+    "sourceSha256": "a80158f0c4aef1d3753cd451d176786005406c66735192e582b4ba55dd7d059b",
+    "sourceIccSha256": null,
+    "crop": "none"
+  }
+}
